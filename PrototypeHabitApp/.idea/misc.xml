@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/matli/AndroidStudioProjects/PrototypeHabitApp/app/src/main/res/layout/add_habit.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/matli/AndroidStudioProjects/PrototypeHabitApp/app/src/main/res/layout/add_habits.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/matli/AndroidStudioProjects/PrototypeHabitApp/app/src/main/res/layout/all_habits.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/matli/AndroidStudioProjects/PrototypeHabitApp/app/src/main/res/layout/boot_screen.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/matli/AndroidStudioProjects/PrototypeHabitApp/app/src/main/res/layout/day_of_week_bar.xml" value="0.4" />
+        <entry key="..\:/Users/matli/AndroidStudioProjects/PrototypeHabitApp/app/src/main/res/layout/feed.xml" value="0.264" />
+        <entry key="..\:/Users/matli/AndroidStudioProjects/PrototypeHabitApp/app/src/main/res/layout/habit_entry.xml" value="0.264" />
+        <entry key="..\:/Users/matli/AndroidStudioProjects/PrototypeHabitApp/app/src/main/res/layout/log_in_screen.xml" value="0.264" />
+        <entry key="..\:/Users/matli/AndroidStudioProjects/PrototypeHabitApp/app/src/main/res/layout/nav_bar.xml" value="0.264" />
+        <entry key="..\:/Users/matli/AndroidStudioProjects/PrototypeHabitApp/app/src/main/res/layout/profile.xml" value="0.264" />
+        <entry key="..\:/Users/matli/AndroidStudioProjects/PrototypeHabitApp/app/src/main/res/layout/sign_up_screen.xml" value="0.264" />
+        <entry key="..\:/Users/matli/AndroidStudioProjects/PrototypeHabitApp/app/src/main/res/layout/today_habits.xml" value="0.2" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
