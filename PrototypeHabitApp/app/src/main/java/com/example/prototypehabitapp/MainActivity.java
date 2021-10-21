@@ -2,6 +2,11 @@ package com.example.prototypehabitapp;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.NavigationUI;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -11,11 +16,14 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -33,14 +41,32 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.boot_screen);
+        setContentView(R.layout.activity_main);
+        FragmentManager supportFragmentManager = getSupportFragmentManager();
+
+        // ========================= NAV BAR SETUP =============================
+        // grab NavHostFragment and setup up controller, and nav bar accordingly
+        NavHostFragment navHostFragment = (NavHostFragment) supportFragmentManager.findFragmentById(R.id.nav_host_fragment);
+        NavController navController = navHostFragment.getNavController();
+        BottomNavigationView bottomNav = findViewById(R.id.bottomAppBar);
+        NavigationUI.setupWithNavController(bottomNav, navController);
     }
 
+    // ========================= NAV BAR SETUP =============================
+    // populates navigation bar with menu items
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        return NavigationUI.onNavDestinationSelected(item, navController)
+                || super.onOptionsItemSelected(item);
+    }
+
+    // button actions below can now be ignored
     // ========================= BUTTON ACTIONS =============================
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~ BOOT SCREEN ~~~~~~~~~~~~~~~~~~~~~~~~~~
     // if a user clicks on the boot screen's log in button
-    public void bootScreenLogInButtonPressed(View view){
+    /* public void bootScreenLogInButtonPressed(View view){
         // move to the log in screen
         setContentView(R.layout.log_in_screen);
     }
@@ -60,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
         // go to the sign up screen
         setContentView(R.layout.sign_up_screen);
     }
+
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void logInScreenLogInButtonPressed(View view){
         // get the Strings inside the editText views
@@ -119,6 +147,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    // nav bar button handlers can be ignored
+
+    /*
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~ NAV BAR ~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public void navBarTodayButtonPressed(View view){
         // move to the today screen
@@ -144,6 +175,8 @@ public class MainActivity extends AppCompatActivity {
         // move to the profile screen
         setContentView(R.layout.profile);
     }
+    */
+
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~ ADD HABIT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -182,6 +215,8 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    // below functions can be ignored
+    /*
     public void addHabitCompleteButtonPressed(View view){
         // TODO move to another screen, this is not yet specified so it goes to all_habits by default
         setContentView(R.layout.all_habits);
@@ -192,6 +227,8 @@ public class MainActivity extends AppCompatActivity {
         // currently it goes to the all habits screen by default
         setContentView(R.layout.all_habits);
     }
+
+     */
 
 
 
