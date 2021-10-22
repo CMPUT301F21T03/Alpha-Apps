@@ -15,7 +15,7 @@
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
-package com.example.prototypehabitapp;
+package com.example.prototypehabitapp.DataClasses;
 
 public class Event {
 

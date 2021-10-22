@@ -6,27 +6,27 @@
     app:startDestination="@id/allHabitsFragment">
     <fragment
         android:id="@+id/allHabitsFragment"
-        android:name="com.example.prototypehabitapp.AllHabitsFragment"
+        android:name="com.example.prototypehabitapp.Fragments.AllHabits"
         android:label="AllHabitsFragment"
         tools:layout="@layout/all_habits"/>
     <fragment
         android:id="@+id/todayHabitsFragment"
-        android:name="com.example.prototypehabitapp.TodayHabitsFragment"
+        android:name="com.example.prototypehabitapp.Fragments.TodayHabits"
         android:label="TodayHabitsFragment"
         tools:layout="@layout/today_habits"/>
     <fragment
         android:id="@+id/addHabitFragment"
-        android:name="com.example.prototypehabitapp.AddHabitFragment"
+        android:name="com.example.prototypehabitapp.Fragments.AddHabit"
         android:label="AddHabitFragment"
         tools:layout="@layout/add_habit"/>
     <fragment
         android:id="@+id/feedFragment"
-        android:name="com.example.prototypehabitapp.FeedFragment"
+        android:name="com.example.prototypehabitapp.Fragments.Feed"
         android:label="FeedFragment"
         tools:layout="@layout/feed"/>
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.example.prototypehabitapp.ProfileFragment"
+        android:name="com.example.prototypehabitapp.Fragments.Profile"
         android:label="ProfileFragment"
         tools:layout="@layout/profile"/>
 </navigation>
