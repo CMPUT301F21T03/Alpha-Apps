@@ -16,7 +16,7 @@
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
-package com.example.prototypehabitapp;
+package com.example.prototypehabitapp.DataClasses;
 
 import android.os.Build;
 
@@ -139,4 +139,19 @@ public class Habit {
     public void setProgress(Double progress) {
         this.progress = progress;
     }
+
+//    @Override
+//    public int describeContents() {
+//        return 0;
+//    }
+//
+//    @Override
+//    public void writeToParcel(Parcel parcel, int i) {
+//        parcel.writeString(getTitle());
+//        parcel.writeString(getReason());
+//        parcel.writeValue(getDateStarted());
+//        parcel.writeValue(getWeekOccurence());
+//        parcel.writeValue(getEventList());
+//        parcel.writeValue(getProgress());
+//    }
 }

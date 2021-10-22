@@ -14,7 +14,7 @@
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
-package com.example.prototypehabitapp;
+package com.example.prototypehabitapp.DataClasses;
 
 import java.util.ArrayList;
 

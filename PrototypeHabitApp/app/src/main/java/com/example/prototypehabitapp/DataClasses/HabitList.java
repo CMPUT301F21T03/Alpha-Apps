@@ -15,7 +15,7 @@
  */
 
 
-package com.example.prototypehabitapp;
+package com.example.prototypehabitapp.DataClasses;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -27,9 +27,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.prototypehabitapp.R;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class HabitList extends ArrayAdapter<Habit> {
+public class HabitList extends ArrayAdapter<Habit> implements Serializable {
 
     private ArrayList<Habit> habitList;
     private Context context;

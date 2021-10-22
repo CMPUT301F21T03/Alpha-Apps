@@ -5,29 +5,33 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- caution, not working atm
-    <Button
-        android:id="@+id/addhabit_go_back"
+    <FrameLayout
+        android:id="@+id/frameLayout2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
-        android:onClick="addHabitGoBackButtonPressed"
-        android:text="Go Back"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-     -->
+        app:layout_constraintTop_toTopOf="parent">
+
+        <fragment
+            android:id="@+id/go_back_button"
+            android:name="com.example.prototypehabitapp.Fragments.GoBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/textView12"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
         android:text="Add habit"
         android:textSize="34sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/frameLayout2" />
 
     <EditText
         android:id="@+id/addhabit_habit_title"
@@ -114,7 +118,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
         android:layout_marginTop="5dp"
-        android:onClick="addHabitSelectDateHyperlinkPressed"
         android:text="Select a date"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
