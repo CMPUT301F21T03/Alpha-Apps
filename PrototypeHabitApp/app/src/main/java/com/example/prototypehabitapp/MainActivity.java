@@ -1,5 +1,23 @@
+/**
+ * Copyright 2021 - 2021 CMPUT301F21T03 (Alpha-Apps). All rights reserved. This document nor any
+ * part of it may be reproduced, stored in a retrieval system or transmitted in any for or by any
+ * means without prior permission of the members of CMPUT301F21T03 or by the professor and any
+ * authorized TAs of the CMPUT301 class at the University of Alberta, fall term 2021.
+ *
+ * Class: MainActivity
+ *
+ * Description: The class that contains the majority of the GUI level code. It deals with the logic
+ * that takes place whenever the user clicks on a button or interacts with the display in general.
+ *
+ * Changelog:
+ * =|Version|=|User(s)|==|Date|========|Description|================================================
+ *   1.0       Mathew    Oct-13-2020   Created
+ * =|=======|=|======|===|====|========|===========|================================================
+ */
+
 package com.example.prototypehabitapp;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -17,6 +35,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -24,10 +43,19 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -90,6 +118,13 @@ public class MainActivity extends AppCompatActivity {
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void logInScreenLogInButtonPressed(View view){
+        // TODO: put your name here for Firestore. Remove when username system is implemented later.
+        final String username = "test";
+        //prep Firestore
+        FirebaseFirestore db;
+        db = FirebaseFirestore.getInstance();
+        final DocumentReference user = db.collection("Doers").document(username);
+
         // get the Strings inside the editText views
         String email = findViewById(R.id.loginscreen_email).toString();
         String password = findViewById(R.id.loginscreen_password).toString();
@@ -117,6 +152,24 @@ public class MainActivity extends AppCompatActivity {
 
         habitAdapter = new HabitList(context, habitDataList);
         allHabitsListView.setAdapter(habitAdapter);
+
+        //show your page from Firestore
+        user.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot queryDocumentSnapshot,
+                                @Nullable FirebaseFirestoreException e) {
+                habitDataList.clear();
+                assert queryDocumentSnapshot != null;
+                if (queryDocumentSnapshot != null && queryDocumentSnapshot.exists()) {
+                    // just takes the name for testing purposes
+                    Map userData = queryDocumentSnapshot.getData();
+                    for(String s: (ArrayList<String>) userData.get("habits")){
+                        habitDataList.add(new Habit(s,"reason",LocalDateTime.now(),testDaysOfWeek));
+                    }
+                }
+                habitAdapter.notifyDataSetChanged();
+            }
+        });
 
     }
 
