@@ -12,18 +12,23 @@
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Mathew    Oct-13-2020   Created
+ *   1.1       Jesse     OCt-27-2020   Added name and dateCompleted components and their
+ *                                      getters/setters
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
 package com.example.prototypehabitapp.DataClasses;
 
+import java.time.LocalDateTime;
+
 public class Event {
+
+    private String name;
+
+    private LocalDateTime dateCompleted;
 
     // a subjective comment about the habit event entered by the user (optional)
     private String comment;
-
-    // states if this event has been completed by the user
-    private Boolean isCompleted;
 
     // TODO change the below attribute (and all other instances) to properly represent an image
     private Boolean hasPhotograph;
@@ -32,20 +37,40 @@ public class Event {
     private Boolean hasLocation;
 
     // creates an event with the specified values. If the value is null it means it was not given by the user
-    public Event(String comment, Boolean isCompleted, Boolean hasPhotograph, Boolean hasLocation){
+    public Event(String name, LocalDateTime dateCompleted, String comment, Boolean hasPhotograph, Boolean hasLocation){
+
+        setName(name);
+        setDateCompleted(dateCompleted);
+
         try{
             setComment(comment);
         }catch (IllegalArgumentException ex){
             System.out.println("comment too long, programs fails");
             // TODO make a function that terminates the program (or handle the error in another way)
         }
-        setCompleted(isCompleted);
         // TODO set the photograph and location attributes
         
     }
     
     // =========================== GETTERS AND SETTERS ===========================
     //TODO create getters and setters for the location and photograph as needed
+
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public LocalDateTime getDateCompleted() {
+        return dateCompleted;
+    }
+
+    public void setDateCompleted(LocalDateTime dateCompleted) {
+        this.dateCompleted = dateCompleted;
+    }
 
     public String getComment() {
         return comment;
@@ -59,11 +84,5 @@ public class Event {
         this.comment = comment;
     }
 
-    public Boolean isCompleted() {
-        return isCompleted;
-    }
 
-    public void setCompleted(Boolean completed) {
-        isCompleted = completed;
-    }
 }
