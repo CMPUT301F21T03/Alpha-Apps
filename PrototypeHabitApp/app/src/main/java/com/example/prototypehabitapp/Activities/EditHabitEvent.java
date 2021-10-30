@@ -4,7 +4,7 @@
  * means without prior permission of the members of CMPUT301F21T03 or by the professor and any
  * authorized TAs of the CMPUT301 class at the University of Alberta, fall term 2021.
  *
- * Class: HabitEventEdit
+ * Class: EditHabitEvent
  *
  * Description: Handles the user interactions of the event edit page
  *
@@ -17,17 +17,25 @@
 package com.example.prototypehabitapp.Activities;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.prototypehabitapp.R;
 
-public class HabitEventEdit extends AppCompatActivity {
+public class EditHabitEvent extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // set the display to be the main page
-        setContentView(R.layout.habit_event_edit);
+        setContentView(R.layout.edit_habit_event);
+        Button completeButton = findViewById(R.id.edithabitevent_complete);
+        completeButton.setOnClickListener(this::editHabitEventCompleteButtonPressed);
+    }
+
+    public void editHabitEventCompleteButtonPressed(View view) {
+        finish();
     }
 }

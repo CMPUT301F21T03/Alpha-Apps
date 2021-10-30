@@ -62,7 +62,7 @@ public class HabitDetails extends AppCompatActivity {
                 if (menuItem.getItemId() == R.id.mark_done) {
                     // TODO mark as done
                 } else if (menuItem.getItemId() == R.id.log_habit) {
-                    Intent intent = new Intent(HabitDetails.this, HabitEventEdit.class);
+                    Intent intent = new Intent(HabitDetails.this, EditHabitEvent.class);
                     // TODO indicate that it's a new entry
                     startActivity(intent);
                 } else if (menuItem.getItemId() == R.id.edit_habit) {

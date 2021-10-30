@@ -40,7 +40,7 @@ public class HabitEventDetails extends AppCompatActivity {
 
     private void habitEventDetailsEditButtonPressed(View view) {
         // navigate to the edit an event activity
-        Intent intent = new Intent(this, HabitEventEdit.class);
+        Intent intent = new Intent(this, EditHabitEvent.class);
         // TODO bundle up the item to be sent to the next frame
         startActivity(intent);
     }
