@@ -10,7 +10,8 @@
  *
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
- *   1.0       Mathew    Oct-21-2020   Created
+ *   1.0       Mathew    Oct-21-2021   Created
+ *   1.1       Moe       Oct-29-2021   Added popup menu when more button is pressed
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -18,9 +19,11 @@ package com.example.prototypehabitapp.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -50,8 +53,26 @@ public class HabitDetails extends AppCompatActivity {
 
     private void habitDetailsMoreButtonPressed(View view) {
         //TODO open a dialog as defined in the figma storyboard
-        System.out.println("habitDetailsMoreButtonPressed");
-
+        PopupMenu popupMenu = new PopupMenu(this, view);
+        popupMenu.getMenuInflater().inflate(R.menu.habit_more_menu, popupMenu.getMenu());
+        popupMenu.show();
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                if (menuItem.getItemId() == R.id.mark_done) {
+                    // TODO mark as done
+                } else if (menuItem.getItemId() == R.id.log_habit) {
+                    Intent intent = new Intent(HabitDetails.this, AddHabitEvent.class);
+                    // TODO indicate that it's a new entry
+                    startActivity(intent);
+                } else if (menuItem.getItemId() == R.id.edit_habit) {
+                    // TODO move to EditHabit class
+                } else if (menuItem.getItemId() == R.id.delete_habit) {
+                    // TODO delete habit
+                }
+                return true;
+            }
+        });
     }
 
     private void habitDetailsHabitEventLayoutPressed(View view) {
