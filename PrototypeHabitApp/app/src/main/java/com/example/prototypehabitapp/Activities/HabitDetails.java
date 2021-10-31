@@ -24,29 +24,27 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.method.KeyListener;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.os.Build;
-import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.ListView;
-import android.widget.PopupMenu;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.prototypehabitapp.DataClasses.DaysOfWeek;
 import com.example.prototypehabitapp.DataClasses.Habit;
+import com.example.prototypehabitapp.DataClasses.Event;
 import com.example.prototypehabitapp.R;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public class HabitDetails extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener{
+public class HabitDetails extends AppCompatActivity{
 
     // attributes
     private Habit habit;
@@ -71,21 +69,8 @@ public class HabitDetails extends AppCompatActivity implements PopupMenu.OnMenuI
         KeyListener reasonKeyListener = reason.getKeyListener();
         reason.setKeyListener(null);
 
-        weekButtons = new ArrayList<>();
-        Button sunday_button = findViewById(R.id.dayofweekbar_sunday);
-        weekButtons.add(sunday_button);
-        Button monday_button = findViewById(R.id.dayofweekbar_monday);
-        weekButtons.add(monday_button);
-        Button tuesday_button = findViewById(R.id.dayofweekbar_tuesday);
-        weekButtons.add(tuesday_button);
-        Button wednesday_button = findViewById(R.id.dayofweekbar_wednesday);
-        weekButtons.add(wednesday_button);
-        Button thursday_button = findViewById(R.id.dayofweekbar_thursday);
-        weekButtons.add(thursday_button);
-        Button friday_button = findViewById(R.id.dayofweekbar_friday);
-        weekButtons.add(friday_button);
-        Button saturday_button = findViewById(R.id.dayofweekbar_saturday);
-        weekButtons.add(saturday_button);
+        ArrayList<Button> weekButtons = prepareDayOfWeekButtons();
+
 
         // if a selected habit was sent over in the intent
         Intent intent = getIntent();
@@ -96,7 +81,7 @@ public class HabitDetails extends AppCompatActivity implements PopupMenu.OnMenuI
             title.setText(habit.getTitle());
             reason.setText(habit.getReason());
             date_started.setText(habit.getDateStarted().toString());
-            weekOccurenceList = habit.getWeekOccurence().getAll();
+            ArrayList<Boolean> weekOccurenceList = habit.getWeekOccurence().getAll();
             for (int i = 0; i < 7; i++) {
                 setButtonColor(weekButtons.get(i), weekOccurenceList.get(i));
             }
@@ -121,13 +106,33 @@ public class HabitDetails extends AppCompatActivity implements PopupMenu.OnMenuI
             }
         });
 
+        // most likely out of date code
         // set a listener for if the more button is pressed by the user
         Button moreButton = findViewById(R.id.habitdetails_more);
         moreButton.setOnClickListener(this::habitDetailsMoreButtonPressed);
     }
 
 
-    private void habitDetailsHabitEventLayoutPressed(View view) {
+    private ArrayList<Button> prepareDayOfWeekButtons(){
+        ArrayList<Button> weekButtons = new ArrayList<>();
+        Button sunday_button = findViewById(R.id.sunday_checkbox);
+        weekButtons.add(sunday_button);
+        Button monday_button = findViewById(R.id.monday_checkbox);
+        weekButtons.add(monday_button);
+        Button tuesday_button = findViewById(R.id.tuesday_checkbox);
+        weekButtons.add(tuesday_button);
+        Button wednesday_button = findViewById(R.id.wednesday_checkbox);
+        weekButtons.add(wednesday_button);
+        Button thursday_button = findViewById(R.id.thursday_checkbox);
+        weekButtons.add(thursday_button);
+        Button friday_button = findViewById(R.id.friday_checkbox);
+        weekButtons.add(friday_button);
+        Button saturday_button = findViewById(R.id.saturday_checkbox);
+        weekButtons.add(saturday_button);
+        return weekButtons;
+    }
+
+    private void habitDetailsMoreButtonPressed(View view) {
         //TODO open a dialog as defined in the figma storyboard
         PopupMenu popupMenu = new PopupMenu(this, view);
         popupMenu.getMenuInflater().inflate(R.menu.habit_more_menu, popupMenu.getMenu());
@@ -151,6 +156,11 @@ public class HabitDetails extends AppCompatActivity implements PopupMenu.OnMenuI
         });
     }
 
+    private void habitDetailsHabitEventLayoutPressed(Event event){
+        Intent intent = new Intent(this, HabitEventDetails.class);
+        intent.putExtra("EVENT", event);
+        startActivity(intent);
+    }
 
     private void setButtonColor(Button button, boolean val) {
         if (val) {
