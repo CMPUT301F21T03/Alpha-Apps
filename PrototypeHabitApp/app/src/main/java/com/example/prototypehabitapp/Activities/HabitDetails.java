@@ -11,7 +11,10 @@
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Mathew    Oct-21-2021   Created
- *   1.1       Eric      Oct-31-2021   Linked EditTexts with data from Habit object passed in Intent
+ *   1.1       Moe       Oct-29-2021   Added popup menu when more button is pressed
+ *   1.2       Jesse     Oct-31-2021   Set up array adapter and on click listener for event list
+ *   1.3       Mathew    Oct-31-2021   Fix imports, add dummy test data
+ *   1.4       Eric      Oct-31-2021   Linked EditTexts with data from Habit object passed in Intent
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -23,20 +26,24 @@ import android.os.Bundle;
 import android.text.method.KeyListener;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.os.Build;
+import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-
+import android.widget.ListView;
+import android.widget.PopupMenu;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.prototypehabitapp.DataClasses.DaysOfWeek;
 import com.example.prototypehabitapp.DataClasses.Habit;
 import com.example.prototypehabitapp.R;
-
 import java.util.ArrayList;
 
 public class HabitDetails extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener{
@@ -45,20 +52,7 @@ public class HabitDetails extends AppCompatActivity implements PopupMenu.OnMenuI
     private Habit habit;
     private DaysOfWeek weekOccurence;
 
-    boolean habit_exists = false;
-
-    Button sunday_button;
-    Button monday_button;
-    Button tuesday_button;
-    Button wednesday_button;
-    Button thursday_button;
-    Button friday_button;
-    Button saturday_button;
-
-    ArrayList<Boolean> weekOccurenceList;
-    ArrayList<Button> weekButtons;
-
-
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,19 +72,19 @@ public class HabitDetails extends AppCompatActivity implements PopupMenu.OnMenuI
         reason.setKeyListener(null);
 
         weekButtons = new ArrayList<>();
-        sunday_button = findViewById(R.id.dayofweekbar_sunday);
+        Button sunday_button = findViewById(R.id.dayofweekbar_sunday);
         weekButtons.add(sunday_button);
-        monday_button = findViewById(R.id.dayofweekbar_monday);
+        Button monday_button = findViewById(R.id.dayofweekbar_monday);
         weekButtons.add(monday_button);
-        tuesday_button = findViewById(R.id.dayofweekbar_tuesday);
+        Button tuesday_button = findViewById(R.id.dayofweekbar_tuesday);
         weekButtons.add(tuesday_button);
-        wednesday_button = findViewById(R.id.dayofweekbar_wednesday);
+        Button wednesday_button = findViewById(R.id.dayofweekbar_wednesday);
         weekButtons.add(wednesday_button);
-        thursday_button = findViewById(R.id.dayofweekbar_thursday);
+        Button thursday_button = findViewById(R.id.dayofweekbar_thursday);
         weekButtons.add(thursday_button);
-        friday_button = findViewById(R.id.dayofweekbar_friday);
+        Button friday_button = findViewById(R.id.dayofweekbar_friday);
         weekButtons.add(friday_button);
-        saturday_button = findViewById(R.id.dayofweekbar_saturday);
+        Button saturday_button = findViewById(R.id.dayofweekbar_saturday);
         weekButtons.add(saturday_button);
 
         // if a selected habit was sent over in the intent
@@ -109,57 +103,54 @@ public class HabitDetails extends AppCompatActivity implements PopupMenu.OnMenuI
 
         }
 
+        ListView eventsListview = findViewById(R.id.habitdetails_habit_event_list);
+
+        //add test habit data (remove later)
+        habit = new Habit("title", "reason", LocalDateTime.now(), new DaysOfWeek());
+
+        ArrayList<Event> events = habit.getEventList();
+        ArrayAdapter<Event> eventsAdapter = new EventList(this, events);
+        eventsListview.setAdapter(eventsAdapter);
+
         //set a listener for if the editHabit layout is pressed by the user
-        LinearLayout eventLayout = findViewById(R.id.habitdetails_habit_event_layout);
-        eventLayout.setOnClickListener(this::habitDetailsHabitEventLayoutPressed);
+        eventsListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Event event = (Event) eventsListview.getItemAtPosition(i);
+                habitDetailsHabitEventLayoutPressed(event);
+            }
+        });
 
         // set a listener for if the more button is pressed by the user
         Button moreButton = findViewById(R.id.habitdetails_more);
         moreButton.setOnClickListener(this::habitDetailsMoreButtonPressed);
     }
 
-    private void habitDetailsMoreButtonPressed(View view) {
-        System.out.println("more button pressed");
-        PopupMenu popup = new PopupMenu(this, view);
-        MenuInflater inflater = popup.getMenuInflater();
-        popup.setOnMenuItemClickListener(HabitDetails.this);
-        inflater.inflate(R.menu.habit_details_menu, popup.getMenu());
-        popup.show();
-
-    }
-
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.moreMenuMarkAsDone:
-                // TODO call mark as done functionality
-                System.out.println("mark as done pressed");
-                return true;
-            case R.id.moreMenuLogHabit:
-                // TODO call log habit functionality
-                System.out.println("log habit pressed");
-                return true;
-            case R.id.moreMenuEditHabit:
-                // TODO edit habit functionality
-                System.out.println("edit habit pressed");
-                return true;
-            case R.id.moreMenuDeleteHabit:
-                // TODO delete habit functionality
-                System.out.println("delete habit pressed");
-                return true;
-            default:
-                return false;
-        }
-    }
-
 
     private void habitDetailsHabitEventLayoutPressed(View view) {
-        // TODO get the habit event data and open the habit event details frame with said data
-        Intent intent = new Intent(this, HabitEventDetails.class);
-        // TODO bundle up the item to be sent to the next frame
-        startActivity(intent);
-
+        //TODO open a dialog as defined in the figma storyboard
+        PopupMenu popupMenu = new PopupMenu(this, view);
+        popupMenu.getMenuInflater().inflate(R.menu.habit_more_menu, popupMenu.getMenu());
+        popupMenu.show();
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                if (menuItem.getItemId() == R.id.mark_done) {
+                    // TODO mark as done
+                } else if (menuItem.getItemId() == R.id.log_habit) {
+                    Intent intent = new Intent(HabitDetails.this, AddHabitEvent.class);
+                    // TODO indicate that it's a new entry
+                    startActivity(intent);
+                } else if (menuItem.getItemId() == R.id.edit_habit) {
+                    // TODO move to EditHabit class
+                } else if (menuItem.getItemId() == R.id.delete_habit) {
+                    // TODO delete habit
+                }
+                return true;
+            }
+        });
     }
+
 
     private void setButtonColor(Button button, boolean val) {
         if (val) {
