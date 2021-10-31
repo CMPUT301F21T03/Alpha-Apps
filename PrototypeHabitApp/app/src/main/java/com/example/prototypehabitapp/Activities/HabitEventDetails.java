@@ -14,6 +14,7 @@
  *   1.1       Jesse     Oct-31-2021   Implemented activity displaying event details
  *   1.2       Jesse     Oct-31-2021   Added getting the event from intent and sending when edit
  *                                       button is clicked
+ *   1.3       Mathew    Oct-31-2021   Fix imports
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -54,7 +55,7 @@ public class HabitEventDetails extends AppCompatActivity {
 
         //get details from bundle
         Intent sentIntent = getIntent();
-        event = sentIntent.getSerializableExtra("EVENT");
+        event = (Event) sentIntent.getSerializableExtra("EVENT");
 
         //update fields with Event info
         habitName = event.getName();

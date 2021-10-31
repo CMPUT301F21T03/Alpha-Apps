@@ -10,7 +10,8 @@
  *
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
- *   1.0       Jesse     Oct-31-2021     Created
+ *   1.0       Jesse     Oct-31-2021    Created
+ *   1.1       Mathew    Oct-31-2021    Fix imports
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -20,12 +21,14 @@ import android.content.Context;
 import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
+import com.example.prototypehabitapp.DataClasses.Event;
 import com.example.prototypehabitapp.R;
 
 import java.time.format.DateTimeFormatter;
@@ -56,6 +59,8 @@ public class EventList extends ArrayAdapter<Event> {
 
         name.setText(event.getName());
         comment.setText(event.getComment());
-        date.setText(event.getDate().format(formatter));
+        date.setText(event.getDateCompleted().format(formatter));
+
+        return view;
     }
 }
