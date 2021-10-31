@@ -12,33 +12,46 @@
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Eric      Oct-21-2020   Created
  *   1.1       Mathew    Oct-21-2020   Added some navigation features, added test data
+ *   1.2       Leah      Oct-30-2020   Now populates from user firestore document, does not use subcollection yet
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
 package com.example.prototypehabitapp.Fragments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
+import com.example.prototypehabitapp.Activities.Main;
 import com.example.prototypehabitapp.DataClasses.DaysOfWeek;
 import com.example.prototypehabitapp.DataClasses.Habit;
 import com.example.prototypehabitapp.Activities.HabitDetails;
 import com.example.prototypehabitapp.DataClasses.HabitList;
 import com.example.prototypehabitapp.R;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class AllHabits extends Fragment {
+
+    private static final String TAG = "allhabitsTAG";
 
     public AllHabits() {
         super(R.layout.all_habits);
@@ -48,15 +61,22 @@ public class AllHabits extends Fragment {
     private ListView allHabitsListView;
     private ArrayAdapter<Habit> habitAdapter;
     private ArrayList<Habit> habitDataList;
+    private Map userData;
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        // get user data
+        Main activity = (Main) getActivity();
+        userData = activity.getUserData();
+        Log.d(TAG,"test habit fragment " + (String) userData.get("password"));
+
         getHabitDataList();
         setHabitListAdapter(view);
-
         // set an on click listener for if a habit is pressed
         allHabitsListView.setOnItemClickListener(this::habitItemClicked);
+
     }
 
     private void habitItemClicked(AdapterView<?> adapterView, View view, int pos, long l) {
@@ -83,11 +103,39 @@ public class AllHabits extends Fragment {
         habitDataList = new ArrayList<>();
 
         // add some test data
+        // TODO: remove this since firestore is added now
         DaysOfWeek testDaysOfWeek = new DaysOfWeek();
         Habit test_habit = new Habit("title", "reason", LocalDateTime.now(), testDaysOfWeek);
         test_habit.setProgress(100.0);
         habitDataList.add(test_habit);
         habitDataList.add(test_habit);
+
+        // show your page from Firestore
+        // REMOVE THIS IF YOU NEED TO TEST WITHOUT THE FIRESTORE
+        FirebaseFirestore db;
+        db = FirebaseFirestore.getInstance();
+        final DocumentReference user = db.collection("Doers").document((String) userData.get("username"));
+        user.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot queryDocumentSnapshot,
+                                @Nullable FirebaseFirestoreException e) {
+                habitDataList.clear();
+                if (queryDocumentSnapshot.exists()) {
+                    // TODO: change to a query for the Habit subcollection rather than keeping in an array field
+                    // just takes the name for testing purposes
+                    Map habitData = queryDocumentSnapshot.getData();
+                    for(String s: (ArrayList<String>) habitData.get("habits")){
+                        habitDataList.add(new Habit(s,"reason",LocalDateTime.now(),testDaysOfWeek));
+                    }
+                }
+                habitAdapter.notifyDataSetChanged();
+            }
+        });
+        // END REMOVE HERE
+
+    }
+    public void setUserData(Map userData) {
+        this.userData = userData;
     }
 
 }

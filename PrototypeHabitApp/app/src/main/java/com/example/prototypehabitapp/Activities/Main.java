@@ -12,14 +12,17 @@
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Mathew    Oct-13-2020   Created
+ *   1.1       Leah      Oct-30-2020   Added firebase user info to bundle.
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
 package com.example.prototypehabitapp.Activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,20 +32,29 @@ import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.prototypehabitapp.Fragments.AllHabits;
 import com.example.prototypehabitapp.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.Map;
 
 public class Main extends AppCompatActivity {
 
     private final Context context = Main.this;
+    private static final String TAG = "mainTAG";
+    private Map userData;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // get the bundle with user data from firestore
+        Intent intent = getIntent();
+        userData = (Map) intent.getSerializableExtra("userData");
         // set the display to be the main page
         setContentView(R.layout.activity_main);
         setUpNavBar();
+
     }
 
     // populates navigation bar with menu items
@@ -62,27 +74,12 @@ public class Main extends AppCompatActivity {
         NavigationUI.setupWithNavController(bottomNav, navController);
     }
 
-    //TODO use the following code later when we need to refresh the data set
 
-//        //show your page from Firestore
-//        user.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable DocumentSnapshot queryDocumentSnapshot,
-//                                @Nullable FirebaseFirestoreException e) {
-//                habitDataList.clear();
-//                assert queryDocumentSnapshot != null;
-//                if (queryDocumentSnapshot != null && queryDocumentSnapshot.exists()) {
-//                    // just takes the name for testing purposes
-//                    Map userData = queryDocumentSnapshot.getData();
-//                    for(String s: (ArrayList<String>) userData.get("habits")){
-//                        habitDataList.add(new Habit(s,"reason",LocalDateTime.now(),testDaysOfWeek));
-//                    }
-//                }
-//                habitAdapter.notifyDataSetChanged();
-//            }
-//        });
-//
-//    }
+    public Map getUserData() {
+        return userData;
+    }
 
-
+    public void setUserData(Map userData) {
+        this.userData = userData;
+    }
 }
