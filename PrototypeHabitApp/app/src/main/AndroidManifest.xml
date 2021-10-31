@@ -11,7 +11,8 @@
         android:theme="@style/Theme.PrototypeHabitApp">
         <activity android:name=".Activities.LogIn"/>
         <activity android:name=".Activities.HabitDetails"/>
-        <activity android:name=".Activities.HabitEventEdit"/>
+        <activity android:name=".Activities.AddHabitEvent"/>
+        <activity android:name=".Activities.EditHabitEvent"/>
         <activity android:name=".Activities.HabitEventDetails"/>
         <activity android:name=".Activities.EditPersonalProfile"/>
         <activity android:name=".Activities.SignUp"/>
