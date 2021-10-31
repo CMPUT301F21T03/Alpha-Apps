@@ -13,31 +13,39 @@
  *   1.0       Mathew    Oct-21-2021   Created
  *   1.1       Moe       Oct-29-2021   Added popup menu when more button is pressed
  *   1.2       Jesse     Oct-31-2021   Set up array adapter and on click listener for event list
+ *   1.3       Mathew    Oct-31-2021   Fix imports, add dummy test data
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
 package com.example.prototypehabitapp.Activities;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.prototypehabitapp.DataClasses.DaysOfWeek;
+import com.example.prototypehabitapp.DataClasses.Event;
+import com.example.prototypehabitapp.DataClasses.Habit;
 import com.example.prototypehabitapp.R;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class HabitDetails extends AppCompatActivity {
 
     Habit habit;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,15 +58,19 @@ public class HabitDetails extends AppCompatActivity {
         // TODO set the data to the proper fields
 
         ListView eventsListview = findViewById(R.id.habitdetails_habit_event_list);
+
+        //add test habit data (remove later)
+        habit = new Habit("title", "reason", LocalDateTime.now(), new DaysOfWeek());
+
         ArrayList<Event> events = habit.getEventList();
         ArrayAdapter<Event> eventsAdapter = new EventList(this, events);
-        events.setAdapter(eventsAdapter);
+        eventsListview.setAdapter(eventsAdapter);
 
         //set a listener for if the editHabit layout is pressed by the user
-        events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        eventsListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Event event = (Event) eventList.getItemAtPosition(i);
+                Event event = (Event) eventsListview.getItemAtPosition(i);
                 habitDetailsHabitEventLayoutPressed(event);
             }
         });
