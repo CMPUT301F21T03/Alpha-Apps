@@ -18,7 +18,7 @@
             android:id="@+id/go_back_button"
             android:name="com.example.prototypehabitapp.Fragments.GoBack"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1" />
     </FrameLayout>
 
@@ -42,7 +42,8 @@
         android:layout_marginEnd="30dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Habit Name"
+        android:hint="Habit Name (20)"
+        android:maxLength="20"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView12" />
@@ -95,8 +96,9 @@
         android:layout_marginTop="5dp"
         android:layout_marginEnd="30dp"
         android:ems="10"
+        android:hint="Why do you want to start this habit? (30)"
         android:inputType="textPersonName"
-        android:text="Why do you want to start this habit?"
+        android:maxLength="30"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView14" />
@@ -123,6 +125,31 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView15" />
 
+
+    <Spinner
+        android:id="@+id/habitprivacy_spinner"
+        android:layout_width="80dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="13dp"
+        android:background="@color/purple_500"
+        android:popupBackground="@color/white"
+        android:spinnerMode="dropdown"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.886"
+        app:layout_constraintStart_toEndOf="@+id/textView15"
+        app:layout_constraintTop_toBottomOf="@+id/addhabit_reason" />
+
+    <TextView
+        android:id="@+id/addhabit_select_privacy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:text="Habit Privacy"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/habitprivacy_spinner" />
+
     <Button
         android:id="@+id/addhabit_complete"
         android:layout_width="0dp"
@@ -134,5 +161,6 @@
         android:text="Complete"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

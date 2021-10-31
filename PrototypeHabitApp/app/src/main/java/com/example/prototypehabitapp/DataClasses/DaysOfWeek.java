@@ -34,6 +34,16 @@ public class DaysOfWeek {
         setAll(false);
     }
 
+    public DaysOfWeek(Boolean sunday, Boolean monday, Boolean tuesday, Boolean wednesday, Boolean thursday, Boolean friday, Boolean saturday) {
+        this.sunday = sunday;
+        this.monday = monday;
+        this.tuesday = tuesday;
+        this.wednesday = wednesday;
+        this.thursday = thursday;
+        this.friday = friday;
+        this.saturday = saturday;
+    }
+
     // sets all of the days of the week to the given value (t/f)
     public void setAll(Boolean setTo){
         setSunday(setTo);
