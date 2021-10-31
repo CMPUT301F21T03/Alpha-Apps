@@ -27,7 +27,7 @@ import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.prototypehabitapp.Activites.Event;
+import com.example.prototypehabitapp.DataClasses.Event;
 import com.example.prototypehabitapp.R;
 
 import java.time.LocalDateTime;
@@ -53,7 +53,7 @@ public class HabitEventDetails extends AppCompatActivity {
         //update fields with Event info
         habitName = event.getName();
         comment = event.getComment();
-        date = event.getDate().format(formatter);
+        date = event.getDateCompleted().format(formatter);
 
         TextView nameText = findViewById(R.id.habiteventdetails_title);
         TextView commentText = findViewById(R.id.habiteventdetails_comment);
