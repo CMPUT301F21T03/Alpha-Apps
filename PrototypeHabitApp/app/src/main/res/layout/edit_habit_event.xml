@@ -60,7 +60,7 @@
         app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName" />
 
     <Button
-        android:id="@+id/habiteeventedit_location"
+        android:id="@+id/edithabitevent_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="location (not implemented)"
@@ -73,10 +73,10 @@
         android:layout_height="wrap_content"
         android:text="add a photo"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/habiteeventedit_location" />
+        app:layout_constraintTop_toBottomOf="@+id/edithabitevent_location" />
 
     <Button
-        android:id="@+id/habiteeventedit_photograph"
+        android:id="@+id/edithabitevent_photograph"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="photograph (not implemented)"
@@ -84,7 +84,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView26" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/edithabitevent_complete"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="60dp"

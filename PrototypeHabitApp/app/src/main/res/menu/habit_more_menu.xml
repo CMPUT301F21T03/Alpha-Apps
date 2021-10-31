@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/mark_done"
+        android:title="Mark as done" />
+
+    <item android:id="@+id/log_habit"
+        android:title="Log habit" />
+
+    <item android:id="@+id/edit_habit"
+        android:title="Edit habit" />
+
+    <item android:id="@+id/delete_habit"
+        android:title="Delete habit" />
+
+</menu>

@@ -29,6 +29,24 @@
         <entry key="..\:/Users/matli/AndroidStudioProjects/PrototypeHabitApp/app/src/main/res/layout/profile.xml" value="0.264" />
         <entry key="..\:/Users/matli/AndroidStudioProjects/PrototypeHabitApp/app/src/main/res/layout/sign_up_screen.xml" value="0.264" />
         <entry key="..\:/Users/matli/AndroidStudioProjects/PrototypeHabitApp/app/src/main/res/layout/today_habits.xml" value="0.2" />
+        <entry key="app/src/main/res/drawable/ic_baseline_add_box_24.xml" value="0.14722222222222223" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.22327898550724637" />
+        <entry key="app/src/main/res/layout/add_habit.xml" value="0.22327898550724637" />
+        <entry key="app/src/main/res/layout/all_habits.xml" value="0.22327898550724637" />
+        <entry key="app/src/main/res/layout/boot_screen.xml" value="0.22327898550724637" />
+        <entry key="app/src/main/res/layout/day_of_week_bar.xml" value="0.22327898550724637" />
+        <entry key="app/src/main/res/layout/edit_habit_event.xml" value="0.31521739130434784" />
+        <entry key="app/src/main/res/layout/edit_personal_profile.xml" value="0.22327898550724637" />
+        <entry key="app/src/main/res/layout/feed.xml" value="0.22327898550724637" />
+        <entry key="app/src/main/res/layout/go_back.xml" value="0.22327898550724637" />
+        <entry key="app/src/main/res/layout/habit_details.xml" value="0.22327898550724637" />
+        <entry key="app/src/main/res/layout/habit_entry.xml" value="0.22327898550724637" />
+        <entry key="app/src/main/res/layout/habit_event_details.xml" value="0.22327898550724637" />
+        <entry key="app/src/main/res/layout/habit_event_edit.xml" value="0.3880208333333333" />
+        <entry key="app/src/main/res/layout/nav_bar.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/profile.xml" value="0.16111111111111112" />
+        <entry key="app/src/main/res/menu/habit_more_menu.xml" value="0.16111111111111112" />
+        <entry key="app/src/main/res/menu/nav_menu.xml" value="0.10345431536600194" />
       </map>
     </option>
   </component>
