@@ -11,17 +11,19 @@
  *
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
- *   1.0       Mathew    Oct-13-2020   Created
- *   1.1       Jesse     OCt-27-2020   Added name and dateCompleted components and their
+ *   1.0       Mathew    Oct-13-2021   Created
+ *   1.1       Jesse     Oct-27-2021   Added name and dateCompleted components and their
  *                                      getters/setters
+ *   1.2       Jesse     Oct-31-2021   Altered Event to implement Serializable
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
 package com.example.prototypehabitapp.DataClasses;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class Event {
+public class Event implements Serializable {
 
     private String name;
 

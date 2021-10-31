@@ -12,6 +12,7 @@
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Mathew    Oct-21-2021   Created
  *   1.1       Moe       Oct-29-2021   Added popup menu when more button is pressed
+ *   1.2       Jesse     Oct-31-2021   Set up array adapter and on click listener for event list
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -21,15 +22,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.PopupMenu;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.prototypehabitapp.R;
 
+import java.util.ArrayList;
+
 public class HabitDetails extends AppCompatActivity {
+
+    Habit habit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +49,19 @@ public class HabitDetails extends AppCompatActivity {
 
         // TODO set the data to the proper fields
 
+        ListView eventsListview = findViewById(R.id.habitdetails_habit_event_list);
+        ArrayList<Event> events = habit.getEventList();
+        ArrayAdapter<Event> eventsAdapter = new EventList(this, events);
+        events.setAdapter(eventsAdapter);
+
         //set a listener for if the editHabit layout is pressed by the user
-        LinearLayout eventLayout = findViewById(R.id.habitdetails_habit_event_layout);
-        eventLayout.setOnClickListener(this::habitDetailsHabitEventLayoutPressed);
+        events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Event event = (Event) eventList.getItemAtPosition(i);
+                habitDetailsHabitEventLayoutPressed(event);
+            }
+        });
 
         // set a listener for if the more button is pressed by the user
         Button moreButton = findViewById(R.id.habitdetails_more);
@@ -75,11 +92,11 @@ public class HabitDetails extends AppCompatActivity {
         });
     }
 
-    private void habitDetailsHabitEventLayoutPressed(View view) {
+    private void habitDetailsHabitEventLayoutPressed(Event event) {
         // TODO get the habit event data and open the habit event details frame with said data
         Intent intent = new Intent(this, HabitEventDetails.class);
         // TODO bundle up the item to be sent to the next frame
+        intent.putExtra("EVENT", event);
         startActivity(intent);
-
     }
 }

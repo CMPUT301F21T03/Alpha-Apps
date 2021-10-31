@@ -10,8 +10,10 @@
  *
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
- *   1.0       Mathew    Oct-21-2020   Created
- *   1.1       Jesse     Oct-31-2020   Implemented activity displaying event details
+ *   1.0       Mathew    Oct-21-2021   Created
+ *   1.1       Jesse     Oct-31-2021   Implemented activity displaying event details
+ *   1.2       Jesse     Oct-31-2021   Added getting the event from intent and sending when edit
+ *                                       button is clicked
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -50,6 +52,10 @@ public class HabitEventDetails extends AppCompatActivity {
         // set the display to be the main page
         setContentView(R.layout.habit_event_details);
 
+        //get details from bundle
+        Intent sentIntent = getIntent();
+        event = sentIntent.getSerializableExtra("EVENT");
+
         //update fields with Event info
         habitName = event.getName();
         comment = event.getComment();
@@ -58,7 +64,7 @@ public class HabitEventDetails extends AppCompatActivity {
         TextView nameText = findViewById(R.id.habiteventdetails_title);
         TextView commentText = findViewById(R.id.habiteventdetails_comment);
         //TextView locationText = findViewById(R.id.habiteventdetails_location);
-        TextView dateText = findViewById(R.id.habitdetails_event_date_text);
+        TextView dateText = findViewById(R.id.habiteventdetails_date);
 
         nameText.setText(habitName);
         commentText.setText(comment);
@@ -74,6 +80,7 @@ public class HabitEventDetails extends AppCompatActivity {
         // navigate to the edit an event activity
         Intent intent = new Intent(this, EditHabitEvent.class);
         // TODO bundle up the item to be sent to the next frame
+        intent.putExtra("EVENT", event);
         startActivity(intent);
     }
 }
