@@ -11,6 +11,7 @@
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Mathew    Oct-21-2020   Created
+ *   1.1       Jesse     Oct-31-2020   Implemented activity displaying event details
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
