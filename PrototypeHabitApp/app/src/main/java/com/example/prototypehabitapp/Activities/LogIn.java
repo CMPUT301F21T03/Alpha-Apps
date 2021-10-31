@@ -52,7 +52,7 @@ public class LogIn extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void logInScreenLogInButtonPressed(View view){
         // TODO: put your name here for Firestore. Remove when username system is implemented later.
-        final String username = "test";
+        final String username = "Arthur";
         //prep Firestore
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
