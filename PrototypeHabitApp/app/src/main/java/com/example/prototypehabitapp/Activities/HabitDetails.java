@@ -14,12 +14,18 @@
  *   1.1       Moe       Oct-29-2021   Added popup menu when more button is pressed
  *   1.2       Jesse     Oct-31-2021   Set up array adapter and on click listener for event list
  *   1.3       Mathew    Oct-31-2021   Fix imports, add dummy test data
+ *   1.4       Eric      Oct-31-2021   Linked EditTexts with data from Habit object passed in Intent
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
 package com.example.prototypehabitapp.Activities;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.text.method.KeyListener;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -27,23 +33,24 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
-
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.prototypehabitapp.DataClasses.DaysOfWeek;
-import com.example.prototypehabitapp.DataClasses.Event;
 import com.example.prototypehabitapp.DataClasses.Habit;
 import com.example.prototypehabitapp.R;
-
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public class HabitDetails extends AppCompatActivity {
+public class HabitDetails extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener{
 
-    Habit habit;
+    // attributes
+    private Habit habit;
+    private DaysOfWeek weekOccurence;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -52,10 +59,49 @@ public class HabitDetails extends AppCompatActivity {
         // set the display to be the main page
         setContentView(R.layout.habit_details);
 
-        //TODO get the intent and unpackage the habit data
-        Intent intent = getIntent();
+        // connect to view elements
+        EditText title = findViewById(R.id.habitdetails_title);
+        // frequency needs to be worked on later
+        EditText reason = findViewById(R.id.habitdetails_reason_text);
+        TextView date_started = findViewById(R.id.habitdetails_date_started);
 
-        // TODO set the data to the proper fields
+        KeyListener titleKeyListener = title.getKeyListener();
+        title.setKeyListener(null);
+
+        KeyListener reasonKeyListener = reason.getKeyListener();
+        reason.setKeyListener(null);
+
+        weekButtons = new ArrayList<>();
+        Button sunday_button = findViewById(R.id.dayofweekbar_sunday);
+        weekButtons.add(sunday_button);
+        Button monday_button = findViewById(R.id.dayofweekbar_monday);
+        weekButtons.add(monday_button);
+        Button tuesday_button = findViewById(R.id.dayofweekbar_tuesday);
+        weekButtons.add(tuesday_button);
+        Button wednesday_button = findViewById(R.id.dayofweekbar_wednesday);
+        weekButtons.add(wednesday_button);
+        Button thursday_button = findViewById(R.id.dayofweekbar_thursday);
+        weekButtons.add(thursday_button);
+        Button friday_button = findViewById(R.id.dayofweekbar_friday);
+        weekButtons.add(friday_button);
+        Button saturday_button = findViewById(R.id.dayofweekbar_saturday);
+        weekButtons.add(saturday_button);
+
+        // if a selected habit was sent over in the intent
+        Intent intent = getIntent();
+        if (intent.getSerializableExtra("selected_habit") != null)  {
+            // then we can work with it...
+            // set the data to the proper fields in the activity
+            habit = (Habit) intent.getSerializableExtra("selected_habit");
+            title.setText(habit.getTitle());
+            reason.setText(habit.getReason());
+            date_started.setText(habit.getDateStarted().toString());
+            weekOccurenceList = habit.getWeekOccurence().getAll();
+            for (int i = 0; i < 7; i++) {
+                setButtonColor(weekButtons.get(i), weekOccurenceList.get(i));
+            }
+
+        }
 
         ListView eventsListview = findViewById(R.id.habitdetails_habit_event_list);
 
@@ -80,7 +126,8 @@ public class HabitDetails extends AppCompatActivity {
         moreButton.setOnClickListener(this::habitDetailsMoreButtonPressed);
     }
 
-    private void habitDetailsMoreButtonPressed(View view) {
+
+    private void habitDetailsHabitEventLayoutPressed(View view) {
         //TODO open a dialog as defined in the figma storyboard
         PopupMenu popupMenu = new PopupMenu(this, view);
         popupMenu.getMenuInflater().inflate(R.menu.habit_more_menu, popupMenu.getMenu());
@@ -104,11 +151,12 @@ public class HabitDetails extends AppCompatActivity {
         });
     }
 
-    private void habitDetailsHabitEventLayoutPressed(Event event) {
-        // TODO get the habit event data and open the habit event details frame with said data
-        Intent intent = new Intent(this, HabitEventDetails.class);
-        // TODO bundle up the item to be sent to the next frame
-        intent.putExtra("EVENT", event);
-        startActivity(intent);
+
+    private void setButtonColor(Button button, boolean val) {
+        if (val) {
+            button.setBackgroundColor(Color.BLUE);
+        } else {
+            button.setBackgroundColor(Color.GRAY);
+        }
     }
 }
