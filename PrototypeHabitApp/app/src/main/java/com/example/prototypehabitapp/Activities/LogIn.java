@@ -71,6 +71,7 @@ public class LogIn extends AppCompatActivity {
     public void logInScreenLogInButtonPressed(View view){
         // prep Firestore
         // this can be moved to initialization of Login
+
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
 

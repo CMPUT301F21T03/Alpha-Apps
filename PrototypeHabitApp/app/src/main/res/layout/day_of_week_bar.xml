@@ -13,14 +13,103 @@
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="1dp">
 
-        <Button
-            android:id="@+id/dayofweekbar_sunday"
+<!--        <Button-->
+<!--            android:id="@+id/dayofweekbar_sunday"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:text="S" />-->
+        <CheckBox
+            android:id="@+id/sunday_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="S" />
+            android:text="S"
+            android:button="@null"
+            android:gravity="center"
+            android:background="@drawable/checkbox_selector"
+            android:checked="false"
+            android:textColor="@color/black"
+            android:layout_marginRight="5dp"
+            android:textStyle="bold"/>
 
-        <Button
+        <CheckBox
+            android:id="@+id/monday_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="M"
+            android:button="@null"
+            android:gravity="center"
+            android:background="@drawable/checkbox_selector"
+            android:checked="false"
+            android:textColor="@color/black"
+            android:layout_marginRight="5dp"
+            android:textStyle="bold"/>
+        <CheckBox
+            android:id="@+id/tuesday_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="T"
+            android:button="@null"
+            android:gravity="center"
+            android:background="@drawable/checkbox_selector"
+            android:checked="false"
+            android:textColor="@color/black"
+            android:layout_marginRight="5dp"
+            android:textStyle="bold"/>
+
+        <CheckBox
+            android:id="@+id/wednesday_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="W"
+            android:button="@null"
+            android:gravity="center"
+            android:background="@drawable/checkbox_selector"
+            android:checked="false"
+            android:textColor="@color/black"
+            android:layout_marginRight="5dp"
+            android:textStyle="bold"/>
+
+        <CheckBox
+            android:id="@+id/thursday_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="T"
+            android:button="@null"
+            android:gravity="center"
+            android:background="@drawable/checkbox_selector"
+            android:checked="false"
+            android:textColor="@color/black"
+            android:layout_marginRight="5dp"
+            android:textStyle="bold"/>
+
+        <CheckBox
+            android:id="@+id/friday_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="F"
+            android:button="@null"
+            android:gravity="center"
+            android:background="@drawable/checkbox_selector"
+            android:checked="false"
+            android:textColor="@color/black"
+            android:layout_marginRight="5dp"
+            android:textStyle="bold"/>
+
+        <CheckBox
+            android:id="@+id/saturday_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="S"
+            android:button="@null"
+            android:gravity="center"
+            android:background="@drawable/checkbox_selector"
+            android:checked="false"
+            android:textColor="@color/black"
+            android:textStyle="bold"/>
+
+
+        <!--<Button
             android:id="@+id/dayofweekbar_monday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -60,6 +149,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="S" />
+            android:text="S" />-->
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -24,10 +24,17 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,9 +42,15 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import com.example.prototypehabitapp.Activities.Main;
+import com.example.prototypehabitapp.DataClasses.DaysOfWeek;
+import com.example.prototypehabitapp.DataClasses.Habit;
 import com.example.prototypehabitapp.R;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 
 public class AddHabit extends Fragment {
@@ -62,12 +75,69 @@ public class AddHabit extends Fragment {
         // set a listener for if the complete button is pressed
         Button completeButton = getActivity().findViewById(R.id.addhabit_complete);
         completeButton.setOnClickListener((this::addHabitCompleteButtonPressed));
+
+       // initialize spinner for public/private habit
+        Spinner privacySpinner = getActivity().findViewById(R.id.habitprivacy_spinner);
+        String[] items = new String[]{"Private", "Public"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, items);
+        privacySpinner.setAdapter(adapter);
     }
 
     public void addHabitCompleteButtonPressed(View view){
         //TODO update firestore with the user entered values
+        //Get all buttons
+        EditText nameText = getActivity().findViewById(R.id.addhabit_habit_title);
+        EditText reasonText = getActivity().findViewById(R.id.addhabit_reason);
+        TextView dateText = getActivity().findViewById(R.id.addhabit_select_date);
+        Spinner privacyText = (Spinner) getActivity().findViewById(R.id.habitprivacy_spinner);
 
-        navigateToMainAcitivity();
+        CheckBox sunday = getActivity().findViewById((R.id.sunday_checkbox));
+        CheckBox monday = getActivity().findViewById((R.id.monday_checkbox));
+        CheckBox tuesday = getActivity().findViewById((R.id.tuesday_checkbox));
+        CheckBox wednesday = getActivity().findViewById((R.id.wednesday_checkbox));
+        CheckBox thursday = getActivity().findViewById((R.id.thursday_checkbox));
+        CheckBox friday = getActivity().findViewById((R.id.friday_checkbox));
+        CheckBox saturday = getActivity().findViewById((R.id.saturday_checkbox));
+
+        //get values
+        String habitName = nameText.getText().toString();
+        String habitReason = reasonText.getText().toString();
+        String habitDate = dateText.getText().toString() + " 00:00:00";
+        String habitPrivacy = privacyText.getSelectedItem().toString();
+
+        boolean sundayVal = sunday.isChecked();
+        boolean mondayVal = monday.isChecked();
+        boolean tuesdayVal = tuesday.isChecked();
+        boolean wednesdayVal = wednesday.isChecked();
+        boolean thursdayVal = thursday.isChecked();
+        boolean fridayVal = friday.isChecked();
+        boolean saturdayVal = saturday.isChecked();
+
+        Log.i("date", habitDate);
+
+        if (TextUtils.isEmpty(habitReason) || TextUtils.isEmpty(habitName) || habitDate.equals("Select a date 00:00:00")){
+            Toast.makeText(getContext(), "Complete habit details!", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            DaysOfWeek frequency = new DaysOfWeek(sundayVal,mondayVal, tuesdayVal, wednesdayVal,thursdayVal, fridayVal, saturdayVal);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime newDate = LocalDateTime.parse(habitDate, formatter);
+            Habit newHabit = new Habit(habitName, habitReason, newDate, frequency);
+
+            FirebaseFirestore db;
+            db = FirebaseFirestore.getInstance();
+            final DocumentReference habitsref = db.collection("Doers").document("Arthur").collection("Attributes").document("Habits");
+
+//            if (habitPrivacy.equals("Private")){
+//                final CollectionReference privateHabits = habitsref.collection("Type").document("Private").collection("PrivateHabits");
+//                privateHabits.document("Habit").set(newHabit);
+//
+//            }
+
+            navigateToMainAcitivity();
+
+        }
+
     }
 
     private void navigateToMainAcitivity(){

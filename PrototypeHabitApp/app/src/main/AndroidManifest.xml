@@ -16,7 +16,8 @@
         <activity android:name=".Activities.HabitEventDetails"/>
         <activity android:name=".Activities.EditPersonalProfile"/>
         <activity android:name=".Activities.SignUp"/>
-        <activity android:name=".Activities.Main"/>
+        <activity android:name=".Activities.Main"
+            android:windowSoftInputMode="adjustNothing"/>
         <activity
             android:name=".Activities.BootScreen"
             android:label="@string/app_name"

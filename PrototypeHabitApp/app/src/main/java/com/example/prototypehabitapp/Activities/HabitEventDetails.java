@@ -10,28 +10,67 @@
  *
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
- *   1.0       Mathew    Oct-21-2020   Created
+ *   1.0       Mathew    Oct-21-2021   Created
+ *   1.1       Jesse     Oct-31-2021   Implemented activity displaying event details
+ *   1.2       Jesse     Oct-31-2021   Added getting the event from intent and sending when edit
+ *                                       button is clicked
+ *   1.3       Mathew    Oct-31-2021   Fix imports
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
 package com.example.prototypehabitapp.Activities;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.prototypehabitapp.DataClasses.Event;
 import com.example.prototypehabitapp.R;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class HabitEventDetails extends AppCompatActivity {
+
+    private Event event;
+    private String habitName;
+    private String comment;
+    private String date;
+    private Boolean hasPhotograph;
+    private Boolean hasLocation;
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // set the display to be the main page
         setContentView(R.layout.habit_event_details);
+
+        //get details from bundle
+        Intent sentIntent = getIntent();
+        event = (Event) sentIntent.getSerializableExtra("EVENT");
+
+        //update fields with Event info
+        habitName = event.getName();
+        comment = event.getComment();
+        date = event.getDateCompleted().format(formatter);
+
+        TextView nameText = findViewById(R.id.habiteventdetails_title);
+        TextView commentText = findViewById(R.id.habiteventdetails_comment);
+        //TextView locationText = findViewById(R.id.habiteventdetails_location);
+        TextView dateText = findViewById(R.id.habiteventdetails_date);
+
+        nameText.setText(habitName);
+        commentText.setText(comment);
+        dateText.setText(date);
+
 
         // set a listener for the edit button
         Button editButton = findViewById(R.id.habiteventdetails_edit);
@@ -42,6 +81,7 @@ public class HabitEventDetails extends AppCompatActivity {
         // navigate to the edit an event activity
         Intent intent = new Intent(this, EditHabitEvent.class);
         // TODO bundle up the item to be sent to the next frame
+        intent.putExtra("EVENT", event);
         startActivity(intent);
     }
 }
