@@ -27,7 +27,7 @@ import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.prototypehabitapp.*;
+import com.example.prototypehabitapp.Activites.Event;
 import com.example.prototypehabitapp.R;
 
 import java.time.LocalDateTime;
