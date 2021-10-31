@@ -10,7 +10,8 @@
  *
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
- *   1.0       Mathew    Oct-21-2020   Created
+ *   1.0       Mathew    Oct-21-2021   Created
+ *   1.1       Eric      Oct-31-2021   Linked EditTexts with data from Habit object passed in Intent
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
