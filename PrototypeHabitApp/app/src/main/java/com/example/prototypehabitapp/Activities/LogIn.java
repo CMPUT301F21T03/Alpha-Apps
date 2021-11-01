@@ -18,21 +18,39 @@
 
 package com.example.prototypehabitapp.Activities;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.prototypehabitapp.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+
+import java.io.Serializable;
+import java.util.Map;
 
 public class LogIn extends AppCompatActivity {
 
     private static final String MESSAGE = "loginhabitdatatransfer";
+    private static final String TAG = "loginTAG";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,28 +69,70 @@ public class LogIn extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void logInScreenLogInButtonPressed(View view){
-        // TODO: put your name here for Firestore. Remove when username system is implemented later.
-        final String username = "Arthur";
-        //prep Firestore
+        // prep Firestore
+        // this can be moved to initialization of Login
+
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
-        final DocumentReference user = db.collection("Doers").document(username);
 
         // get the Strings inside the editText views
-        String email = findViewById(R.id.loginscreen_email).toString();
-        String password = findViewById(R.id.loginscreen_password).toString();
+        EditText emailEdit = (EditText)findViewById(R.id.loginscreen_email);
+        String email = emailEdit.getText().toString();
+        EditText passwordEdit = (EditText)findViewById(R.id.loginscreen_password);
+        String password = passwordEdit.getText().toString();
 
-        //TODO check firebase for an email and password combination matching the above
-        // If one pair exists return the user's ID and bring them to their "All Habits" page
+        // TODO: could use something other than an alertdialog, like a snackbar
+        // initiates an alertdialog to use if there is an error logging in
+        AlertDialog.Builder loginAlert = new AlertDialog.Builder(this)
+                .setTitle("Login Error")
+                .setNegativeButton("OK", null)
+                ;
+        // save the context for the Firestore listener
+        Context loginContext = this;
 
-        String userID = "some_user";
+        // try obtaining a reference to the email field
+        final DocumentReference findUserRef = db.collection("Doers").document(email);
+        findUserRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    // Validates username exists in database
+                    if (document.exists()) {
+                        Map userData = document.getData();
+                        // Validating password
+                        if(((String) userData.get("password")).equals(password)){
+                            // LOGIN HERE
+                            // TODO figure out a way to move to the mainActivity class without allowing the back
+                            //  button to take the user back to the log in page
+                            //  send a state through the intent bundle?
+                            Intent intent = new Intent(loginContext, Main.class);
+                            //
+                            intent.putExtra(MESSAGE, email);
+                            // bundle the user info into Serializable and send through Intent
+                            intent.putExtra("userData",(Serializable) userData);
+                            // start Main Activity
+                            startActivity(intent);
+                        }
+                        else{
+                            // if the password is incorrect
+                            loginAlert.setMessage("Incorrect Password");
+                            loginAlert.show();
+                        }
 
+                    } else {
+                        // if the username does not exist
+                        loginAlert.setMessage("Username does not exit");
+                        loginAlert.show();
+                    }
+                } else {
+                    // firebase error
+                    loginAlert.setMessage("Connection Error");
+                    loginAlert.show();
+                }
+            }
+        });
 
-        // TODO figure out a way to move to the mainActivity class without allowing the back
-        //  button to take the user back to the log in page
-        Intent intent = new Intent(this, Main.class);
-        intent.putExtra(MESSAGE, userID);
-        startActivity(intent);
 
     }
 
