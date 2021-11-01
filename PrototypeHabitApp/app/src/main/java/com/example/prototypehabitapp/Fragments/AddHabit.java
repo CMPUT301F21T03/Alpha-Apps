@@ -10,8 +10,9 @@
  *
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
- *   1.0       Eric      Oct-21-2020   Created
- *   1.1       Mathew    Oct-21-2020   Added some navigation features to and from this page
+ *   1.0       Eric      Oct-21-2021   Created
+ *   1.1       Mathew    Oct-21-2021   Added some navigation features to and from this page
+ *   1.2       Arthur    Oct-31-2021   Added full functionality
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -51,6 +52,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 
 public class AddHabit extends Fragment {
@@ -64,9 +66,11 @@ public class AddHabit extends Fragment {
     public AddHabit() {
         super(R.layout.add_habit);
     }
-
+    private Map userData;
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        Main activity = (Main) getActivity();
+        userData = activity.getUserData();
 
         // set a listener for if the date hyperlink is pressed by the user
         TextView selectDateHyperlink = getActivity().findViewById(R.id.addhabit_select_date);
@@ -126,8 +130,9 @@ public class AddHabit extends Fragment {
 
             FirebaseFirestore db;
             db = FirebaseFirestore.getInstance();
-            final DocumentReference habitsref = db.collection("Doers").document("Arthur").collection("Attributes").document("Habits");
-
+            final CollectionReference habitsref = db.collection("Doers").document((String)userData.get("username")).collection("habits");
+            //Toast.makeText(getContext(), "I came here", Toast.LENGTH_SHORT).show();
+            habitsref.document(habitName).set(newHabit);
 //            if (habitPrivacy.equals("Private")){
 //                final CollectionReference privateHabits = habitsref.collection("Type").document("Private").collection("PrivateHabits");
 //                privateHabits.document("Habit").set(newHabit);
