@@ -12,6 +12,7 @@
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Mathew    Oct-13-2021   Created
  *   1.1       Leah      Oct-31-2021   Now implements serializable, added new Map constructor
+ *   1.2       Mathew    Oct-31-2021   Added Javadocs
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -32,11 +33,18 @@ public class DaysOfWeek implements Serializable {
     private Boolean friday;
     private Boolean saturday;
 
-    // on creation all of the days of the week are set to be not selected
+    /**
+     * on creation with no parameters all of the days of the week are set to be not selected
+     */
     public DaysOfWeek(){
         setAll(false);
     }
 
+    /**
+     * Uses a map obtained from firebase to create a DaysOfWeek object that properly represents
+     * which days should be set to true or false
+     * @param daysMap the map off which to base which days are set to true or false
+     */
     public DaysOfWeek(Map<String, Boolean> daysMap){
         this.sunday = daysMap.get("sunday");
         this.monday = daysMap.get("monday");
@@ -47,7 +55,19 @@ public class DaysOfWeek implements Serializable {
         this.saturday = daysMap.get("saturday");
     }
 
-    public DaysOfWeek(Boolean sunday, Boolean monday, Boolean tuesday, Boolean wednesday, Boolean thursday, Boolean friday, Boolean saturday) {
+    /**
+     * Creates a DaysOfWeek object by sepcifying each day as true or false individually
+     * goes from to sunday -> monday ... -> saturday
+     * @param sunday is sunday selected
+     * @param monday is monday selected
+     * @param tuesday is tuesday selected
+     * @param wednesday is wednesday selected
+     * @param thursday is thursday selected
+     * @param friday is friday selected
+     * @param saturday is saturday selected
+     */
+    public DaysOfWeek(Boolean sunday, Boolean monday, Boolean tuesday, Boolean wednesday,
+                      Boolean thursday, Boolean friday, Boolean saturday) {
         this.sunday = sunday;
         this.monday = monday;
         this.tuesday = tuesday;
@@ -58,6 +78,11 @@ public class DaysOfWeek implements Serializable {
     }
 
     // sets all of the days of the week to the given value (t/f)
+
+    /**
+     * set all of the days of the week to the given value
+     * @param setTo the value to set all of the days of the week to
+     */
     public void setAll(Boolean setTo){
         setSunday(setTo);
         setMonday(setTo);
@@ -68,7 +93,12 @@ public class DaysOfWeek implements Serializable {
         setSaturday(setTo);
     }
     
-    // returns an arrayList of each value, position 0 = sunday, pos 1 = monday, etc. etc.
+    //
+
+    /**
+     * returns an arrayList of each value, position 0 = sunday, pos 1 = monday, etc. etc.
+     * @return an arrayList of each value, position 0 = sunday, pos 1 = monday, etc. etc.
+     */
     public ArrayList<Boolean> getAll(){
         ArrayList<Boolean> weeklyList = new ArrayList<>();
 

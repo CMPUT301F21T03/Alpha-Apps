@@ -12,7 +12,8 @@
  *
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
- *   1.0       Mathew    Oct-13-2020   Created
+ *   1.0       Mathew    Oct-13-2021   Created
+ *   1.1       Mathew    Oct-31-2021   Added Javadocs
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -31,7 +32,14 @@ public class User {
     // whether or not the user has set their account to private
     private boolean privateAccount;
 
-    // create a User
+    /**
+     * create a User
+     * @param uniqueID an ID that is unique to the user so it can be used for identification in our
+     *                 database
+     * @param name the name that the user gives themselves
+     * @param email the email that the user links with their account
+     * @param password the password that the user sets for their account
+     */
     public User(String uniqueID, String name, String email, String password){
         setUniqueID(uniqueID);
         setName(name);
