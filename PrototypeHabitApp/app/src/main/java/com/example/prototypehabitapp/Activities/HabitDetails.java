@@ -15,7 +15,8 @@
  *   1.2       Jesse     Oct-31-2021   Set up array adapter and on click listener for event list
  *   1.3       Mathew    Oct-31-2021   Fix imports, add dummy test data
  *   1.4       Eric      Oct-31-2021   Linked EditTexts with data from Habit object passed in Intent
- *   1.5       Mathew    Oct-31-2021   Added a more descriptive tag by which to get the intent info
+ *   1.5       Eric      Oct-31-2021   Added edit functionality
+ *   1.6       Mathew    Oct-31-2021   Added a more descriptive tag by which to get the intent info
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -31,12 +32,15 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.ListView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.prototypehabitapp.DataClasses.DaysOfWeek;
 import com.example.prototypehabitapp.DataClasses.Habit;
 import com.example.prototypehabitapp.DataClasses.Event;
@@ -50,7 +54,18 @@ public class HabitDetails extends AppCompatActivity{
 
     // attributes
     private Habit habit;
-    private DaysOfWeek weekOccurence;
+    private boolean editing;
+
+    private EditText title;
+    private EditText reason;
+    private TextView date_started;
+    private TextView habit_events_title;
+    private HorizontalScrollView habit_events_scoller;
+    private Button done_editing;
+
+    PopupMenu popupMenu;
+
+    ArrayList<CheckBox> weekButtons;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -59,20 +74,23 @@ public class HabitDetails extends AppCompatActivity{
         // set the display to be the main page
         setContentView(R.layout.habit_details);
 
+        editing = false;
+
         // connect to view elements
-        EditText title = findViewById(R.id.habitdetails_title);
-        // frequency needs to be worked on later
-        EditText reason = findViewById(R.id.habitdetails_reason_text);
-        TextView date_started = findViewById(R.id.habitdetails_date_started);
+        title = findViewById(R.id.habitdetails_title);
+        reason = findViewById(R.id.habitdetails_reason_text);
+        date_started = findViewById(R.id.habitdetails_date_started);
+        habit_events_title = findViewById(R.id.habitdetails_habit_events_text);
+        habit_events_scoller = findViewById(R.id.habitdetails_habit_event_list_scroll_view);
+        done_editing = findViewById(R.id.habitdetails_button_done_editing);
 
-        KeyListener titleKeyListener = title.getKeyListener();
-        title.setKeyListener(null);
+        // disable title and reason editablity onCreate
+        title.setEnabled(false);
+        title.setTextColor(Color.BLACK);
+        reason.setEnabled(false);
+        reason.setTextColor(Color.BLACK);
 
-        KeyListener reasonKeyListener = reason.getKeyListener();
-        reason.setKeyListener(null);
-
-        ArrayList<Button> weekButtons = prepareDayOfWeekButtons();
-
+        weekButtons = prepareDayOfWeekButtons();
 
         // if a selected habit was sent over in the intent
         Intent intent = getIntent();
@@ -85,9 +103,13 @@ public class HabitDetails extends AppCompatActivity{
             date_started.setText(habit.getDateStarted().toString());
             ArrayList<Boolean> weekOccurenceList = habit.getWeekOccurence().getAll();
             for (int i = 0; i < 7; i++) {
-                setButtonColor(weekButtons.get(i), weekOccurenceList.get(i));
+                setBoxesChecked(weekButtons.get(i), weekOccurenceList.get(i));
             }
 
+        }
+
+        for (int i = 0; i < 7; i++) {
+            weekButtons.get(i).setClickable(false);
         }
 
         ListView eventsListview = findViewById(R.id.habitdetails_habit_event_list);
@@ -114,34 +136,37 @@ public class HabitDetails extends AppCompatActivity{
         moreButton.setOnClickListener(this::habitDetailsMoreButtonPressed);
     }
 
-
-    private ArrayList<Button> prepareDayOfWeekButtons(){
-        ArrayList<Button> weekButtons = new ArrayList<>();
-        Button sunday_button = findViewById(R.id.sunday_checkbox);
+    private ArrayList<CheckBox> prepareDayOfWeekButtons(){
+        ArrayList<CheckBox> weekButtons = new ArrayList<>();
+        CheckBox sunday_button = findViewById(R.id.sunday_checkbox);
         weekButtons.add(sunday_button);
-        Button monday_button = findViewById(R.id.monday_checkbox);
+        CheckBox monday_button = findViewById(R.id.monday_checkbox);
         weekButtons.add(monday_button);
-        Button tuesday_button = findViewById(R.id.tuesday_checkbox);
+        CheckBox tuesday_button = findViewById(R.id.tuesday_checkbox);
         weekButtons.add(tuesday_button);
-        Button wednesday_button = findViewById(R.id.wednesday_checkbox);
+        CheckBox wednesday_button = findViewById(R.id.wednesday_checkbox);
         weekButtons.add(wednesday_button);
-        Button thursday_button = findViewById(R.id.thursday_checkbox);
+        CheckBox thursday_button = findViewById(R.id.thursday_checkbox);
         weekButtons.add(thursday_button);
-        Button friday_button = findViewById(R.id.friday_checkbox);
+        CheckBox friday_button = findViewById(R.id.friday_checkbox);
         weekButtons.add(friday_button);
-        Button saturday_button = findViewById(R.id.saturday_checkbox);
+        CheckBox saturday_button = findViewById(R.id.saturday_checkbox);
         weekButtons.add(saturday_button);
         return weekButtons;
     }
 
     private void habitDetailsMoreButtonPressed(View view) {
         //TODO open a dialog as defined in the figma storyboard
-        PopupMenu popupMenu = new PopupMenu(this, view);
+        popupMenu = new PopupMenu(this, view);
         popupMenu.getMenuInflater().inflate(R.menu.habit_more_menu, popupMenu.getMenu());
+        if (editing) {
+            popupMenu.getMenu().removeItem(R.id.edit_habit);
+        }
         popupMenu.show();
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
+
                 if (menuItem.getItemId() == R.id.mark_done) {
                     // TODO mark as done
                 } else if (menuItem.getItemId() == R.id.log_habit) {
@@ -149,9 +174,10 @@ public class HabitDetails extends AppCompatActivity{
                     // TODO indicate that it's a new entry
                     startActivity(intent);
                 } else if (menuItem.getItemId() == R.id.edit_habit) {
-                    // TODO move to EditHabit class
+                    prepareForEdit();
+
                 } else if (menuItem.getItemId() == R.id.delete_habit) {
-                    // TODO delete habit
+                    // TODO delete habit in Firestore here
                 }
                 return true;
             }
@@ -164,11 +190,43 @@ public class HabitDetails extends AppCompatActivity{
         startActivity(intent);
     }
 
-    private void setButtonColor(Button button, boolean val) {
+    public void habitDetailsDoneEditingPressed(View view) {
+        prepareForFinishEditing();
+        // TODO update information in Firestore here
+    }
+
+    private void setBoxesChecked(CheckBox button, boolean val) {
         if (val) {
-            button.setBackgroundColor(Color.BLUE);
+            button.setChecked(true);
         } else {
-            button.setBackgroundColor(Color.GRAY);
+            button.setChecked(false);
+        }
+    }
+
+    private void prepareForEdit() {
+        editing = true; // set editing flag to true (for popup menu)
+        habit_events_title.setVisibility(View.GONE); // hide Habit Events
+        habit_events_scoller.setVisibility(View.GONE);
+        done_editing.setVisibility(View.VISIBLE); // show done editing button
+        title.setEnabled(true); // enable title and reason EditTexts
+        reason.setEnabled(true);
+        for (int i = 0; i < 7; i++) { // enable frequency click boxes
+            weekButtons.get(i).setClickable(true);
+        }
+    }
+
+    private void prepareForFinishEditing() {
+        editing = false; // set editing flag to false (for popup menu)
+        habit_events_title.setVisibility(View.VISIBLE); // show Habit Events
+        habit_events_scoller.setVisibility(View.VISIBLE);
+        done_editing.setVisibility(View.GONE); // hide done editing button
+        title.setEnabled(false); // disable title and reason EditTexts
+        title.setTextColor(Color.BLACK);
+        reason.setEnabled(false);
+        reason.setTextColor(Color.BLACK);
+
+        for (int i = 0; i < 7; i++) { // disable frequency click boxes
+            weekButtons.get(i).setClickable(false);
         }
     }
 }
