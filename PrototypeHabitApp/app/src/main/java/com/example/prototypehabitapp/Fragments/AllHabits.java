@@ -93,7 +93,7 @@ public class AllHabits extends Fragment {
         Log.d(TAG,itemToSend.toString());
         Intent intent = new Intent(getContext(), HabitDetails.class);
         // TODO bundle up the item to be sent to the next frame
-        intent.putExtra("selected_habit",itemToSend);
+        intent.putExtra(getTag(),itemToSend);
         startActivity(intent);
     }
 
@@ -145,6 +145,11 @@ public class AllHabits extends Fragment {
                         habitDataList.add(new Habit(doc.getString("title"),doc.getString("reason"),ldt,new DaysOfWeek(docDaysOfWeek)));
                     }
                 }
+                if (habitDataList.isEmpty()){
+                    showPromptText(true);
+                }else{
+                    showPromptText(false);
+                }
                 habitAdapter.notifyDataSetChanged();
             }
         });
@@ -153,6 +158,20 @@ public class AllHabits extends Fragment {
     }
     public void setUserData(Map userData) {
         this.userData = userData;
+    }
+
+    private void showPromptText(Boolean show){
+        if (show){
+            getView().findViewById(R.id.allhabits_hidden_textview_1).setVisibility(View.VISIBLE);
+            getView().findViewById(R.id.allhabits_hidden_textview_2).setVisibility(View.VISIBLE);
+        }else{
+            getView().findViewById(R.id.allhabits_hidden_textview_1).setVisibility(View.INVISIBLE);
+            getView().findViewById(R.id.allhabits_hidden_textview_2).setVisibility(View.INVISIBLE);
+        }
+    }
+
+    public static String getTAG(){
+        return TAG;
     }
 
 }

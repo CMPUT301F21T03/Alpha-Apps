@@ -20,6 +20,7 @@ package com.example.prototypehabitapp.Fragments;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -31,21 +32,27 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import com.example.prototypehabitapp.Activities.HabitDetails;
+import com.example.prototypehabitapp.Activities.Main;
 import com.example.prototypehabitapp.DataClasses.DaysOfWeek;
 import com.example.prototypehabitapp.DataClasses.Habit;
 import com.example.prototypehabitapp.DataClasses.HabitList;
 import com.example.prototypehabitapp.R;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 
@@ -54,14 +61,22 @@ public class TodayHabits extends Fragment {
         super(R.layout.today_habits);
     }
 
+    private static final String TAG = "todayhabitsTAG";
+
     // prep the today_habits screen related objects
     private ListView todaysHabitsListView;
     private ArrayAdapter<Habit> habitAdapter;
     private ArrayList<Habit> habitDataList;
+    private Map userData;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        // get user data
+        Main activity = (Main) getActivity();
+        userData = activity.getUserData();
+        Log.d(TAG,"Successfully logged in: " + (String) userData.get("username"));
+
         getHabitDataList();
         setHabitListAdapter(view);
 
@@ -102,41 +117,47 @@ public class TodayHabits extends Fragment {
         habitDataList.add(test_habit);
 
 
-//        FirebaseFirestore db;
-//        db = FirebaseFirestore.getInstance();
-//        final DocumentReference user = db.collection("Doers").document((String) userData.get("username"));
-//        user.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-//                habitDataList.clear();
-//                if (queryDocumentSnapshot.exists()){
-//                    Map HabitData = queryDocumentSnapshot.getData();
-//
-//                    // get the day of the week
-//                    Integer dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-//                    dayOfWeek -= 1;
-//
-//
-//                    for (int i = 0; i < habitData.getSize(); i++){
-//                        // checks to see if the habit is set to be done today
-//                        DaysOfWeek freq = habitData.get("Days_of_week");
-//                        ArrayList<Boolean> boolList = freq.getAll();
-//                        if (boolList.get(dayOfWeek) == true){
-//                            //title = habitData.get("habits" @ pos i)
-//                            // repeat for reason, days of week, progress
-//                            habitDataList.add(title, reason, dateStarted, daysOfWeek,)
-//                        }
-//
-//                    }
-//                if (habitDataList.isEmpty()){
-//                    showPromptText(true);
-//                }else{
-//                    showPromptText(false);
-//                }
-//                }
-//                habitAdapter.notifyDataSetChanged();
-//            }
-//        });
+        // REMOVE THIS IF YOU NEED TO TEST WITHOUT THE FIRESTORE
+        FirebaseFirestore db;
+        db = FirebaseFirestore.getInstance();
+        final CollectionReference user = db.collection("Doers").document((String) userData.get("username")).collection("habits");
+        user.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot querySnapshot,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    // if error occurs
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
+                }
+                List<String> habits = new ArrayList<>();
+                habitDataList.clear();
+                // get the day of the week with 0 = sunday 1 = monday... 6 = saturday;
+                Integer dayWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)-1;
+
+                for(QueryDocumentSnapshot doc : querySnapshot){
+                    // make sure the title exists
+                    if (doc.get("title") != null) {
+                        // get the days of the week and see if the habit is schedule for today
+                        DaysOfWeek freq = new DaysOfWeek((Map<String, Boolean>) doc.get("weekOccurence"));
+                        // if it is scheduled for today, add the data to the list
+                        if(freq.getAll().get(dayWeek) == true){
+                            // convert firestore timestamp to local time
+                            LocalDateTime ldt = LocalDateTime.ofInstant(doc.getDate("dateStarted").toInstant(),
+                                    ZoneId.systemDefault());
+                            habitDataList.add(new Habit(doc.getString("title"),doc.getString("reason"),ldt, freq));
+                        }
+                    }
+                }
+                if (habitDataList.isEmpty()){
+                    showPromptText(true);
+                }else{
+                    showPromptText(false);
+                }
+                habitAdapter.notifyDataSetChanged();
+            }
+        });
+        // END REMOVE HERE
     }
 
 
@@ -146,6 +167,14 @@ public class TodayHabits extends Fragment {
         }else{
             getView().findViewById(R.id.today_habits_hidden_textview).setVisibility(View.INVISIBLE);
         }
+    }
+
+    public void setUserData(Map userData) {
+        this.userData = userData;
+    }
+
+    public static String getTAG(){
+        return TAG;
     }
 
 }
