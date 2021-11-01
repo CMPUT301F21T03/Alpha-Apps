@@ -12,7 +12,8 @@
  *
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
- *   1.0       Mathew    Oct-13-2020   Created
+ *   1.0       Mathew    Oct-13-2021   Created
+ *   1.1       Mathew    Oct-31-2021   Added Javadocs
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -55,8 +56,13 @@ public class Habit implements Serializable {
     private LocalDateTime dateEventChecked;
     //==================================================================================
 
-
-    // create a Habit with the specified values
+    /**
+     * create a Habit object with the specified values
+     * @param title a title to represent the kind of habit
+     * @param reason a reason about why the user wants to complete the habit
+     * @param dateStarted the date the habit is scheduled to start
+     * @param weekOccurence the weekly frequency that the user specifies the habit should take place
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Habit(String title, String reason, LocalDateTime dateStarted, DaysOfWeek weekOccurence){
         // set the eventList to be empty
@@ -140,19 +146,4 @@ public class Habit implements Serializable {
     public void setProgress(Double progress) {
         this.progress = progress;
     }
-
-//    @Override
-//    public int describeContents() {
-//        return 0;
-//    }
-//
-//    @Override
-//    public void writeToParcel(Parcel parcel, int i) {
-//        parcel.writeString(getTitle());
-//        parcel.writeString(getReason());
-//        parcel.writeValue(getDateStarted());
-//        parcel.writeValue(getWeekOccurence());
-//        parcel.writeValue(getEventList());
-//        parcel.writeValue(getProgress());
-//    }
 }
