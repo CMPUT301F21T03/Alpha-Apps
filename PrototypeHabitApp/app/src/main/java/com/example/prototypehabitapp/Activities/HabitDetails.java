@@ -17,6 +17,8 @@
  *   1.4       Eric      Oct-31-2021   Linked EditTexts with data from Habit object passed in Intent
  *   1.5       Eric      Oct-31-2021   Added edit functionality
  *   1.6       Mathew    Oct-31-2021   Added a more descriptive tag by which to get the intent info
+ *   1.7       Moe       Nov-01-2021   Added passing event object when log habit is selected in the
+ *                                         popup menu
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -62,6 +64,10 @@ public class HabitDetails extends AppCompatActivity{
     private TextView habit_events_title;
     private HorizontalScrollView habit_events_scoller;
     private Button done_editing;
+
+    private ArrayAdapter<Event> eventsAdapter;
+    private ListView eventsListview;
+
 
     PopupMenu popupMenu;
 
@@ -112,13 +118,13 @@ public class HabitDetails extends AppCompatActivity{
             weekButtons.get(i).setClickable(false);
         }
 
-        ListView eventsListview = findViewById(R.id.habitdetails_habit_event_list);
+        eventsListview = findViewById(R.id.habitdetails_habit_event_list);
 
         //add test habit data (remove later)
         habit = new Habit("title", "reason", LocalDateTime.now(), new DaysOfWeek());
 
         ArrayList<Event> events = habit.getEventList();
-        ArrayAdapter<Event> eventsAdapter = new EventList(this, events);
+        eventsAdapter = new EventList(this, events);
         eventsListview.setAdapter(eventsAdapter);
 
         //set a listener for if the editHabit layout is pressed by the user
@@ -171,8 +177,9 @@ public class HabitDetails extends AppCompatActivity{
                     // TODO mark as done
                 } else if (menuItem.getItemId() == R.id.log_habit) {
                     Intent intent = new Intent(HabitDetails.this, AddHabitEvent.class);
-                    // TODO indicate that it's a new entry
+                    intent.putExtra("HABIT", habit);
                     startActivity(intent);
+                    eventsListview.setAdapter(eventsAdapter);
                 } else if (menuItem.getItemId() == R.id.edit_habit) {
                     prepareForEdit();
 
