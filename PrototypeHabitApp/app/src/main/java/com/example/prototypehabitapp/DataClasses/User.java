@@ -14,6 +14,7 @@
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Mathew    Oct-13-2021   Created
  *   1.1       Mathew    Oct-31-2021   Added Javadocs
+ *   1.2       Mathew    Nov-01-2021   Added a stand in attribute for a profile picture
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -31,9 +32,12 @@ public class User {
     private String password;
     // whether or not the user has set their account to private
     private boolean privateAccount;
+    // a profile picture of the user
+    //TODO make this an actual picture
+    private String photoStandIn;
 
     /**
-     * create a User
+     * create a User. Their profile picture is the default picture upon creation.
      * @param uniqueID an ID that is unique to the user so it can be used for identification in our
      *                 database
      * @param name the name that the user gives themselves
@@ -47,6 +51,8 @@ public class User {
         setPassword(password);
         // default the account to be public, NOT private
         setPrivateAccount(false);
+        // set the account's profile picture to be a default
+        setPhotoStandIn("default photo");
     }
 
     // =========================== GETTERS AND SETTERS ===========================
@@ -88,5 +94,13 @@ public class User {
 
     public void setPrivateAccount(boolean privateAccount) {
         this.privateAccount = privateAccount;
+    }
+
+    public String getPhotoStandIn() {
+        return photoStandIn;
+    }
+
+    public void setPhotoStandIn(String photoStandIn) {
+        this.photoStandIn = photoStandIn;
     }
 }
