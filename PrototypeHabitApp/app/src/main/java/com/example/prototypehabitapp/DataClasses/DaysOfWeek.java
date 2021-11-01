@@ -10,7 +10,8 @@
  *
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
- *   1.0       Mathew    Oct-13-2020   Created
+ *   1.0       Mathew    Oct-13-2021   Created
+ *   1.1       Leah      Oct-31-2021   Now implements serializable, added new Map constructor
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
