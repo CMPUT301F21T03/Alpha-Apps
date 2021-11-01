@@ -15,6 +15,7 @@
  *   1.1       Jesse     Oct-27-2021   Added name and dateCompleted components and their
  *                                      getters/setters
  *   1.2       Jesse     Oct-31-2021   Altered Event to implement Serializable
+ *   1.3       Mathew    Oct-31-2021   Added Javadocs
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -38,7 +39,14 @@ public class Event implements Serializable {
     // TODO change the below attribute (and all other instances) to properly represent a location
     private Boolean hasLocation;
 
-    // creates an event with the specified values. If the value is null it means it was not given by the user
+    /**
+     * creates an event with the specified values. If the value is null it means it was not given by the user
+     * @param name the name of the habit event
+     * @param dateCompleted the day that the event was completed
+     * @param comment an optional comment about the event
+     * @param hasPhotograph a placeholder for the photograph object that will be implemented later
+     * @param hasLocation a placeholder for the location object that will be implemented later
+     */
     public Event(String name, LocalDateTime dateCompleted, String comment, Boolean hasPhotograph, Boolean hasLocation){
 
         setName(name);

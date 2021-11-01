@@ -22,10 +22,11 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public class Habit {
+public class Habit implements Serializable {
 
     // User interactive elements
     //=================================================================================
