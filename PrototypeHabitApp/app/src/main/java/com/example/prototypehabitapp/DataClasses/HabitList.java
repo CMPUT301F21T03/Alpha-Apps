@@ -37,12 +37,25 @@ public class HabitList extends ArrayAdapter<Habit> implements Serializable {
     private ArrayList<Habit> habitList;
     private Context context;
 
+    /**
+     * creates a list of habit objects. As this class extends an array adapter this object must
+     * contain the context of its use so other functions may use this value later
+     * @param context the context into which the habit list is created in
+     * @param habitList the raw data of the habit list which will be formatted by this class
+     */
     public HabitList(Context context, ArrayList<Habit> habitList){
         super(context, 0, habitList);
         this.habitList = habitList;
         this.context = context;
     }
 
+    /**
+     * Returns a View that represents a list of habitdata
+     * @param pos the position in the habitdatalist that the function is on
+     * @param convertView
+     * @param parent
+     * @return the view of the object after it has been formatted with habit data
+     */
     @NonNull
     @Override
     public View getView(int pos, @Nullable View convertView, @NonNull ViewGroup parent) {
