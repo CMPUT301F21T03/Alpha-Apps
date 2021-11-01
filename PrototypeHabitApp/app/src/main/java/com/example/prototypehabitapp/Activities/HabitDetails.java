@@ -15,6 +15,7 @@
  *   1.2       Jesse     Oct-31-2021   Set up array adapter and on click listener for event list
  *   1.3       Mathew    Oct-31-2021   Fix imports, add dummy test data
  *   1.4       Eric      Oct-31-2021   Linked EditTexts with data from Habit object passed in Intent
+ *   1.5       Mathew    Oct-31-2021   Added a more descriptive tag by which to get the intent info
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -39,6 +40,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.prototypehabitapp.DataClasses.DaysOfWeek;
 import com.example.prototypehabitapp.DataClasses.Habit;
 import com.example.prototypehabitapp.DataClasses.Event;
+import com.example.prototypehabitapp.Fragments.AllHabits;
 import com.example.prototypehabitapp.R;
 
 import java.time.LocalDateTime;
@@ -74,10 +76,10 @@ public class HabitDetails extends AppCompatActivity{
 
         // if a selected habit was sent over in the intent
         Intent intent = getIntent();
-        if (intent.getSerializableExtra("selected_habit") != null)  {
+        if (intent.getSerializableExtra(AllHabits.getTAG()) != null)  {
             // then we can work with it...
             // set the data to the proper fields in the activity
-            habit = (Habit) intent.getSerializableExtra("selected_habit");
+            habit = (Habit) intent.getSerializableExtra(AllHabits.getTAG());
             title.setText(habit.getTitle());
             reason.setText(habit.getReason());
             date_started.setText(habit.getDateStarted().toString());
