@@ -16,9 +16,11 @@
 
 package com.example.prototypehabitapp.DataClasses;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Map;
 
-public class DaysOfWeek {
+public class DaysOfWeek implements Serializable {
 
     // each attribute records if that day of the week has been selected by the user
     private Boolean sunday;
@@ -32,6 +34,16 @@ public class DaysOfWeek {
     // on creation all of the days of the week are set to be not selected
     public DaysOfWeek(){
         setAll(false);
+    }
+
+    public DaysOfWeek(Map<String, Boolean> daysMap){
+        this.sunday = daysMap.get("sunday");
+        this.monday = daysMap.get("monday");
+        this.tuesday = daysMap.get("tuesday");
+        this.wednesday = daysMap.get("wednesday");
+        this.thursday = daysMap.get("thursday");
+        this.friday = daysMap.get("friday");
+        this.saturday = daysMap.get("saturday");
     }
 
     public DaysOfWeek(Boolean sunday, Boolean monday, Boolean tuesday, Boolean wednesday, Boolean thursday, Boolean friday, Boolean saturday) {

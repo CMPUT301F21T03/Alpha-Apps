@@ -39,14 +39,22 @@ import com.example.prototypehabitapp.DataClasses.Habit;
 import com.example.prototypehabitapp.Activities.HabitDetails;
 import com.example.prototypehabitapp.DataClasses.HabitList;
 import com.example.prototypehabitapp.R;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 public class AllHabits extends Fragment {
@@ -70,7 +78,7 @@ public class AllHabits extends Fragment {
         // get user data
         Main activity = (Main) getActivity();
         userData = activity.getUserData();
-        Log.d(TAG,"test habit fragment " + (String) userData.get("password"));
+        Log.d(TAG,"Successfully logged in: " + (String) userData.get("username"));
 
         getHabitDataList();
         setHabitListAdapter(view);
@@ -82,9 +90,10 @@ public class AllHabits extends Fragment {
     private void habitItemClicked(AdapterView<?> adapterView, View view, int pos, long l) {
         // get the item that the user selected
         Habit itemToSend = (Habit) allHabitsListView.getItemAtPosition(pos);
-
+        Log.d(TAG,itemToSend.toString());
         Intent intent = new Intent(getContext(), HabitDetails.class);
         // TODO bundle up the item to be sent to the next frame
+        intent.putExtra("selected_habit",itemToSend);
         startActivity(intent);
     }
 
@@ -114,18 +123,26 @@ public class AllHabits extends Fragment {
         // REMOVE THIS IF YOU NEED TO TEST WITHOUT THE FIRESTORE
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
-        final DocumentReference user = db.collection("Doers").document((String) userData.get("username"));
-        user.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        final CollectionReference user = db.collection("Doers").document((String) userData.get("username")).collection("habits");
+        user.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onEvent(@Nullable DocumentSnapshot queryDocumentSnapshot,
+            public void onEvent(@Nullable QuerySnapshot querySnapshot,
                                 @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    // if error occurs
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
+                }
+                List<String> habits = new ArrayList<>();
                 habitDataList.clear();
-                if (queryDocumentSnapshot.exists()) {
-                    // TODO: change to a query for the Habit subcollection rather than keeping in an array field
-                    // just takes the name for testing purposes
-                    Map habitData = queryDocumentSnapshot.getData();
-                    for(String s: (ArrayList<String>) habitData.get("habits")){
-                        habitDataList.add(new Habit(s,"reason",LocalDateTime.now(),testDaysOfWeek));
+                for(QueryDocumentSnapshot doc : querySnapshot){
+                    // make sure the title exists
+                    if (doc.get("title") != null) {
+                        // convert firestore timestamp to local time
+                        LocalDateTime ldt = LocalDateTime.ofInstant(doc.getDate("dateStarted").toInstant(),
+                                ZoneId.systemDefault());
+                        Map<String, Boolean> docDaysOfWeek = (Map<String, Boolean>) doc.get("weekOccurence");
+                        habitDataList.add(new Habit(doc.getString("title"),doc.getString("reason"),ldt,new DaysOfWeek(docDaysOfWeek)));
                     }
                 }
                 habitAdapter.notifyDataSetChanged();
