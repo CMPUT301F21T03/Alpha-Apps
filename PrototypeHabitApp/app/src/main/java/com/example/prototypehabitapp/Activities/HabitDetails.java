@@ -19,6 +19,7 @@
  *   1.6       Mathew    Oct-31-2021   Added a more descriptive tag by which to get the intent info
  *   1.7       Moe       Nov-01-2021   Added passing event object when log habit is selected in the
  *                                         popup menu
+ *   1.8       Moe       Nov-01-2021   Removed log habit in the popup menu
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -65,9 +66,9 @@ public class HabitDetails extends AppCompatActivity{
     private HorizontalScrollView habit_events_scoller;
     private Button done_editing;
 
-    private ArrayAdapter<Event> eventsAdapter;
     private ListView eventsListview;
-
+    private ArrayList<Event> events;
+    private ArrayAdapter<Event> eventsAdapter;
 
     PopupMenu popupMenu;
 
@@ -123,7 +124,7 @@ public class HabitDetails extends AppCompatActivity{
         //add test habit data (remove later)
         habit = new Habit("title", "reason", LocalDateTime.now(), new DaysOfWeek());
 
-        ArrayList<Event> events = habit.getEventList();
+        events = habit.getEventList();
         eventsAdapter = new EventList(this, events);
         eventsListview.setAdapter(eventsAdapter);
 
@@ -161,6 +162,7 @@ public class HabitDetails extends AppCompatActivity{
         return weekButtons;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void habitDetailsMoreButtonPressed(View view) {
         //TODO open a dialog as defined in the figma storyboard
         popupMenu = new PopupMenu(this, view);
@@ -175,11 +177,13 @@ public class HabitDetails extends AppCompatActivity{
 
                 if (menuItem.getItemId() == R.id.mark_done) {
                     // TODO mark as done
-                } else if (menuItem.getItemId() == R.id.log_habit) {
-                    Intent intent = new Intent(HabitDetails.this, AddHabitEvent.class);
-                    intent.putExtra("HABIT", habit);
-                    startActivity(intent);
-                    eventsListview.setAdapter(eventsAdapter);
+                    Event event = new Event(habit.getTitle(), LocalDateTime.now(), "", false, false);
+                    events.add(event);
+                    habit.setEventList(events);
+
+                    HabitEventDialog dialog = new HabitEventDialog(HabitDetails.this, event);
+                    dialog.show();
+
                 } else if (menuItem.getItemId() == R.id.edit_habit) {
                     prepareForEdit();
 
