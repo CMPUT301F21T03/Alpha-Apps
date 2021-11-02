@@ -13,6 +13,7 @@
  *   1.0       Eric      Oct-21-2021   Created
  *   1.1       Mathew    Oct-21-2021   Added some navigation features to and from this page
  *   1.2       Arthur    Oct-31-2021   Added full functionality
+ *   1.3       Leah      Nov-1-2021    Added ability to write to Firestore
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -41,15 +42,23 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
 
 import com.example.prototypehabitapp.Activities.Main;
 import com.example.prototypehabitapp.DataClasses.DaysOfWeek;
 import com.example.prototypehabitapp.DataClasses.Habit;
 import com.example.prototypehabitapp.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -62,6 +71,7 @@ public class AddHabit extends Fragment {
     public Context getContext() {
         return super.getContext();
     }
+    private final String TAG = "addhabitTAG";
 
     public AddHabit() {
         super(R.layout.add_habit);
@@ -71,6 +81,7 @@ public class AddHabit extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         Main activity = (Main) getActivity();
         userData = activity.getUserData();
+        Log.d(TAG,(String) userData.get("username"));
 
         // set a listener for if the date hyperlink is pressed by the user
         TextView selectDateHyperlink = getActivity().findViewById(R.id.addhabit_select_date);
@@ -87,6 +98,7 @@ public class AddHabit extends Fragment {
         privacySpinner.setAdapter(adapter);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void addHabitCompleteButtonPressed(View view){
         //TODO update firestore with the user entered values
         //Get all buttons
@@ -123,23 +135,33 @@ public class AddHabit extends Fragment {
             Toast.makeText(getContext(), "Complete habit details!", Toast.LENGTH_SHORT).show();
         }
         else{
+            // format the input data into a new Habit
             DaysOfWeek frequency = new DaysOfWeek(sundayVal,mondayVal, tuesdayVal, wednesdayVal,thursdayVal, fridayVal, saturdayVal);
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss");
             LocalDateTime newDate = LocalDateTime.parse(habitDate, formatter);
             Habit newHabit = new Habit(habitName, habitReason, newDate, frequency);
 
+            // add new Habit to Firestore
             FirebaseFirestore db;
             db = FirebaseFirestore.getInstance();
             final CollectionReference habitsref = db.collection("Doers").document((String)userData.get("username")).collection("habits");
             //Toast.makeText(getContext(), "I came here", Toast.LENGTH_SHORT).show();
-            habitsref.document(habitName).set(newHabit);
-//            if (habitPrivacy.equals("Private")){
-//                final CollectionReference privateHabits = habitsref.collection("Type").document("Private").collection("PrivateHabits");
-//                privateHabits.document("Habit").set(newHabit);
-//
-//            }
+            habitsref.add(newHabit)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG,"success");
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d(TAG,"failed: "+ e);
+                }
+            });
 
-            navigateToMainAcitivity();
+            // go back to Main Activity
+            getFragmentManager().popBackStack();
+            //navigateToMainAcitivity();
 
         }
 
