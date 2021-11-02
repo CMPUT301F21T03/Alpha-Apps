@@ -12,8 +12,9 @@
  *
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
- *   1.0       Mathew    Oct-21-2020   Created
- *   1.1       Leah      Oct-30-2020   Added signup system
+ *   1.0       Mathew    Oct-21-2021   Created
+ *   1.1       Leah      Oct-30-2021   Added signup system
+ *   1.2       Leah      Nov-1-2021    Removed test habit data.
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -110,9 +111,6 @@ public class SignUp extends AppCompatActivity {
                         // TODO: initiate name and other user profile details here
                         // Must change habit format later
                         Map userData = new HashMap<>();
-                        ArrayList<String> testHabits = new ArrayList<String>();
-                        testHabits.add("My First Habit");  // you can add more here for your test data
-                        userData.put("habits",testHabits);
                         userData.put("username",email);
                         userData.put("password",password);
                         userData.put("name",name);

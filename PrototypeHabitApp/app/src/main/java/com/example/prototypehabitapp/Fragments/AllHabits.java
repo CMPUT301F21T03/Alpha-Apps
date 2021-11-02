@@ -52,6 +52,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -70,6 +71,7 @@ public class AllHabits extends Fragment {
     private ArrayAdapter<Habit> habitAdapter;
     private ArrayList<Habit> habitDataList;
     private Map userData;
+    private View mView;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -85,11 +87,14 @@ public class AllHabits extends Fragment {
         // set an on click listener for if a habit is pressed
         allHabitsListView.setOnItemClickListener(this::habitItemClicked);
 
+        mView = getView();
+
     }
 
     private void habitItemClicked(AdapterView<?> adapterView, View view, int pos, long l) {
         // get the item that the user selected
         Habit itemToSend = (Habit) allHabitsListView.getItemAtPosition(pos);
+        // TODO: serialize before bundling
         Log.d(TAG,itemToSend.toString());
         Intent intent = new Intent(getContext(), HabitDetails.class);
         // TODO bundle up the item to be sent to the next frame
@@ -116,8 +121,8 @@ public class AllHabits extends Fragment {
         DaysOfWeek testDaysOfWeek = new DaysOfWeek();
         Habit test_habit = new Habit("title", "reason", LocalDateTime.now(), testDaysOfWeek);
         test_habit.setProgress(100.0);
-        habitDataList.add(test_habit);
-        habitDataList.add(test_habit);
+        // habitDataList.add(test_habit);
+        // habitDataList.add(test_habit);
 
         // show your page from Firestore
         // REMOVE THIS IF YOU NEED TO TEST WITHOUT THE FIRESTORE
@@ -133,18 +138,27 @@ public class AllHabits extends Fragment {
                     Log.w(TAG, "Listen failed.", e);
                     return;
                 }
-                List<String> habits = new ArrayList<>();
-                habitDataList.clear();
-                for(QueryDocumentSnapshot doc : querySnapshot){
-                    // make sure the title exists
-                    if (doc.get("title") != null) {
-                        // convert firestore timestamp to local time
-                        LocalDateTime ldt = LocalDateTime.ofInstant(doc.getDate("dateStarted").toInstant(),
-                                ZoneId.systemDefault());
-                        Map<String, Boolean> docDaysOfWeek = (Map<String, Boolean>) doc.get("weekOccurence");
-                        habitDataList.add(new Habit(doc.getString("title"),doc.getString("reason"),ldt,new DaysOfWeek(docDaysOfWeek)));
+                if (!querySnapshot.isEmpty()){
+                    List<String> habits = new ArrayList<>();
+                    habitDataList.clear();
+                    for(QueryDocumentSnapshot doc : querySnapshot){
+                        // make sure the title exists
+                        if (doc.get("title") != null) {
+                            // convert firestore timestamp to local time
+                            Map getDate = (Map) doc.get("dateStarted");
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss");
+                            String newDateString = getDate.get("year").toString() + "-" +
+                                                   getDate.get("monthValue").toString() + "-" +
+                                                   getDate.get("dayOfMonth").toString() + " 00:00:00";
+                            LocalDateTime newDate = LocalDateTime.parse(newDateString, formatter);
+                            LocalDateTime ldt = newDate;
+                            Map<String, Boolean> docDaysOfWeek = (Map<String, Boolean>) doc.get("weekOccurence");
+                            Habit addHabit = new Habit(doc.getString("title"),doc.getString("reason"),ldt,new DaysOfWeek(docDaysOfWeek));
+                            habitDataList.add(addHabit);
+                        }
                     }
                 }
+
                 if (habitDataList.isEmpty()){
                     showPromptText(true);
                 }else{
@@ -156,17 +170,16 @@ public class AllHabits extends Fragment {
         // END REMOVE HERE
 
     }
-    public void setUserData(Map userData) {
-        this.userData = userData;
-    }
 
     private void showPromptText(Boolean show){
         if (show){
-            getView().findViewById(R.id.allhabits_hidden_textview_1).setVisibility(View.VISIBLE);
-            getView().findViewById(R.id.allhabits_hidden_textview_2).setVisibility(View.VISIBLE);
-        }else{
-            getView().findViewById(R.id.allhabits_hidden_textview_1).setVisibility(View.INVISIBLE);
-            getView().findViewById(R.id.allhabits_hidden_textview_2).setVisibility(View.INVISIBLE);
+            mView.findViewById(R.id.allhabits_hidden_textview_1).setVisibility(View.VISIBLE);
+            mView.findViewById(R.id.allhabits_hidden_textview_2).setVisibility(View.VISIBLE);
+
+        }else {
+            mView.findViewById(R.id.allhabits_hidden_textview_1).setVisibility(View.INVISIBLE);
+            mView.findViewById(R.id.allhabits_hidden_textview_2).setVisibility(View.INVISIBLE);
+
         }
     }
 

@@ -122,7 +122,7 @@ public class LogIn extends AppCompatActivity {
 
                     } else {
                         // if the username does not exist
-                        loginAlert.setMessage("Username does not exit");
+                        loginAlert.setMessage("Username does not exist");
                         loginAlert.show();
                     }
                 } else {
