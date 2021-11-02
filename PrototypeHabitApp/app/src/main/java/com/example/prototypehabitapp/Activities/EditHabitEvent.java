@@ -12,31 +12,48 @@
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Mathew    Oct-21-2021   Created
  *   1.1       Moe       Oct-29-2021   Set up complete button
+ *   1.2       Moe       Nov-01-2021   Added receiving event from intent and editing event's comment
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
 package com.example.prototypehabitapp.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.prototypehabitapp.DataClasses.Event;
+import com.example.prototypehabitapp.DataClasses.Habit;
 import com.example.prototypehabitapp.R;
 
 public class EditHabitEvent extends AppCompatActivity {
+
+    private Event event;
+    private EditText comments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // set the display to be the main page
         setContentView(R.layout.edit_habit_event);
+
+        //get details from bundle
+        Intent sentIntent = getIntent();
+        event = (Event) sentIntent.getSerializableExtra("EVENT");
+
+        comments = findViewById(R.id.edithabitevent_comment);
+        comments.setText(event.getComment());
+
         Button completeButton = findViewById(R.id.edithabitevent_complete);
         completeButton.setOnClickListener(this::editHabitEventCompleteButtonPressed);
     }
 
     public void editHabitEventCompleteButtonPressed(View view) {
+        event.setComment(comments.toString());
         finish();
     }
 }

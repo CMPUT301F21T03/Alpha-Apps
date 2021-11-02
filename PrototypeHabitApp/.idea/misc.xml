@@ -35,8 +35,17 @@
         <entry key="..\:/Users/matli/AndroidStudioProjects/PrototypeHabitApp/app/src/main/res/layout/profile.xml" value="0.264" />
         <entry key="..\:/Users/matli/AndroidStudioProjects/PrototypeHabitApp/app/src/main/res/layout/sign_up_screen.xml" value="0.264" />
         <entry key="..\:/Users/matli/AndroidStudioProjects/PrototypeHabitApp/app/src/main/res/layout/today_habits.xml" value="0.2" />
+        <entry key="app/src/main/res/layout/events_listview_content.xml" value="0.21041666666666667" />
+        <entry key="app/src/main/res/layout/habit_details.xml" value="0.38846153846153847" />
+        <entry key="app/src/main/res/layout/habit_entry.xml" value="0.21041666666666667" />
+        <entry key="app/src/main/res/layout/habit_event_dialog.xml" value="0.26865671641791045" />
+        <entry key="app/src/main/res/menu/habit_details_menu.xml" value="0.3880208333333333" />
+        <entry key="app/src/main/res/menu/habit_more_menu.xml" value="0.2203125" />
       </map>
     </option>
+  </component>
+  <component name="ProjectPlainTextFileTypeManager">
+    <file url="file://$PROJECT_DIR$/app/src/main/res/menu/habit_details_menu.xml" />
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />

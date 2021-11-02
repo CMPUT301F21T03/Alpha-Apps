@@ -15,6 +15,7 @@
  *   1.2       Jesse     Oct-31-2021   Added getting the event from intent and sending when edit
  *                                       button is clicked
  *   1.3       Mathew    Oct-31-2021   Fix imports
+ *   1.4       Moe       Nov-01-2021   Added delete button
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -75,6 +76,9 @@ public class HabitEventDetails extends AppCompatActivity {
         // set a listener for the edit button
         Button editButton = findViewById(R.id.habiteventdetails_edit);
         editButton.setOnClickListener(this::habitEventDetailsEditButtonPressed);
+
+        Button deleteButton = findViewById(R.id.habiteventdetails_delete);
+        deleteButton.setOnClickListener(this::habitEventDetailsDeleteButtonPressed);
     }
 
     private void habitEventDetailsEditButtonPressed(View view) {
@@ -83,5 +87,9 @@ public class HabitEventDetails extends AppCompatActivity {
         // TODO bundle up the item to be sent to the next frame
         intent.putExtra("EVENT", event);
         startActivity(intent);
+    }
+
+    private void habitEventDetailsDeleteButtonPressed(View view) {
+
     }
 }
