@@ -14,6 +14,7 @@
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Mathew    Oct-13-2021   Created
  *   1.1       Mathew    Oct-31-2021   Added Javadocs
+ *   1.2       Leah      Nov-02-2021   Added FirestoreId to allow for edits and deletes
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -48,6 +49,9 @@ public class Habit implements Serializable {
 
     // records how well the user is keeping up with this specific habit
     private Double progress;
+
+    // records the Firestore document ID in case it must be fetched for edits/deletes
+    private String firestoreId;
     //==================================================================================
 
     // program data objects
@@ -145,5 +149,13 @@ public class Habit implements Serializable {
 
     public void setProgress(Double progress) {
         this.progress = progress;
+    }
+
+    public String getFirestoreId() {
+        return firestoreId;
+    }
+
+    public void setFirestoreId(String firestoreId) {
+        this.firestoreId = firestoreId;
     }
 }

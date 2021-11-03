@@ -13,7 +13,7 @@
  *   1.0       Eric      Oct-21-2021   Created
  *   1.1       Mathew    Oct-21-2021   Added some navigation features, added test data
  *   1.2       Leah      Oct-30-2021   Now populates from user firestore document, does not use subcollection yet
- *   1.3       Leah      Nov-02-2021   Now uses Habits subcollection. Cleaned up test code.
+ *   1.3       Leah      Nov-02-2021   Now uses Habits subcollection. Cleaned up test code. Adds Firestore document ID.
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -96,7 +96,6 @@ public class AllHabits extends Fragment {
         // get the item that the user selected
         Habit itemToSend = (Habit) allHabitsListView.getItemAtPosition(pos);
         // TODO: serialize before bundling
-        Log.d(TAG,itemToSend.toString());
         Intent intent = new Intent(getContext(), HabitDetails.class);
         // TODO bundle up the item to be sent to the next frame
         intent.putExtra(getTag(),itemToSend);
@@ -149,6 +148,9 @@ public class AllHabits extends Fragment {
                             // Convert Firestore's stored days of week to DaysOfWeek
                             Map<String, Boolean> docDaysOfWeek = (Map<String, Boolean>) doc.get("weekOccurence");
                             Habit addHabit = new Habit(doc.getString("title"),doc.getString("reason"),ldt,new DaysOfWeek(docDaysOfWeek));
+                            // Set the document ID in case it needs to be fetched for delete/edits
+                            addHabit.setFirestoreId(doc.getId());
+                            // Add to the ListArray
                             habitDataList.add(addHabit);
                         }
                     }
