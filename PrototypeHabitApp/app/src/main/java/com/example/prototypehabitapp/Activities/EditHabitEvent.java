@@ -13,6 +13,8 @@
  *   1.0       Mathew    Oct-21-2021   Created
  *   1.1       Moe       Oct-29-2021   Set up complete button
  *   1.2       Moe       Nov-01-2021   Added receiving event from intent and editing event's comment
+ *   1.3       Jesse     Nov-02=2021   Added habit attribute and start HabitDetails activity when
+ *                                       complete button pressed
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -33,6 +35,7 @@ import com.example.prototypehabitapp.R;
 public class EditHabitEvent extends AppCompatActivity {
 
     private Event event;
+    private Habit habit;
     private EditText comments;
 
     @Override
@@ -44,6 +47,7 @@ public class EditHabitEvent extends AppCompatActivity {
         //get details from bundle
         Intent sentIntent = getIntent();
         event = (Event) sentIntent.getSerializableExtra("EVENT");
+        habit = (Habit) sentIntent.getSerializableExtra("HABIT");
 
         comments = findViewById(R.id.edithabitevent_comment);
         comments.setText(event.getComment());
@@ -54,6 +58,8 @@ public class EditHabitEvent extends AppCompatActivity {
 
     public void editHabitEventCompleteButtonPressed(View view) {
         event.setComment(comments.toString());
-        finish();
+        Intent intent = new Intent(this, HabitDetails.class);
+        intent.putExtra("habit", habit);
+        startActivity(intent);
     }
 }
