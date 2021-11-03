@@ -95,10 +95,10 @@ public class TodayHabits extends Fragment {
     private void habitItemClicked(AdapterView<?> adapterView, View view, int pos, long l) {
         // get the item that the user selected
         Habit itemToSend = (Habit) todaysHabitsListView.getItemAtPosition(pos);
+        Intent intent = new Intent(getContext(), HabitDetails.class);
 
         // go to the habit details class with that item
-        Intent intent = new Intent(getContext(), HabitDetails.class);
-        intent.putExtra(getTag(), itemToSend);
+        intent.putExtra("habit",itemToSend);
         startActivity(intent);
     }
 
@@ -115,7 +115,7 @@ public class TodayHabits extends Fragment {
         // Gets list of habits for today
         habitDataList = new ArrayList<>();
 
-        // get the day of the week 
+        // get the day of the week
         String dayWeek = LocalDate.now().getDayOfWeek().name().toLowerCase(Locale.ROOT);
 
         // initialize firestore
@@ -155,6 +155,9 @@ public class TodayHabits extends Fragment {
                             // Convert Firestore's stored days of week to DaysOfWeek
                             Map<String, Boolean> docDaysOfWeek = (Map<String, Boolean>) doc.get("weekOccurence");
                             Habit addHabit = new Habit(doc.getString("title"),doc.getString("reason"),ldt,new DaysOfWeek(docDaysOfWeek));
+                            // Set the document ID in case it needs to be fetched for delete/edits
+                            addHabit.setFirestoreId(doc.getId());
+                            // Add to the ListArray
                             habitDataList.add(addHabit);
                         }
                     }
