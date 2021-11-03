@@ -95,10 +95,10 @@ public class AllHabits extends Fragment {
     private void habitItemClicked(AdapterView<?> adapterView, View view, int pos, long l) {
         // get the item that the user selected
         Habit itemToSend = (Habit) allHabitsListView.getItemAtPosition(pos);
-        // TODO: serialize before bundling
         Intent intent = new Intent(getContext(), HabitDetails.class);
-        // TODO bundle up the item to be sent to the next frame
-        intent.putExtra(getTag(),itemToSend);
+
+        // Put pressed habit into bundle to send to HabitDetails
+        intent.putExtra("habit",itemToSend);
         startActivity(intent);
     }
 

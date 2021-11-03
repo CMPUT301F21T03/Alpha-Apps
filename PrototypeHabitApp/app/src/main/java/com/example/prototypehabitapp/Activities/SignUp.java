@@ -14,7 +14,8 @@
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Mathew    Oct-21-2021   Created
  *   1.1       Leah      Oct-30-2021   Added signup system
- *   1.2       Leah      Nov-1-2021    Removed test habit data.
+ *   1.2       Leah      Nov-01-2021   Removed test habit data.
+ *   1.3       Leah      Nov-02-2021   Fixed crash on blank field
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -100,69 +101,77 @@ public class SignUp extends AppCompatActivity {
         Context signupContext = this;
 
         // try obtaining a reference to the email field
-        final DocumentReference findUserRef = db.collection("Doers").document(email);
-        findUserRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    // Validates username exists in database
-                    if (!document.exists()) {
-                        // TODO: initiate name and other user profile details here
-                        // Must change habit format later
-                        Map userData = new HashMap<>();
-                        userData.put("username",email);
-                        userData.put("password",password);
-                        userData.put("name",name);
+        if(email != null && password != null){
+            final DocumentReference findUserRef = db.collection("Doers").document(email);
+            findUserRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        // Validates username exists in database
+                        if (!document.exists()) {
+                            // TODO: initiate name and other user profile details here
+                            // Must change habit format later
+                            Map userData = new HashMap<>();
+                            userData.put("username",email);
+                            userData.put("password",password);
+                            userData.put("name",name);
 
-                        // Validating password
-                        // TODO change this later to something other than random 3
-                        if(password.length() > 2){
-                            findUserRef.set(userData)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        // if signup is successful
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            // SIGNUP HERE
-                                            // TODO figure out a way to move to the mainActivity class without allowing the back
-                                            //  button to take the user back to the log in page
-                                            //  send a state through the intent bundle?
-                                            Intent intent = new Intent(signupContext, Main.class);
-                                            intent.putExtra(MESSAGE, email);
-                                            // bundle the user info into Serializable and send through Intent
-                                            intent.putExtra("userData",(Serializable) userData);
-                                            // start Main Activity
-                                            startActivity(intent);
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        // if signup fails
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            signupAlert.setMessage("Connection Error");
-                                            signupAlert.show();
-                                        }
-                                    });
+                            // Validating password
+                            // TODO change this later to something other than random 3
+                            if(password.length() > 2){
+                                findUserRef.set(userData)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            // if signup is successful
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                // SIGNUP HERE
+                                                // TODO figure out a way to move to the mainActivity class without allowing the back
+                                                //  button to take the user back to the log in page
+                                                //  send a state through the intent bundle?
+                                                Intent intent = new Intent(signupContext, Main.class);
+                                                intent.putExtra(MESSAGE, email);
+                                                // bundle the user info into Serializable and send through Intent
+                                                intent.putExtra("userData",(Serializable) userData);
+                                                // start Main Activity
+                                                startActivity(intent);
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            // if signup fails
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                signupAlert.setMessage("Connection Error");
+                                                signupAlert.show();
+                                            }
+                                        });
 
-                        }
-                        else{
-                            // if the password is incorrect
-                            signupAlert.setMessage("Your password is too short.");
+                            }
+                            else{
+                                // if the password is incorrect
+                                signupAlert.setMessage("Your password is too short.");
+                                signupAlert.show();
+                            }
+
+                        } else {
+                            // if the username does not exist
+                            signupAlert.setMessage("Username already exists");
                             signupAlert.show();
                         }
-
                     } else {
-                        // if the username does not exist
-                        signupAlert.setMessage("Username already exists");
+                        // firebase error
+                        signupAlert.setMessage("Connection Error");
                         signupAlert.show();
                     }
-                } else {
-                    // firebase error
-                    signupAlert.setMessage("Connection Error");
-                    signupAlert.show();
                 }
-            }
-        });
+            });
+        }
+        else{
+            // username/password error
+            signupAlert.setMessage("Please enter your username and password.");
+            signupAlert.show();
+        }
+
 
 
         // TODO figure out a way to move to the mainActivity class without allowing the back

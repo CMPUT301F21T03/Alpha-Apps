@@ -95,10 +95,10 @@ public class TodayHabits extends Fragment {
     private void habitItemClicked(AdapterView<?> adapterView, View view, int pos, long l) {
         // get the item that the user selected
         Habit itemToSend = (Habit) todaysHabitsListView.getItemAtPosition(pos);
+        Intent intent = new Intent(getContext(), HabitDetails.class);
 
         // go to the habit details class with that item
-        Intent intent = new Intent(getContext(), HabitDetails.class);
-        intent.putExtra(getTag(), itemToSend);
+        intent.putExtra("habit",itemToSend);
         startActivity(intent);
     }
 
