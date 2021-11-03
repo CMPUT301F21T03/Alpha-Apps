@@ -10,9 +10,10 @@
  *
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
- *   1.0       Eric      Oct-21-2020   Created
- *   1.1       Mathew    Oct-21-2020   Added some navigation features, added test data
- *   1.2       Leah      Oct-30-2020   Now populates from user firestore document, does not use subcollection yet
+ *   1.0       Eric      Oct-21-2021   Created
+ *   1.1       Mathew    Oct-21-2021   Added some navigation features, added test data
+ *   1.2       Leah      Oct-30-2021   Now populates from user firestore document, does not use subcollection yet
+ *   1.3       Leah      Nov-02-2021   Now uses Habits subcollection. Cleaned up test code.
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -69,7 +70,7 @@ public class AllHabits extends Fragment {
     // prep the all_habits screen related objects
     private ListView allHabitsListView;
     private ArrayAdapter<Habit> habitAdapter;
-    private ArrayList<Habit> habitDataList;
+    private ArrayList<Habit> habitDataList = new ArrayList<>();;
     private Map userData;
     private View mView;
 
@@ -112,20 +113,10 @@ public class AllHabits extends Fragment {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void getHabitDataList(){
-        //TODO one needs to get the habit array of the user once the user is known
-        // for now it is an empty list
+        // Gets the list of Habits from the user logged in
         habitDataList = new ArrayList<>();
 
-        // add some test data
-        // TODO: remove this since firestore is added now
-        DaysOfWeek testDaysOfWeek = new DaysOfWeek();
-        Habit test_habit = new Habit("title", "reason", LocalDateTime.now(), testDaysOfWeek);
-        test_habit.setProgress(100.0);
-        // habitDataList.add(test_habit);
-        // habitDataList.add(test_habit);
-
         // show your page from Firestore
-        // REMOVE THIS IF YOU NEED TO TEST WITHOUT THE FIRESTORE
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
         final CollectionReference user = db.collection("Doers").document((String) userData.get("username")).collection("habits");
@@ -133,18 +124,21 @@ public class AllHabits extends Fragment {
             @Override
             public void onEvent(@Nullable QuerySnapshot querySnapshot,
                                 @Nullable FirebaseFirestoreException e) {
+                // check for errors in listen
                 if (e != null) {
                     // if error occurs
                     Log.w(TAG, "Listen failed.", e);
                     return;
                 }
+                // if there are Habits
                 if (!querySnapshot.isEmpty()){
                     List<String> habits = new ArrayList<>();
                     habitDataList.clear();
                     for(QueryDocumentSnapshot doc : querySnapshot){
                         // make sure the title exists
                         if (doc.get("title") != null) {
-                            // convert firestore timestamp to local time
+                            // Convert Firestore's stored time to LocalDateTime
+                            // doc.getID() // use this later so deletes/edits are possible
                             Map getDate = (Map) doc.get("dateStarted");
                             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss");
                             String newDateString = getDate.get("year").toString() + "-" +
@@ -152,13 +146,13 @@ public class AllHabits extends Fragment {
                                                    getDate.get("dayOfMonth").toString() + " 00:00:00";
                             LocalDateTime newDate = LocalDateTime.parse(newDateString, formatter);
                             LocalDateTime ldt = newDate;
+                            // Convert Firestore's stored days of week to DaysOfWeek
                             Map<String, Boolean> docDaysOfWeek = (Map<String, Boolean>) doc.get("weekOccurence");
                             Habit addHabit = new Habit(doc.getString("title"),doc.getString("reason"),ldt,new DaysOfWeek(docDaysOfWeek));
                             habitDataList.add(addHabit);
                         }
                     }
                 }
-
                 if (habitDataList.isEmpty()){
                     showPromptText(true);
                 }else{
@@ -167,8 +161,6 @@ public class AllHabits extends Fragment {
                 habitAdapter.notifyDataSetChanged();
             }
         });
-        // END REMOVE HERE
-
     }
 
     private void showPromptText(Boolean show){

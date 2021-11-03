@@ -10,8 +10,9 @@
  *
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
- *   1.0       Eric      Oct-21-2020   Created
- *   1.1       Mathew    Oct-31-2020   Added logic to only show today's habits
+ *   1.0       Eric      Oct-21-2021   Created
+ *   1.1       Mathew    Oct-31-2021   Added logic to only show today's habits
+ *   1.2       Leah      Nov-02-2021   Fixed crashing when opening this Fragment
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -43,16 +44,20 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 
@@ -68,6 +73,7 @@ public class TodayHabits extends Fragment {
     private ArrayAdapter<Habit> habitAdapter;
     private ArrayList<Habit> habitDataList;
     private Map userData;
+    private View mView;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -82,6 +88,8 @@ public class TodayHabits extends Fragment {
 
         // set an on click listener for if a habit is pressed
         todaysHabitsListView.setOnItemClickListener(this::habitItemClicked);
+
+        mView = getView();
     }
 
     private void habitItemClicked(AdapterView<?> adapterView, View view, int pos, long l) {
@@ -104,48 +112,50 @@ public class TodayHabits extends Fragment {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void getHabitDataList() {
-        //TODO one needs to get the habit array of the user once the user is known
-        // for now it is an empty list
+        // Gets list of habits for today
         habitDataList = new ArrayList<>();
 
-        // add some test data
-        showPromptText(false);
-        DaysOfWeek testDaysOfWeek = new DaysOfWeek();
-        Habit test_habit = new Habit("title", "reason", LocalDateTime.now(), testDaysOfWeek);
-        test_habit.setProgress(100.0);
-        habitDataList.add(test_habit);
-        habitDataList.add(test_habit);
+        // get the day of the week 
+        String dayWeek = LocalDate.now().getDayOfWeek().name().toLowerCase(Locale.ROOT);
 
-
-        // REMOVE THIS IF YOU NEED TO TEST WITHOUT THE FIRESTORE
+        // initialize firestore
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
-        final CollectionReference user = db.collection("Doers").document((String) userData.get("username")).collection("habits");
+        // only get the ones for today
+        final Query user = db.collection("Doers")
+                                           .document((String) userData.get("username"))
+                                           .collection("habits")
+                                           .whereEqualTo("weekOccurence."+dayWeek,true);
         user.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot querySnapshot,
                                 @Nullable FirebaseFirestoreException e) {
+                // check for errors in listen
                 if (e != null) {
                     // if error occurs
                     Log.w(TAG, "Listen failed.", e);
                     return;
                 }
-                List<String> habits = new ArrayList<>();
-                habitDataList.clear();
-                // get the day of the week with 0 = sunday 1 = monday... 6 = saturday;
-                Integer dayWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)-1;
-
-                for(QueryDocumentSnapshot doc : querySnapshot){
-                    // make sure the title exists
-                    if (doc.get("title") != null) {
-                        // get the days of the week and see if the habit is schedule for today
-                        DaysOfWeek freq = new DaysOfWeek((Map<String, Boolean>) doc.get("weekOccurence"));
-                        // if it is scheduled for today, add the data to the list
-                        if(freq.getAll().get(dayWeek) == true){
-                            // convert firestore timestamp to local time
-                            LocalDateTime ldt = LocalDateTime.ofInstant(doc.getDate("dateStarted").toInstant(),
-                                    ZoneId.systemDefault());
-                            habitDataList.add(new Habit(doc.getString("title"),doc.getString("reason"),ldt, freq));
+                // if there are Habits
+                if (!querySnapshot.isEmpty()){
+                    List<String> habits = new ArrayList<>();
+                    habitDataList.clear();
+                    for(QueryDocumentSnapshot doc : querySnapshot){
+                        // make sure the title exists
+                        if (doc.get("title") != null) {
+                            // Convert Firestore's stored time to LocalDateTime
+                            // doc.getID() // use this later so deletes/edits are possible
+                            Map getDate = (Map) doc.get("dateStarted");
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss");
+                            String newDateString = getDate.get("year").toString() + "-" +
+                                    getDate.get("monthValue").toString() + "-" +
+                                    getDate.get("dayOfMonth").toString() + " 00:00:00";
+                            LocalDateTime newDate = LocalDateTime.parse(newDateString, formatter);
+                            LocalDateTime ldt = newDate;
+                            // Convert Firestore's stored days of week to DaysOfWeek
+                            Map<String, Boolean> docDaysOfWeek = (Map<String, Boolean>) doc.get("weekOccurence");
+                            Habit addHabit = new Habit(doc.getString("title"),doc.getString("reason"),ldt,new DaysOfWeek(docDaysOfWeek));
+                            habitDataList.add(addHabit);
                         }
                     }
                 }
@@ -157,15 +167,14 @@ public class TodayHabits extends Fragment {
                 habitAdapter.notifyDataSetChanged();
             }
         });
-        // END REMOVE HERE
     }
 
 
     private void showPromptText(Boolean show){
         if (show){
-            getView().findViewById(R.id.today_habits_hidden_textview).setVisibility(View.VISIBLE);
+            mView.findViewById(R.id.today_habits_hidden_textview).setVisibility(View.VISIBLE);
         }else{
-            getView().findViewById(R.id.today_habits_hidden_textview).setVisibility(View.INVISIBLE);
+            mView.findViewById(R.id.today_habits_hidden_textview).setVisibility(View.INVISIBLE);
         }
     }
 
