@@ -66,6 +66,7 @@ import java.util.Map;
 
 public class HabitDetails extends AppCompatActivity{
 
+    private static final String TAG = "habitdetailsTAG";
     // attributes
     private Habit habit;
     private boolean editing;
@@ -111,10 +112,12 @@ public class HabitDetails extends AppCompatActivity{
 
         // if a selected habit was sent over in the intent
         Intent intent = getIntent();
-        if (intent.getSerializableExtra(AllHabits.getTAG()) != null)  {
+        /*if (intent.getSerializableExtra(AllHabits.getTAG()) != null)  {
             // then we can work with it...
             // set the data to the proper fields in the activity
+            Log.d(TAG,"2");
             habit = (Habit) intent.getSerializableExtra(AllHabits.getTAG());
+            Log.d(TAG,habit.getTitle());
             title.setText(habit.getTitle());
             reason.setText(habit.getReason());
             date_started.setText(habit.getDateStarted().toString());
@@ -123,6 +126,15 @@ public class HabitDetails extends AppCompatActivity{
                 setBoxesChecked(weekButtons.get(i), weekOccurenceList.get(i));
             }
 
+        }*/
+        habit = (Habit) intent.getSerializableExtra("habit");
+        Log.d(TAG,habit.getTitle());
+        title.setText(habit.getTitle());
+        reason.setText(habit.getReason());
+        date_started.setText(habit.getDateStarted().toString());
+        ArrayList<Boolean> weekOccurenceList = habit.getWeekOccurence().getAll();
+        for (int i = 0; i < 7; i++) {
+            setBoxesChecked(weekButtons.get(i), weekOccurenceList.get(i));
         }
 
         for (int i = 0; i < 7; i++) {

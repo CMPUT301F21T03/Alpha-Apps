@@ -12,7 +12,10 @@
  *
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
- *   1.0       Mathew    Oct-21-2020   Created
+ *   1.0       Mathew    Oct-21-2021   Created
+ *   1.1       Leah      Oct-30-2021   Added Firestore functionality
+ *   1.2       Leah      Nov-02-2021   Fixed crash on blank field
+ *   1.3       Eric      Nov-03-2021   Fixed other crashes on blank fields
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -72,6 +75,8 @@ public class LogIn extends AppCompatActivity {
         // prep Firestore
         // this can be moved to initialization of Login
 
+
+
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
 
@@ -91,47 +96,55 @@ public class LogIn extends AppCompatActivity {
         Context loginContext = this;
 
         // try obtaining a reference to the email field
-        final DocumentReference findUserRef = db.collection("Doers").document(email);
-        findUserRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    // Validates username exists in database
-                    if (document.exists()) {
-                        Map userData = document.getData();
-                        // Validating password
-                        if(((String) userData.get("password")).equals(password)){
-                            // LOGIN HERE
-                            // TODO figure out a way to move to the mainActivity class without allowing the back
-                            //  button to take the user back to the log in page
-                            //  send a state through the intent bundle?
-                            Intent intent = new Intent(loginContext, Main.class);
-                            //
-                            intent.putExtra(MESSAGE, email);
-                            // bundle the user info into Serializable and send through Intent
-                            intent.putExtra("userData",(Serializable) userData);
-                            // start Main Activity
-                            startActivity(intent);
-                        }
-                        else{
-                            // if the password is incorrect
-                            loginAlert.setMessage("Incorrect Password");
+        if(email.isEmpty() || password.isEmpty()){
+            // username/password error
+            loginAlert.setMessage("Please enter your username and password.");
+            loginAlert.show();
+        }
+        else{
+            final DocumentReference findUserRef = db.collection("Doers").document(email);
+            findUserRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        // Validates username exists in database
+                        if (document.exists()) {
+                            Map userData = document.getData();
+                            // Validating password
+                            if(((String) userData.get("password")).equals(password)){
+                                // LOGIN HERE
+                                // TODO figure out a way to move to the mainActivity class without allowing the back
+                                //  button to take the user back to the log in page
+                                //  send a state through the intent bundle?
+                                Intent intent = new Intent(loginContext, Main.class);
+                                //
+                                intent.putExtra(MESSAGE, email);
+                                // bundle the user info into Serializable and send through Intent
+                                intent.putExtra("userData",(Serializable) userData);
+                                // start Main Activity
+                                startActivity(intent);
+                            }
+                            else{
+                                // if the password is incorrect
+                                loginAlert.setMessage("Incorrect Password");
+                                loginAlert.show();
+                            }
+
+                        } else {
+                            // if the username does not exist
+                            loginAlert.setMessage("Username does not exist");
                             loginAlert.show();
                         }
-
                     } else {
-                        // if the username does not exist
-                        loginAlert.setMessage("Username does not exist");
+                        // firebase error
+                        loginAlert.setMessage("Connection Error");
                         loginAlert.show();
                     }
-                } else {
-                    // firebase error
-                    loginAlert.setMessage("Connection Error");
-                    loginAlert.show();
                 }
-            }
-        });
+            });
+        }
+
 
 
     }

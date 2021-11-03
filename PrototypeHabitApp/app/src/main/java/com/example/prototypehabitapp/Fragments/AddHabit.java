@@ -14,6 +14,7 @@
  *   1.1       Mathew    Oct-21-2021   Added some navigation features to and from this page
  *   1.2       Arthur    Oct-31-2021   Added full functionality
  *   1.3       Leah      Nov-1-2021    Added ability to write to Firestore
+ *   1.4       Eric      Nov-03-2021   Changed date picker dialog to display current date by default
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -178,7 +179,7 @@ public class AddHabit extends Fragment {
         // get the current date
         LocalDateTime today = LocalDateTime.now();
         Integer year = today.getYear();
-        Integer month = today.getMonthValue();
+        Integer month = today.getMonthValue() - 1;
         Integer day = today.getDayOfMonth();
         // create a date picker dialog set to todays date
         DatePickerDialog dialog = new DatePickerDialog(
