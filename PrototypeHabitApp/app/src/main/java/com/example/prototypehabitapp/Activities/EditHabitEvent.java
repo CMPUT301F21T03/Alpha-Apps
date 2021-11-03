@@ -34,8 +34,8 @@ import com.example.prototypehabitapp.R;
 public class EditHabitEvent extends AppCompatActivity {
 
     private Event event;
-    private EditText comments;
     private Habit habit;
+    private EditText comments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

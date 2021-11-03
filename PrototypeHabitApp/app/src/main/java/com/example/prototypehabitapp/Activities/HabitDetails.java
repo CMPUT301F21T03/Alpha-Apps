@@ -20,6 +20,7 @@
  *   1.7       Moe       Nov-01-2021   Added passing event object when log habit is selected in the
  *                                         popup menu
  *   1.8       Moe       Nov-01-2021   Removed log habit in the popup menu
+ *   1.9   Jesse/Moe     Nov-02-2021   Added intent extra to send to habit event details
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -27,9 +28,8 @@ package com.example.prototypehabitapp.Activities;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Bundle;
-import android.text.method.KeyListener;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,8 +39,11 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
+import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -52,7 +55,7 @@ import androidx.fragment.app.Fragment;
 import com.example.prototypehabitapp.DataClasses.DaysOfWeek;
 import com.example.prototypehabitapp.DataClasses.Habit;
 import com.example.prototypehabitapp.DataClasses.Event;
-import com.example.prototypehabitapp.Fragments.AllHabits;
+import com.example.prototypehabitapp.DataClasses.Habit;
 import com.example.prototypehabitapp.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -210,7 +213,6 @@ public class HabitDetails extends AppCompatActivity{
                     Event event = new Event(habit.getTitle(), LocalDateTime.now(), "", false, false);
                     events.add(event);
                     habit.setEventList(events);
-
                     HabitEventDialog dialog = new HabitEventDialog(HabitDetails.this, event, habit);
                     dialog.show();
 

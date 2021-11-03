@@ -11,6 +11,7 @@
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Moe       Nov-01-2021   Created
+ *   1.1       Jesse     Nov-02-2021   Added habit attribute and as extra sent to edit habit event
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
