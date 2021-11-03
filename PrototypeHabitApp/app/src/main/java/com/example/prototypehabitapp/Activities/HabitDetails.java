@@ -30,6 +30,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.method.KeyListener;
 import android.os.Build;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -41,17 +42,27 @@ import android.widget.HorizontalScrollView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.ListView;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+import androidx.fragment.app.Fragment;
 
 import com.example.prototypehabitapp.DataClasses.DaysOfWeek;
 import com.example.prototypehabitapp.DataClasses.Habit;
 import com.example.prototypehabitapp.DataClasses.Event;
 import com.example.prototypehabitapp.Fragments.AllHabits;
 import com.example.prototypehabitapp.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class HabitDetails extends AppCompatActivity{
 
@@ -69,7 +80,6 @@ public class HabitDetails extends AppCompatActivity{
     private ListView eventsListview;
     private ArrayList<Event> events;
     private ArrayAdapter<Event> eventsAdapter;
-
     PopupMenu popupMenu;
 
     ArrayList<CheckBox> weekButtons;
@@ -123,10 +133,18 @@ public class HabitDetails extends AppCompatActivity{
 
         //add test habit data (remove later)
         habit = new Habit("title", "reason", LocalDateTime.now(), new DaysOfWeek());
-
         events = habit.getEventList();
+
+        Event newEvent = new Event("title", LocalDateTime.now(), "comment", false, false);
+        Event newEvent2 = new Event("title", LocalDateTime.now(), "comment", false, false);
+
+        events.add(newEvent);
+        events.add(newEvent2);
+        habit.setEventList(events);
+
         eventsAdapter = new EventList(this, events);
         eventsListview.setAdapter(eventsAdapter);
+
 
         //set a listener for if the editHabit layout is pressed by the user
         eventsListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -181,7 +199,7 @@ public class HabitDetails extends AppCompatActivity{
                     events.add(event);
                     habit.setEventList(events);
 
-                    HabitEventDialog dialog = new HabitEventDialog(HabitDetails.this, event);
+                    HabitEventDialog dialog = new HabitEventDialog(HabitDetails.this, event, habit);
                     dialog.show();
 
                 } else if (menuItem.getItemId() == R.id.edit_habit) {
@@ -198,6 +216,7 @@ public class HabitDetails extends AppCompatActivity{
     private void habitDetailsHabitEventLayoutPressed(Event event){
         Intent intent = new Intent(this, HabitEventDetails.class);
         intent.putExtra("EVENT", event);
+        intent.putExtra("HABIT", habit);
         startActivity(intent);
     }
 

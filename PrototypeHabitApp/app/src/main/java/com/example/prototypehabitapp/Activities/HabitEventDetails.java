@@ -32,7 +32,9 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.prototypehabitapp.DataClasses.Event;
+import com.example.prototypehabitapp.DataClasses.Habit;
 import com.example.prototypehabitapp.R;
+import com.example.prototypehabitapp.Fragments.GoBack;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -41,6 +43,7 @@ import java.time.format.DateTimeFormatter;
 public class HabitEventDetails extends AppCompatActivity {
 
     private Event event;
+    private Habit habit;
     private String habitName;
     private String comment;
     private String date;
@@ -57,6 +60,7 @@ public class HabitEventDetails extends AppCompatActivity {
         //get details from bundle
         Intent sentIntent = getIntent();
         event = (Event) sentIntent.getSerializableExtra("EVENT");
+        habit = (Habit) sentIntent.getSerializableExtra("HABIT");
 
         //update fields with Event info
         habitName = event.getName();
@@ -86,10 +90,13 @@ public class HabitEventDetails extends AppCompatActivity {
         Intent intent = new Intent(this, EditHabitEvent.class);
         // TODO bundle up the item to be sent to the next frame
         intent.putExtra("EVENT", event);
+        intent.putExtra("HABIT", habit);
         startActivity(intent);
     }
 
     private void habitEventDetailsDeleteButtonPressed(View view) {
 
     }
+//
+//    @Override
 }
