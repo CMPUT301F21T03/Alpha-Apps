@@ -13,8 +13,9 @@
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Mathew    Oct-21-2021   Created
- *   1.2       Leah      Oct-30-2021   Added Firestore functionality
+ *   1.1       Leah      Oct-30-2021   Added Firestore functionality
  *   1.2       Leah      Nov-02-2021   Fixed crash on blank field
+ *   1.3       Eric      Nov-03-2021   Fixed other crashes on blank fields
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -74,6 +75,8 @@ public class LogIn extends AppCompatActivity {
         // prep Firestore
         // this can be moved to initialization of Login
 
+
+
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
 
@@ -93,7 +96,12 @@ public class LogIn extends AppCompatActivity {
         Context loginContext = this;
 
         // try obtaining a reference to the email field
-        if(email != null && password != null){
+        if(email.isEmpty() || password.isEmpty()){
+            // username/password error
+            loginAlert.setMessage("Please enter your username and password.");
+            loginAlert.show();
+        }
+        else{
             final DocumentReference findUserRef = db.collection("Doers").document(email);
             findUserRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
@@ -135,11 +143,6 @@ public class LogIn extends AppCompatActivity {
                     }
                 }
             });
-        }
-        else{
-            // username/password error
-            loginAlert.setMessage("Please enter your username and password.");
-            loginAlert.show();
         }
 
 
