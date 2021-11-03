@@ -99,4 +99,6 @@ public class HabitEventDetails extends AppCompatActivity {
         events.remove(event);
         finish();
     }
+//
+//    @Override
 }

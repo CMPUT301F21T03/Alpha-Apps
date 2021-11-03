@@ -13,8 +13,7 @@
  *   1.0       Mathew    Oct-21-2021   Created
  *   1.1       Moe       Oct-29-2021   Set up complete button
  *   1.2       Moe       Nov-01-2021   Added receiving event from intent and editing event's comment
- *   1.3       Jesse     Nov-02=2021   Added habit attribute and start HabitDetails activity when
- *                                       complete button pressed
+ *   1.3       Moe&Jesse Nov-03-2021   Added passing event to intent when complete button is pressed
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -57,9 +56,12 @@ public class EditHabitEvent extends AppCompatActivity {
     }
 
     public void editHabitEventCompleteButtonPressed(View view) {
-        event.setComment(comments.toString());
-        Intent intent = new Intent(this, HabitDetails.class);
-        intent.putExtra("habit", habit);
+        String commentStr = (String) comments.getText().toString();
+        event.setComment(commentStr);
+        Intent intent = new Intent(this, HabitEventDetails.class);
+        intent.putExtra("HABIT", habit);
+        intent.putExtra("EVENT", event);
         startActivity(intent);
+//        finish();
     }
 }

@@ -3,21 +3,21 @@
     <item
         android:id="@+id/allHabitsFragment"
         android:icon="@drawable/ic_baseline_home_24"
-        android:title="Details" />
+        android:title="All Habits" />
     <item
         android:id="@+id/todayHabitsFragment"
         android:icon="@drawable/ic_baseline_calendar_today_24"
-        android:title="Details" />
+        android:title="Today" />
     <item
         android:id="@+id/addHabitFragment"
         android:icon="@drawable/ic_baseline_add_box_24"
-        android:title="Name" />
+        android:title="Add Habit" />
     <item
         android:id="@+id/feedFragment"
         android:icon="@drawable/ic_baseline_dynamic_feed_24"
-        android:title="Name" />
+        android:title="Feed" />
     <item
         android:id="@+id/profileFragment"
         android:icon="@drawable/ic_baseline_person_24"
-        android:title="Name" />
+        android:title="Profile" />
 </menu>

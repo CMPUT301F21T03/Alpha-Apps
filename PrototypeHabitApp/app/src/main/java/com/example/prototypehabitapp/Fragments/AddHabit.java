@@ -14,6 +14,7 @@
  *   1.1       Mathew    Oct-21-2021   Added some navigation features to and from this page
  *   1.2       Arthur    Oct-31-2021   Added full functionality
  *   1.3       Leah      Nov-1-2021    Added ability to write to Firestore
+ *   1.4       Eric      Nov-03-2021   Changed date picker dialog to display current date by default
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -42,11 +43,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.NavigationUI;
 
 import com.example.prototypehabitapp.Activities.Main;
 import com.example.prototypehabitapp.DataClasses.DaysOfWeek;
@@ -58,7 +54,6 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -178,7 +173,7 @@ public class AddHabit extends Fragment {
         // get the current date
         LocalDateTime today = LocalDateTime.now();
         Integer year = today.getYear();
-        Integer month = today.getMonthValue();
+        Integer month = today.getMonthValue() - 1;
         Integer day = today.getDayOfMonth();
         // create a date picker dialog set to todays date
         DatePickerDialog dialog = new DatePickerDialog(

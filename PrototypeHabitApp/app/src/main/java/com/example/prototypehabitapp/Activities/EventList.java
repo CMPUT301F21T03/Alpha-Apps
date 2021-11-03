@@ -12,7 +12,7 @@
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Jesse     Oct-31-2021    Created
  *   1.1       Mathew    Oct-31-2021    Fix imports
- *   1.2       Jesse     Nov-03-2021    Add layout inflater
+ *   1.2     Jesse/Moe     Nov-03-2021    Add layout inflater
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -53,7 +53,6 @@ public class EventList extends ArrayAdapter<Event> {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent){
         View view = convertView;
-
         if(view == null){
             view = LayoutInflater.from(context).inflate(R.layout.events_listview_content, parent,false);
         }
