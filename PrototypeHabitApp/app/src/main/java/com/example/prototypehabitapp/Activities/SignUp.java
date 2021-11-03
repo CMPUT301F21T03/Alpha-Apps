@@ -16,6 +16,7 @@
  *   1.1       Leah      Oct-30-2021   Added signup system
  *   1.2       Leah      Nov-01-2021   Removed test habit data.
  *   1.3       Leah      Nov-02-2021   Fixed crash on blank field
+ *   1.4       Eric      Nov-03-2021   Fixed other crashes on blank fields
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -101,7 +102,12 @@ public class SignUp extends AppCompatActivity {
         Context signupContext = this;
 
         // try obtaining a reference to the email field
-        if(email != null && password != null){
+        if(name.isEmpty() || email.isEmpty() || password.isEmpty()){
+            // name/username/password error
+            signupAlert.setMessage("Please enter your name, your username and, password.");
+            signupAlert.show();
+
+        } else {
             final DocumentReference findUserRef = db.collection("Doers").document(email);
             findUserRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
@@ -165,12 +171,9 @@ public class SignUp extends AppCompatActivity {
                     }
                 }
             });
+
         }
-        else{
-            // username/password error
-            signupAlert.setMessage("Please enter your username and password.");
-            signupAlert.show();
-        }
+
 
 
 
