@@ -14,7 +14,8 @@
  *   1.1       Mathew    Oct-21-2021   Added some navigation features, added test data
  *   1.2       Leah      Oct-30-2021   Now populates from user firestore document, does not use subcollection yet
  *   1.3       Leah      Nov-02-2021   Now uses Habits subcollection. Cleaned up test code. Adds Firestore document ID.
- *   1.4       Eric      Nov-03-2021   Firestore add, edit, delete now part of Habit class. Changes reflected here.
+ *   1.4       Leah      Nov-03-2021   Changed empty habit list text to use emptyListView, moved list population to HabitList
+ *   1.5       Eric      Nov-03-2021   Firestore add, edit, delete now part of Habit class. Changes reflected here.
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -49,6 +50,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -71,10 +73,9 @@ public class AllHabits extends Fragment {
 
     // prep the all_habits screen related objects
     private ListView allHabitsListView;
-    private ArrayAdapter<Habit> habitAdapter;
-    private ArrayList<Habit> habitDataList = new ArrayList<>();;
+    private HabitList habitAdapter;
+    private ArrayList<Habit> habitDataList = new ArrayList<>();
     private Map userData;
-    private View mView;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -85,13 +86,9 @@ public class AllHabits extends Fragment {
         userData = activity.getUserData();
         Log.d(TAG,"Successfully logged in: " + (String) userData.get("username"));
 
-        getHabitDataList();
         setHabitListAdapter(view);
         // set an on click listener for if a habit is pressed
         allHabitsListView.setOnItemClickListener(this::habitItemClicked);
-
-        mView = getView();
-
     }
 
     private void habitItemClicked(AdapterView<?> adapterView, View view, int pos, long l) {
@@ -107,84 +104,28 @@ public class AllHabits extends Fragment {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void setHabitListAdapter(View view) {
         allHabitsListView = (ListView) view.findViewById(R.id.allhabits_habit_list);
         habitAdapter = new HabitList(view.getContext(), habitDataList);
         allHabitsListView.setAdapter(habitAdapter);
+        getHabitDataList(habitAdapter);
+        allHabitsListView.setEmptyView(view.findViewById(R.id.allhabits_hidden_textview_1));
     }
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void getHabitDataList(){
-        // Gets the list of Habits from the user logged in
-        habitDataList = new ArrayList<>();
-
+    public void getHabitDataList(HabitList habitAdapter){
         // show your page from Firestore
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
-        final CollectionReference user = db.collection("Doers").document((String) userData.get("username")).collection("habits");
-        user.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot querySnapshot,
-                                @Nullable FirebaseFirestoreException e) {
-                // check for errors in listen
-                if (e != null) {
-                    // if error occurs
-                    Log.w(TAG, "Listen failed.", e);
-                    return;
-                }
-                // if there are Habits
-                if (!querySnapshot.isEmpty()){
-                    List<String> habits = new ArrayList<>();
-                    habitDataList.clear();
-                    for(QueryDocumentSnapshot doc : querySnapshot){
-                        // make sure the title exists
-                        if (doc.get("title") != null) {
-                            // Convert Firestore's stored time to LocalDateTime
-                            // doc.getID() // use this later so deletes/edits are possible
-                            Map getDate = (Map) doc.get("dateStarted");
-                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss");
-                            String newDateString = getDate.get("year").toString() + "-" +
-                                                   getDate.get("monthValue").toString() + "-" +
-                                                   getDate.get("dayOfMonth").toString() + " 00:00:00";
-                            LocalDateTime newDate = LocalDateTime.parse(newDateString, formatter);
-                            LocalDateTime ldt = newDate;
-                            // Convert Firestore's stored days of week to DaysOfWeek
-                            Map<String, Boolean> docDaysOfWeek = (Map<String, Boolean>) doc.get("weekOccurence");
-                            Habit addHabit = new Habit(doc.getString("title"),doc.getString("reason"),ldt,new DaysOfWeek(docDaysOfWeek));
-                            // Set the document ID in case it needs to be fetched for delete/edits
-                            addHabit.setFirestoreId(doc.getId());
-                            //System.out.println("Firestore ID of " + doc.getString("title") + " is " + doc.getId());
-                            //System.out.println("And in the habit class: " + addHabit.getFirestoreId());
-                            // Add to the ListArray
-                            habitDataList.add(addHabit);
-                        }
-                    }
-                }
-                if (habitDataList.isEmpty()){
-                    showPromptText(true);
-                }else{
-                    showPromptText(false);
-                }
-                habitAdapter.notifyDataSetChanged();
-            }
-        });
+
+        final Query user = db.collection("Doers")
+                                         .document((String) userData.get("username"))
+                                         .collection("habits")
+                                         .orderBy("title");
+        habitAdapter.addSnapshotQuery(user,TAG);
+
+
     }
-
-    private void showPromptText(Boolean show){
-        if (show){
-            mView.findViewById(R.id.allhabits_hidden_textview_1).setVisibility(View.VISIBLE);
-            mView.findViewById(R.id.allhabits_hidden_textview_2).setVisibility(View.VISIBLE);
-
-        }else {
-            mView.findViewById(R.id.allhabits_hidden_textview_1).setVisibility(View.INVISIBLE);
-            mView.findViewById(R.id.allhabits_hidden_textview_2).setVisibility(View.INVISIBLE);
-
-        }
-    }
-
-    public static String getTAG(){
-        return TAG;
-    }
-
 }
