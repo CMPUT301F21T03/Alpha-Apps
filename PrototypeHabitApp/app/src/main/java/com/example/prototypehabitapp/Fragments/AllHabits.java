@@ -14,6 +14,7 @@
  *   1.1       Mathew    Oct-21-2021   Added some navigation features, added test data
  *   1.2       Leah      Oct-30-2021   Now populates from user firestore document, does not use subcollection yet
  *   1.3       Leah      Nov-02-2021   Now uses Habits subcollection. Cleaned up test code. Adds Firestore document ID.
+ *   1.4       Eric      Nov-03-2021   Firestore add, edit, delete now part of Habit class. Changes reflected here.
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -23,6 +24,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -95,10 +97,12 @@ public class AllHabits extends Fragment {
     private void habitItemClicked(AdapterView<?> adapterView, View view, int pos, long l) {
         // get the item that the user selected
         Habit itemToSend = (Habit) allHabitsListView.getItemAtPosition(pos);
+        //System.out.println("Sending in the habit class: " + itemToSend.getFirestoreId());
         Intent intent = new Intent(getContext(), HabitDetails.class);
 
         // Put pressed habit into bundle to send to HabitDetails
         intent.putExtra("habit",itemToSend);
+        intent.putExtra("userData", (Serializable) userData);
         startActivity(intent);
     }
 
@@ -150,6 +154,8 @@ public class AllHabits extends Fragment {
                             Habit addHabit = new Habit(doc.getString("title"),doc.getString("reason"),ldt,new DaysOfWeek(docDaysOfWeek));
                             // Set the document ID in case it needs to be fetched for delete/edits
                             addHabit.setFirestoreId(doc.getId());
+                            //System.out.println("Firestore ID of " + doc.getString("title") + " is " + doc.getId());
+                            //System.out.println("And in the habit class: " + addHabit.getFirestoreId());
                             // Add to the ListArray
                             habitDataList.add(addHabit);
                         }
