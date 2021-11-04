@@ -14,11 +14,15 @@
  *   1.1       Moe       Oct-29-2021   Set up complete button
  *   1.2       Moe       Nov-01-2021   Added receiving event from intent and editing event's comment
  *   1.3       Moe&Jesse Nov-03-2021   Added passing event to intent when complete button is pressed
+ *   1.4       Moe       Nov-04-2021   Changed the editHabitEventCompleteButtonPressed function
+ *                                      depending on the activity that is passed from
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
 package com.example.prototypehabitapp.Activities;
 
+import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -31,11 +35,17 @@ import com.example.prototypehabitapp.DataClasses.Event;
 import com.example.prototypehabitapp.DataClasses.Habit;
 import com.example.prototypehabitapp.R;
 
+import java.util.ArrayList;
+import java.util.Objects;
+
 public class EditHabitEvent extends AppCompatActivity {
 
     private Event event;
     private Habit habit;
+    private String prevActivity;
+    private ComponentName previousActivity;
     private EditText comments;
+    private ArrayList<Event> events;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +57,8 @@ public class EditHabitEvent extends AppCompatActivity {
         Intent sentIntent = getIntent();
         event = (Event) sentIntent.getSerializableExtra("EVENT");
         habit = (Habit) sentIntent.getSerializableExtra("HABIT");
+        prevActivity = (String) sentIntent.getSerializableExtra("ACTIVITY");
+        previousActivity = getCallingActivity();
 
         comments = findViewById(R.id.edithabitevent_comment);
         comments.setText(event.getComment());
@@ -58,10 +70,15 @@ public class EditHabitEvent extends AppCompatActivity {
     public void editHabitEventCompleteButtonPressed(View view) {
         String commentStr = (String) comments.getText().toString();
         event.setComment(commentStr);
-        Intent intent = new Intent(this, HabitEventDetails.class);
-        intent.putExtra("HABIT", habit);
-        intent.putExtra("EVENT", event);
-        startActivity(intent);
-//        finish();
+        Intent intent;
+        if (Objects.equals("HabitDetails", prevActivity)) {
+            finish();
+        } else if (Objects.equals("HabitEventDetails", prevActivity)) {
+            intent = new Intent(this, HabitEventDetails.class);
+            intent.putExtra("HABIT", habit);
+            intent.putExtra("EVENT", event);
+            startActivity(intent);
+        }
+
     }
 }

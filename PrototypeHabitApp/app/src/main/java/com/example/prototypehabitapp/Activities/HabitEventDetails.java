@@ -17,6 +17,7 @@
  *   1.3       Mathew    Oct-31-2021   Fix imports
  *   1.4       Moe       Nov-01-2021   Added delete button
  *   1.5       Jesse     Nov-02-2021   Implemented delete event
+ *   1.6       Moe       Nov-04-2021   Added extra value for intent
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -90,6 +91,7 @@ public class HabitEventDetails extends AppCompatActivity {
         Intent intent = new Intent(this, EditHabitEvent.class);
         intent.putExtra("EVENT", event);
         intent.putExtra("HABIT", habit);
+        intent.putExtra("ACTIVITY", "HabitEventDetails");
         startActivity(intent);
     }
 
