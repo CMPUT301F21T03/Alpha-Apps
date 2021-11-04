@@ -23,4 +23,4 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x PrototypeHabitApp/gradlew
     - name: Build with Gradle
-      run: .PrototypeHabitApp/gradlew build
+      run: ./PrototypeHabitApp/gradlew build
