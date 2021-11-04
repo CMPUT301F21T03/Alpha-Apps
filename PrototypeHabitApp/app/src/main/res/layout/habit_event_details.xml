@@ -14,7 +14,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.fragment.app.FragmentContainerView
+        <fragment
             android:id="@+id/go_back_button"
             android:name="com.example.prototypehabitapp.Fragments.GoBack"
             android:layout_width="wrap_content"
@@ -23,94 +23,57 @@
     </FrameLayout>
 
     <TextView
-        android:id="@+id/textView23"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:text="Habit Event"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/frameLayout2" />
-
-    <TextView
         android:id="@+id/habiteventdetails_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:text="habit title"
+        android:layout_marginStart="140dp"
+        android:layout_marginTop="36dp"
+        android:text="Name"
+        android:textSize="34sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView23" />
-
-    <TextView
-        android:id="@+id/textView28"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:text="comment"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/habiteventdetails_title" />
+        app:layout_constraintTop_toBottomOf="@+id/frameLayout2" />
 
     <TextView
         android:id="@+id/habiteventdetails_comment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:text="comment text"
+        android:layout_marginStart="140dp"
+        android:layout_marginTop="24dp"
+        android:text="Comment"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView28" />
-
-    <TextView
-        android:id="@+id/textView30"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:text="location"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/habiteventdetails_comment" />
-
-    <TextView
-        android:id="@+id/habiteventdetails_location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:text="location text"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView30" />
-
-    <TextView
-        android:id="@+id/textView31"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:text="location"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/habiteventdetails_location" />
+        app:layout_constraintTop_toBottomOf="@+id/habiteventdetails_title" />
 
     <TextView
         android:id="@+id/habiteventdetails_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="160dp"
         android:layout_marginTop="20dp"
-        android:text="location text"
+        android:text="Date"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView31" />
+        app:layout_constraintTop_toBottomOf="@+id/habiteventdetails_comment" />
 
-    <TextView
-        android:id="@+id/textView32"
+    <Button
+        android:id="@+id/edithabitevent_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:text="photo"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="48dp"
+        android:text="location (not implemented)"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/habiteventdetails_date" />
+
+    <Button
+        android:id="@+id/edithabitevent_photograph"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="20dp"
+        android:text="photograph (not implemented)"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edithabitevent_location" />
 
     <Button
         android:id="@+id/habiteventdetails_delete"
