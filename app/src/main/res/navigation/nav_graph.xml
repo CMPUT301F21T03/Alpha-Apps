@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_menu"
+    app:startDestination="@id/allHabitsFragment">
+    <fragment
+        android:id="@+id/allHabitsFragment"
+        android:name="com.example.habitapp.Fragments.AllHabits"
+        android:label="AllHabitsFragment"
+        tools:layout="@layout/all_habits"/>
+    <fragment
+        android:id="@+id/todayHabitsFragment"
+        android:name="com.example.habitapp.Fragments.TodayHabits"
+        android:label="TodayHabitsFragment"
+        tools:layout="@layout/today_habits"/>
+    <fragment
+        android:id="@+id/addHabitFragment"
+        android:name="com.example.habitapp.Fragments.AddHabit"
+        android:label="AddHabitFragment"
+        tools:layout="@layout/add_habit">
+        <action
+            android:id="@+id/action_addHabitFragment_to_allHabitsFragment"
+            app:destination="@id/allHabitsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/feedFragment"
+        android:name="com.example.habitapp.Fragments.Feed"
+        android:label="FeedFragment"
+        tools:layout="@layout/feed"/>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.habitapp.Fragments.Profile"
+        android:label="ProfileFragment"
+        tools:layout="@layout/profile"/>
+</navigation>
