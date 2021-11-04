@@ -3,28 +3,19 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/jegry/AndroidStudioProjects/Project/Alpha-Apps/PrototypeHabitApp/app/src/main/res/layout/edit_habit_event.xml" value="0.9214659685863874" />
-        <entry key="..\:/Users/jegry/AndroidStudioProjects/Project/Alpha-Apps/PrototypeHabitApp/app/src/main/res/layout/habit_details.xml" value="0.17135416666666667" />
-        <entry key="..\:/Users/jegry/AndroidStudioProjects/Project/Alpha-Apps/PrototypeHabitApp/app/src/main/res/layout/habit_event_details.xml" value="0.4528301886792453" />
-        <entry key="..\:/Users/matli/AndroidStudioProjects/Alpha-Apps/PrototypeHabitApp/app/src/main/res/drawable/following_followers.xml" value="0.2703125" />
         <entry key="..\:/Users/matli/AndroidStudioProjects/Alpha-Apps/PrototypeHabitApp/app/src/main/res/layout/activity_main.xml" value="0.152" />
         <entry key="..\:/Users/matli/AndroidStudioProjects/Alpha-Apps/PrototypeHabitApp/app/src/main/res/layout/add_habit.xml" value="0.264" />
-        <entry key="..\:/Users/matli/AndroidStudioProjects/Alpha-Apps/PrototypeHabitApp/app/src/main/res/layout/all_habits.xml" value="0.264" />
+        <entry key="..\:/Users/matli/AndroidStudioProjects/Alpha-Apps/PrototypeHabitApp/app/src/main/res/layout/all_habits.xml" value="0.2" />
         <entry key="..\:/Users/matli/AndroidStudioProjects/Alpha-Apps/PrototypeHabitApp/app/src/main/res/layout/boot_screen.xml" value="0.264" />
-        <entry key="..\:/Users/matli/AndroidStudioProjects/Alpha-Apps/PrototypeHabitApp/app/src/main/res/layout/day_of_week_bar.xml" value="0.536" />
-        <entry key="..\:/Users/matli/AndroidStudioProjects/Alpha-Apps/PrototypeHabitApp/app/src/main/res/layout/edit_personal_profile.xml" value="0.264" />
+        <entry key="..\:/Users/matli/AndroidStudioProjects/Alpha-Apps/PrototypeHabitApp/app/src/main/res/layout/edit_personal_profile.xml" value="0.536" />
         <entry key="..\:/Users/matli/AndroidStudioProjects/Alpha-Apps/PrototypeHabitApp/app/src/main/res/layout/feed.xml" value="0.264" />
-        <entry key="..\:/Users/matli/AndroidStudioProjects/Alpha-Apps/PrototypeHabitApp/app/src/main/res/layout/following_followers.xml" value="0.4" />
         <entry key="..\:/Users/matli/AndroidStudioProjects/Alpha-Apps/PrototypeHabitApp/app/src/main/res/layout/go_back.xml" value="0.4" />
         <entry key="..\:/Users/matli/AndroidStudioProjects/Alpha-Apps/PrototypeHabitApp/app/src/main/res/layout/habit_details.xml" value="0.264" />
-        <entry key="..\:/Users/matli/AndroidStudioProjects/Alpha-Apps/PrototypeHabitApp/app/src/main/res/layout/habit_entry.xml" value="0.536" />
         <entry key="..\:/Users/matli/AndroidStudioProjects/Alpha-Apps/PrototypeHabitApp/app/src/main/res/layout/habit_event_details.xml" value="0.4" />
         <entry key="..\:/Users/matli/AndroidStudioProjects/Alpha-Apps/PrototypeHabitApp/app/src/main/res/layout/habit_event_edit.xml" value="0.4" />
         <entry key="..\:/Users/matli/AndroidStudioProjects/Alpha-Apps/PrototypeHabitApp/app/src/main/res/layout/nav_bar.xml" value="0.4" />
         <entry key="..\:/Users/matli/AndroidStudioProjects/Alpha-Apps/PrototypeHabitApp/app/src/main/res/layout/notifications.xml" value="0.264" />
         <entry key="..\:/Users/matli/AndroidStudioProjects/Alpha-Apps/PrototypeHabitApp/app/src/main/res/layout/profile.xml" value="0.264" />
-        <entry key="..\:/Users/matli/AndroidStudioProjects/Alpha-Apps/PrototypeHabitApp/app/src/main/res/layout/profile_list_entry.xml" value="0.264" />
-        <entry key="..\:/Users/matli/AndroidStudioProjects/Alpha-Apps/PrototypeHabitApp/app/src/main/res/layout/profile_list_entry_2.xml" value="0.4" />
         <entry key="..\:/Users/matli/AndroidStudioProjects/Alpha-Apps/PrototypeHabitApp/app/src/main/res/layout/today_habits.xml" value="0.264" />
         <entry key="..\:/Users/matli/AndroidStudioProjects/PrototypeHabitApp/app/src/main/res/layout/add_habit.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/matli/AndroidStudioProjects/PrototypeHabitApp/app/src/main/res/layout/add_habits.xml" value="0.25416666666666665" />
@@ -38,14 +29,18 @@
         <entry key="..\:/Users/matli/AndroidStudioProjects/PrototypeHabitApp/app/src/main/res/layout/profile.xml" value="0.264" />
         <entry key="..\:/Users/matli/AndroidStudioProjects/PrototypeHabitApp/app/src/main/res/layout/sign_up_screen.xml" value="0.264" />
         <entry key="..\:/Users/matli/AndroidStudioProjects/PrototypeHabitApp/app/src/main/res/layout/today_habits.xml" value="0.2" />
-        <entry key="app/src/main/res/layout/edit_habit_event.xml" value="0.3197463768115942" />
-        <entry key="app/src/main/res/layout/events_listview_content.xml" value="0.21041666666666667" />
-        <entry key="app/src/main/res/layout/habit_details.xml" value="0.38846153846153847" />
-        <entry key="app/src/main/res/layout/habit_entry.xml" value="0.21041666666666667" />
-        <entry key="app/src/main/res/layout/habit_event_details.xml" value="0.3197463768115942" />
-        <entry key="app/src/main/res/layout/habit_event_dialog.xml" value="0.26865671641791045" />
-        <entry key="app/src/main/res/menu/habit_details_menu.xml" value="0.3880208333333333" />
-        <entry key="app/src/main/res/menu/habit_more_menu.xml" value="0.2203125" />
+        <entry key="app/src/main/res/drawable/checkbox_selected.xml" value="0.111" />
+        <entry key="app/src/main/res/drawable/checkbox_unselected.xml" value="0.2565" />
+        <entry key="app/src/main/res/layout/add_habit.xml" value="0.24072265625000003" />
+        <entry key="app/src/main/res/layout/boot_screen.xml" value="0.2006340579710145" />
+        <entry key="app/src/main/res/layout/checkbox_selected.xml" value="0.18704710144927536" />
+        <entry key="app/src/main/res/layout/checkbox_selector.xml" value="0.18704710144927536" />
+        <entry key="app/src/main/res/layout/checkbox_unselected.xml" value="0.18704710144927536" />
+        <entry key="app/src/main/res/layout/day_of_week_bar.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/habit_details.xml" value="0.2006340579710145" />
+        <entry key="app/src/main/res/layout/habit_entry.xml" value="0.2006340579710145" />
+        <entry key="app/src/main/res/layout/habit_event_details.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/habit_event_dialog.xml" value="0.18" />
       </map>
     </option>
   </component>

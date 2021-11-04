@@ -44,6 +44,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -147,8 +148,15 @@ public class HabitList extends ArrayAdapter<Habit> implements Serializable {
             habitList.add(habit);
         }
     }
+    public List<Habit> getHabits() {
+        ArrayList<Habit> list = habitList;
 
-    public Habit getHabitAtPosition(Integer pos){
+        return list;
+    }
+
+
+
+        public Habit getHabitAtPosition(Integer pos){
         return habitList.get(pos);
     }
 
