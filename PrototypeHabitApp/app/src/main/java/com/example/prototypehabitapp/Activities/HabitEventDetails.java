@@ -16,6 +16,7 @@
  *                                       button is clicked
  *   1.3       Mathew    Oct-31-2021   Fix imports
  *   1.4       Moe       Nov-01-2021   Added delete button
+ *   1.5       Jesse     Nov-02-2021   Implemented delete event
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -32,14 +33,16 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.prototypehabitapp.DataClasses.Event;
+import com.example.prototypehabitapp.DataClasses.Habit;
 import com.example.prototypehabitapp.R;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class HabitEventDetails extends AppCompatActivity {
 
+    private Habit habit;
     private Event event;
     private String habitName;
     private String comment;
@@ -57,6 +60,7 @@ public class HabitEventDetails extends AppCompatActivity {
         //get details from bundle
         Intent sentIntent = getIntent();
         event = (Event) sentIntent.getSerializableExtra("EVENT");
+        habit = (Habit) sentIntent.getSerializableExtra("HABIT");
 
         //update fields with Event info
         habitName = event.getName();
@@ -84,12 +88,17 @@ public class HabitEventDetails extends AppCompatActivity {
     private void habitEventDetailsEditButtonPressed(View view) {
         // navigate to the edit an event activity
         Intent intent = new Intent(this, EditHabitEvent.class);
-        // TODO bundle up the item to be sent to the next frame
         intent.putExtra("EVENT", event);
+        intent.putExtra("HABIT", habit);
         startActivity(intent);
     }
 
     private void habitEventDetailsDeleteButtonPressed(View view) {
-
+        // TODO add confirm delete dialog
+        ArrayList<Event> events = habit.getEventList();
+        events.remove(event);
+        finish();
     }
+//
+//    @Override
 }

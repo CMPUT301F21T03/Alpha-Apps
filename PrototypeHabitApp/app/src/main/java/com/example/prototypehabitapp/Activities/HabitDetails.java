@@ -20,7 +20,8 @@
  *   1.7       Moe       Nov-01-2021   Added passing event object when log habit is selected in the
  *                                         popup menu
  *   1.8       Moe       Nov-01-2021   Removed log habit in the popup menu
- *   1.9       Eric      Nov-03-2021   Firestore add, edit, delete now part of Habit class. Changes reflected here.
+ *   1.9       Jesse/Moe     Nov-02-2021   Added intent extra to send to habit event details
+ *   1.10      Eric      Nov-03-2021   Firestore add, edit, delete now part of Habit class. Changes reflected here.
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -28,9 +29,8 @@ package com.example.prototypehabitapp.Activities;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Bundle;
-import android.text.method.KeyListener;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,17 +40,29 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
+import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.ListView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import android.widget.ListView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+
+import androidx.fragment.app.Fragment;
 
 import com.example.prototypehabitapp.DataClasses.DaysOfWeek;
 import com.example.prototypehabitapp.DataClasses.Habit;
 import com.example.prototypehabitapp.DataClasses.Event;
-import com.example.prototypehabitapp.Fragments.AllHabits;
+import com.example.prototypehabitapp.DataClasses.Habit;
 import com.example.prototypehabitapp.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -83,7 +95,9 @@ public class HabitDetails extends AppCompatActivity{
     private ArrayList<Event> events;
     private ArrayAdapter<Event> eventsAdapter;
 
+
     private Map userData;
+
 
     PopupMenu popupMenu;
 
@@ -153,10 +167,18 @@ public class HabitDetails extends AppCompatActivity{
 
         //add test habit data (remove later)
         habit = new Habit("title", "reason", LocalDateTime.now(), new DaysOfWeek());
-
         events = habit.getEventList();
+
+        Event newEvent = new Event("title", LocalDateTime.now(), "comment", false, false);
+        Event newEvent2 = new Event("title", LocalDateTime.now(), "comment", false, false);
+
+        events.add(newEvent);
+        events.add(newEvent2);
+        habit.setEventList(events);
+
         eventsAdapter = new EventList(this, events);
         eventsListview.setAdapter(eventsAdapter);
+
 
         //set a listener for if the editHabit layout is pressed by the user
         eventsListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -210,8 +232,7 @@ public class HabitDetails extends AppCompatActivity{
                     Event event = new Event(habit.getTitle(), LocalDateTime.now(), "", false, false);
                     events.add(event);
                     habit.setEventList(events);
-
-                    HabitEventDialog dialog = new HabitEventDialog(HabitDetails.this, event);
+                    HabitEventDialog dialog = new HabitEventDialog(HabitDetails.this, event, habit);
                     dialog.show();
 
                 } else if (menuItem.getItemId() == R.id.edit_habit) {
@@ -232,6 +253,7 @@ public class HabitDetails extends AppCompatActivity{
     private void habitDetailsHabitEventLayoutPressed(Event event){
         Intent intent = new Intent(this, HabitEventDetails.class);
         intent.putExtra("EVENT", event);
+        intent.putExtra("HABIT", habit);
         startActivity(intent);
     }
 

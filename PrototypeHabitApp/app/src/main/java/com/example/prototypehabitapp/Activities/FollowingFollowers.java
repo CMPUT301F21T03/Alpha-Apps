@@ -14,6 +14,7 @@
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Mathew    Nov-01-2021   Created
+ *   1.1       Mathew    Nov-03-2021   Forgot to add dynamic title last time (now added)
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -27,6 +28,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -73,12 +75,20 @@ public class FollowingFollowers extends AppCompatActivity {
     }
 
     private void setFrameType() {
+        TextView titleText = findViewById(R.id.followingfollowers_title_type);
+
         Intent sentIntent = getIntent();
         String sentFollowString = (String) sentIntent.getStringExtra("FOLLOWING?");
-        if (sentFollowString == "following"){
+        System.out.println(sentFollowString);
+        if (sentFollowString.equalsIgnoreCase("following")){
             following = true;
+            // set the title of the frame to be 'following'
+            titleText.setText("Following");
         }else{
+            // set the title of the frame to be 'followers'
             following = false;
+            titleText.setText("Followers");
+            System.out.println("here");
         }
     }
 

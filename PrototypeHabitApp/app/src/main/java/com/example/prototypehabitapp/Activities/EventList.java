@@ -12,6 +12,7 @@
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Jesse     Oct-31-2021    Created
  *   1.1       Mathew    Oct-31-2021    Fix imports
+ *   1.2     Jesse/Moe     Nov-03-2021    Add layout inflater
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -19,6 +20,7 @@ package com.example.prototypehabitapp.Activities;
 
 import android.content.Context;
 import android.os.Build;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -51,6 +53,9 @@ public class EventList extends ArrayAdapter<Event> {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent){
         View view = convertView;
+        if(view == null){
+            view = LayoutInflater.from(context).inflate(R.layout.events_listview_content, parent,false);
+        }
 
         Event event = events.get(position);
         TextView name = view.findViewById(R.id.eventslistviewcontent_name_text);

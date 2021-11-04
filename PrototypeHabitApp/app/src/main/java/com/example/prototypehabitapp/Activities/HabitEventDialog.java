@@ -11,6 +11,7 @@
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Moe       Nov-01-2021   Created
+ *   1.1       Jesse     Nov-02-2021   Added habit attribute and as extra sent to edit habit event
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -24,6 +25,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.prototypehabitapp.DataClasses.Event;
+import com.example.prototypehabitapp.DataClasses.Habit;
 import com.example.prototypehabitapp.R;
 
 public class HabitEventDialog extends Dialog implements android.view.View.OnClickListener {
@@ -33,11 +35,13 @@ public class HabitEventDialog extends Dialog implements android.view.View.OnClic
     private Button loghabitButton;
     private Button cancelButton;
     private Event event;
+    private Habit habit;
 
-    public HabitEventDialog(Activity activity, Event event) {
+    public HabitEventDialog(Activity activity, Event event, Habit habit) {
         super(activity);
         this.activity = activity;
         this.event = event;
+        this.habit = habit;
     }
 
     @Override
@@ -59,6 +63,7 @@ public class HabitEventDialog extends Dialog implements android.view.View.OnClic
                 dismiss();
                 Intent intent = new Intent(getContext(), EditHabitEvent.class);
                 intent.putExtra("EVENT", event);
+                intent.putExtra("HABIT", habit);
                 getContext().startActivity(intent);
                 break;
             case R.id.habiteventdialog_cancel:
