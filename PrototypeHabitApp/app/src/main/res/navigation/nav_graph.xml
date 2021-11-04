@@ -18,7 +18,11 @@
         android:id="@+id/addHabitFragment"
         android:name="com.example.prototypehabitapp.Fragments.AddHabit"
         android:label="AddHabitFragment"
-        tools:layout="@layout/add_habit"/>
+        tools:layout="@layout/add_habit">
+        <action
+            android:id="@+id/action_addHabitFragment_to_allHabitsFragment"
+            app:destination="@id/allHabitsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/feedFragment"
         android:name="com.example.prototypehabitapp.Fragments.Feed"
