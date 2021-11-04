@@ -79,7 +79,7 @@ public class HabitList extends ArrayAdapter<Habit> implements Serializable {
         if(view == null){
             view = LayoutInflater.from(context).inflate(R.layout.habit_entry, parent, false);
         }
-        Habit habit = habitList.get(pos);
+        Habit habit = getHabitAtPosition(pos);
 
         // get the text views set up for each field
         TextView habitTitle = view.findViewById(R.id.habitentry_habit_title);
@@ -113,10 +113,9 @@ public class HabitList extends ArrayAdapter<Habit> implements Serializable {
                     return;
                 }
                 // if there are Habits
-                habitList.clear();
+                clearHabitList();
                 if (!querySnapshot.isEmpty()){
                     List<String> habits = new ArrayList<>();
-
                     for(QueryDocumentSnapshot doc : querySnapshot){
                         // make sure the title exists
                         if (doc.get("title") != null) {
@@ -130,17 +129,31 @@ public class HabitList extends ArrayAdapter<Habit> implements Serializable {
                             LocalDateTime ldt = newDate;
                             // Convert Firestore's stored days of week to DaysOfWeek
                             Map<String, Boolean> docDaysOfWeek = (Map<String, Boolean>) doc.get("weekOccurence");
-                            Habit addHabit = new Habit(doc.getString("title"),doc.getString("reason"),ldt,new DaysOfWeek(docDaysOfWeek));
+                            Habit habitToAdd = new Habit(doc.getString("title"),doc.getString("reason"),ldt,new DaysOfWeek(docDaysOfWeek));
                             // Set the document ID in case it needs to be fetched for delete/edits
-                            addHabit.setFirestoreId(doc.getId());
+                            habitToAdd.setFirestoreId(doc.getId());
                             // Add to the ListArray
-                            habitList.add(addHabit);
+                            addHabit(habitToAdd);
                         }
                     }
                 }
                 notifyDataSetChanged();
             }
         });
+    }
+
+    public void addHabit(Habit habit){
+        if(!habitList.contains(habit)){
+            habitList.add(habit);
+        }
+    }
+
+    public Habit getHabitAtPosition(Integer pos){
+        return habitList.get(pos);
+    }
+
+    public void clearHabitList(){
+        habitList.clear();
     }
 
     public Boolean getHabitListEmpty() {
