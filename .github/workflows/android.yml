@@ -21,6 +21,10 @@ jobs:
         cache: gradle
 
     - name: Grant execute permission for gradlew
-      run: chmod +x PrototypeHabitApp/gradlew
+      run: |
+        cd PrototypeHabitApp
+        chmod +x gradlew
     - name: Build with Gradle
-      run: ./PrototypeHabitApp/gradlew build
+      run: |
+        cd PrototypeHabitApp
+        ./gradlew build
