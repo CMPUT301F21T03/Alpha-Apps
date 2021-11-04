@@ -223,6 +223,7 @@ public class HabitDetails extends AppCompatActivity{
 
                 if (menuItem.getItemId() == R.id.mark_done) {
                     addHabitEvent();
+                    eventsAdapter.notifyDataSetChanged();
 
                 } else if (menuItem.getItemId() == R.id.edit_habit) {
                     prepareForEdit();
@@ -324,6 +325,8 @@ public class HabitDetails extends AppCompatActivity{
                                     public void onClick(DialogInterface dialog, int which) {
                                         Intent intent = new Intent(HabitDetails.this, EditHabitEvent.class);
                                         intent.putExtra("EVENT", newHabitEvent);
+                                        intent.putExtra("HABIT", habit);
+                                        intent.putExtra("ACTIVITY", "HabitDetails");
                                         startActivity(intent);
                                     }
                                 })
@@ -337,5 +340,6 @@ public class HabitDetails extends AppCompatActivity{
         alert.show();
 
     }
+
 
 }
