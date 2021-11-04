@@ -15,6 +15,8 @@
  *   1.2       Arthur    Oct-31-2021   Added full functionality
  *   1.3       Leah      Nov-1-2021    Added ability to write to Firestore
  *   1.4       Eric      Nov-03-2021   Changed date picker dialog to display current date by default
+ *   1.5       Eric      Nov-03-2021   Firestore add, edit, delete now part of Habit class. Changes reflected here.
+ *   1.6       Eric      Nov-03-2021   Fixed empty list glitch
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -43,6 +45,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.prototypehabitapp.Activities.Main;
 import com.example.prototypehabitapp.DataClasses.DaysOfWeek;
@@ -136,27 +142,13 @@ public class AddHabit extends Fragment {
             LocalDateTime newDate = LocalDateTime.parse(habitDate, formatter);
             Habit newHabit = new Habit(habitName, habitReason, newDate, frequency);
 
-            // add new Habit to Firestore
-            FirebaseFirestore db;
-            db = FirebaseFirestore.getInstance();
-            final CollectionReference habitsref = db.collection("Doers").document((String)userData.get("username")).collection("habits");
-            //Toast.makeText(getContext(), "I came here", Toast.LENGTH_SHORT).show();
-            habitsref.add(newHabit)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d(TAG,"success");
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.d(TAG,"failed: "+ e);
-                }
-            });
+            newHabit.addHabitToFirestore(userData);
 
-            // go back to Main Activity
-            getFragmentManager().popBackStack();
-            //navigateToMainAcitivity();
+
+
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.action_addHabitFragment_to_allHabitsFragment);
+
 
         }
 
