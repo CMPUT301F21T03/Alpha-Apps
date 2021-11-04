@@ -13,6 +13,7 @@
  *   1.0       Mathew    Oct-13-2021   Created
  *   1.1       Mathew    Oct-31-2021   Added Javadocs
  *   1.2       Leah      Nov-03-2021   Added addSnapshotQuery to better modularize data. Updated Javadocs accordingly
+ *   1.3       Leah      Nov-03-2021   Fixed empty list glitch
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -112,14 +113,14 @@ public class HabitList extends ArrayAdapter<Habit> implements Serializable {
                     return;
                 }
                 // if there are Habits
+                habitList.clear();
                 if (!querySnapshot.isEmpty()){
                     List<String> habits = new ArrayList<>();
-                    habitList.clear();
+
                     for(QueryDocumentSnapshot doc : querySnapshot){
                         // make sure the title exists
                         if (doc.get("title") != null) {
                             // Convert Firestore's stored time to LocalDateTime
-                            // doc.getID() // use this later so deletes/edits are possible
                             Map getDate = (Map) doc.get("dateStarted");
                             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss");
                             String newDateString = getDate.get("year").toString() + "-" +
