@@ -16,7 +16,7 @@
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
-package com.example.prototypehabitapp.Activities;
+package com.example.prototypehabitapp.DataClasses;
 
 import android.content.Context;
 import android.os.Build;
@@ -30,7 +30,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
-import com.example.prototypehabitapp.DataClasses.Event;
 import com.example.prototypehabitapp.R;
 
 import java.time.format.DateTimeFormatter;

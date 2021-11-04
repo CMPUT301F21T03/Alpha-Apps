@@ -44,28 +44,15 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import android.widget.ListView;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
-import androidx.fragment.app.Fragment;
 
 import com.example.prototypehabitapp.DataClasses.DaysOfWeek;
+import com.example.prototypehabitapp.DataClasses.EventList;
 import com.example.prototypehabitapp.DataClasses.Habit;
 import com.example.prototypehabitapp.DataClasses.Event;
-import com.example.prototypehabitapp.DataClasses.Habit;
 import com.example.prototypehabitapp.R;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Map;
 
 public class HabitDetails extends AppCompatActivity{
 
