@@ -107,7 +107,7 @@ public class HabitDetails extends AppCompatActivity{
         reason = findViewById(R.id.habitdetails_reason_text);
         date_started = findViewById(R.id.habitdetails_date_started);
         habit_events_title = findViewById(R.id.habitdetails_habit_events_text);
-        habit_events_scoller = findViewById(R.id.habitdetails_habit_event_list_scroll_view);
+        //habit_events_scoller = findViewById(R.id.habitdetails_habit_event_list_scroll_view);
         done_editing = findViewById(R.id.habitdetails_button_done_editing);
 
         // disable title and reason editablity onCreate
@@ -279,7 +279,7 @@ public class HabitDetails extends AppCompatActivity{
     private void prepareForEdit() {
         editing = true; // set editing flag to true (for popup menu)
         habit_events_title.setVisibility(View.GONE); // hide Habit Events
-        habit_events_scoller.setVisibility(View.GONE);
+        //habit_events_scoller.setVisibility(View.GONE);
         done_editing.setVisibility(View.VISIBLE); // show done editing button
         title.setEnabled(true); // enable title and reason EditTexts
         reason.setEnabled(true);
@@ -291,7 +291,7 @@ public class HabitDetails extends AppCompatActivity{
     private void prepareForFinishEditing() {
         editing = false; // set editing flag to false (for popup menu)
         habit_events_title.setVisibility(View.VISIBLE); // show Habit Events
-        habit_events_scoller.setVisibility(View.VISIBLE);
+        //habit_events_scoller.setVisibility(View.VISIBLE);
         done_editing.setVisibility(View.GONE); // hide done editing button
         title.setEnabled(false); // disable title and reason EditTexts
         title.setTextColor(Color.BLACK);
