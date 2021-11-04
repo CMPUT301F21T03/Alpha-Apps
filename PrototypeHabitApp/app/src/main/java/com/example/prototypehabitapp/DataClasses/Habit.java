@@ -15,20 +15,32 @@
  *   1.0       Mathew    Oct-13-2021   Created
  *   1.1       Mathew    Oct-31-2021   Added Javadocs
  *   1.2       Leah      Nov-02-2021   Added FirestoreId to allow for edits and deletes
+ *   1.3       Eric      Nov-03-2021   Firestore add, edit, delete now part of Habit class. Changes reflected here.
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
 package com.example.prototypehabitapp.DataClasses;
 
 import android.os.Build;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class Habit implements Serializable {
+
+    private final String TAG = "addhabitTAG";
 
     // User interactive elements
     //=================================================================================
@@ -59,6 +71,8 @@ public class Habit implements Serializable {
     // records the date that the habit was last checked until for habit completion
     private LocalDateTime dateEventChecked;
     //==================================================================================
+
+
 
     /**
      * create a Habit object with the specified values
@@ -157,5 +171,73 @@ public class Habit implements Serializable {
 
     public void setFirestoreId(String firestoreId) {
         this.firestoreId = firestoreId;
+    }
+
+    public void addHabitToFirestore(Map userData) {
+        // add new Habit to Firestore
+        FirebaseFirestore db;
+        db = FirebaseFirestore.getInstance();
+        final CollectionReference habitsref = db.collection("Doers").document((String)userData.get("username")).collection("habits");
+        //Toast.makeText(getContext(), "I came here", Toast.LENGTH_SHORT).show();
+        habitsref.add(this)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG,"success");
+                        setFirestoreId(documentReference.getId());
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG,"failed: "+ e);
+            }
+        });
+    }
+
+    public void removeHabitFromFirestore(Map userData) {
+        // remove current Habit from Firestore
+        FirebaseFirestore db;
+        db = FirebaseFirestore.getInstance();
+        final CollectionReference habitsref = db.collection("Doers").document((String)userData.get("username")).collection("habits");
+        //System.out.println("Firestore ID is: " + getFirestoreId());
+        habitsref.document(getFirestoreId())
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d(TAG,"successfully deleted");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG,"failed delete");
+                    }
+                });
+    }
+
+    public void editHabitInFirestore(Map userData) {
+        // add new Habit to Firestore
+        FirebaseFirestore db;
+        db = FirebaseFirestore.getInstance();
+        final CollectionReference habitsref = db.collection("Doers").document((String)userData.get("username")).collection("habits");
+        //Toast.makeText(getContext(), "I came here", Toast.LENGTH_SHORT).show();
+        habitsref.document(getFirestoreId())
+                .set(this)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d(TAG,"successfully updated");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG,"failed update");
+                    }
+                });
+
+
     }
 }

@@ -20,7 +20,8 @@
  *   1.7       Moe       Nov-01-2021   Added passing event object when log habit is selected in the
  *                                         popup menu
  *   1.8       Moe       Nov-01-2021   Removed log habit in the popup menu
- *   1.9   Jesse/Moe     Nov-02-2021   Added intent extra to send to habit event details
+ *   1.9       Jesse/Moe     Nov-02-2021   Added intent extra to send to habit event details
+ *   1.10      Eric      Nov-03-2021   Firestore add, edit, delete now part of Habit class. Changes reflected here.
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -44,24 +45,12 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import android.widget.ListView;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
-import androidx.fragment.app.Fragment;
 
 import com.example.prototypehabitapp.DataClasses.DaysOfWeek;
+import com.example.prototypehabitapp.DataClasses.EventList;
 import com.example.prototypehabitapp.DataClasses.Habit;
 import com.example.prototypehabitapp.DataClasses.Event;
-import com.example.prototypehabitapp.DataClasses.Habit;
 import com.example.prototypehabitapp.R;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -81,10 +70,26 @@ public class HabitDetails extends AppCompatActivity{
     private HorizontalScrollView habit_events_scoller;
     private Button done_editing;
 
+
+    CheckBox sunday_button;
+    CheckBox monday_button;
+    CheckBox tuesday_button;
+    CheckBox wednesday_button;
+    CheckBox thursday_button;
+    CheckBox friday_button;
+    CheckBox saturday_button;
+
     private ListView eventsListview;
     private ArrayList<Event> events;
     private ArrayAdapter<Event> eventsAdapter;
+
+
+    private Map userData;
+
+
     PopupMenu popupMenu;
+
+    Intent intent;
 
     ArrayList<CheckBox> weekButtons;
 
@@ -114,7 +119,7 @@ public class HabitDetails extends AppCompatActivity{
         weekButtons = prepareDayOfWeekButtons();
 
         // if a selected habit was sent over in the intent
-        Intent intent = getIntent();
+        intent = getIntent();
         /*if (intent.getSerializableExtra(AllHabits.getTAG()) != null)  {
             // then we can work with it...
             // set the data to the proper fields in the activity
@@ -130,6 +135,8 @@ public class HabitDetails extends AppCompatActivity{
             }
 
         }*/
+        userData = (Map) intent.getSerializableExtra("userData");
+
         habit = (Habit) intent.getSerializableExtra("habit");
         Log.d(TAG,habit.getTitle());
         title.setText(habit.getTitle());
@@ -178,19 +185,19 @@ public class HabitDetails extends AppCompatActivity{
 
     private ArrayList<CheckBox> prepareDayOfWeekButtons(){
         ArrayList<CheckBox> weekButtons = new ArrayList<>();
-        CheckBox sunday_button = findViewById(R.id.sunday_checkbox);
+        sunday_button = findViewById(R.id.sunday_checkbox);
         weekButtons.add(sunday_button);
-        CheckBox monday_button = findViewById(R.id.monday_checkbox);
+        monday_button = findViewById(R.id.monday_checkbox);
         weekButtons.add(monday_button);
-        CheckBox tuesday_button = findViewById(R.id.tuesday_checkbox);
+        tuesday_button = findViewById(R.id.tuesday_checkbox);
         weekButtons.add(tuesday_button);
-        CheckBox wednesday_button = findViewById(R.id.wednesday_checkbox);
+        wednesday_button = findViewById(R.id.wednesday_checkbox);
         weekButtons.add(wednesday_button);
-        CheckBox thursday_button = findViewById(R.id.thursday_checkbox);
+        thursday_button = findViewById(R.id.thursday_checkbox);
         weekButtons.add(thursday_button);
-        CheckBox friday_button = findViewById(R.id.friday_checkbox);
+        friday_button = findViewById(R.id.friday_checkbox);
         weekButtons.add(friday_button);
-        CheckBox saturday_button = findViewById(R.id.saturday_checkbox);
+        saturday_button = findViewById(R.id.saturday_checkbox);
         weekButtons.add(saturday_button);
         return weekButtons;
     }
@@ -221,6 +228,10 @@ public class HabitDetails extends AppCompatActivity{
 
                 } else if (menuItem.getItemId() == R.id.delete_habit) {
                     // TODO delete habit in Firestore here
+                    Habit habit_to_delete = (Habit) intent.getSerializableExtra("habit");
+                    //System.out.println("ID to delete: " + habit_to_delete.getFirestoreId());
+                    habit_to_delete.removeHabitFromFirestore(userData);
+                    finish();
                 }
                 return true;
             }
@@ -237,6 +248,24 @@ public class HabitDetails extends AppCompatActivity{
     public void habitDetailsDoneEditingPressed(View view) {
         prepareForFinishEditing();
         // TODO update information in Firestore here
+        Habit habit_to_edit = (Habit) intent.getSerializableExtra("habit");
+        habit_to_edit.setTitle(title.getText().toString());
+        habit_to_edit.setReason(reason.getText().toString());
+
+
+
+        boolean sundayVal = sunday_button.isChecked();
+        boolean mondayVal = monday_button.isChecked();
+        boolean tuesdayVal = tuesday_button.isChecked();
+        boolean wednesdayVal = wednesday_button.isChecked();
+        boolean thursdayVal = thursday_button.isChecked();
+        boolean fridayVal = friday_button.isChecked();
+        boolean saturdayVal = saturday_button.isChecked();
+
+        DaysOfWeek frequency = new DaysOfWeek(sundayVal,mondayVal, tuesdayVal, wednesdayVal,thursdayVal, fridayVal, saturdayVal);
+
+        habit_to_edit.setWeekOccurence(frequency);
+        habit_to_edit.editHabitInFirestore(userData);
     }
 
     private void setBoxesChecked(CheckBox button, boolean val) {

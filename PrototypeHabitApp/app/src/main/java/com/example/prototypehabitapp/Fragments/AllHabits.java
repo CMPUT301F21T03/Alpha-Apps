@@ -15,6 +15,7 @@
  *   1.2       Leah      Oct-30-2021   Now populates from user firestore document, does not use subcollection yet
  *   1.3       Leah      Nov-02-2021   Now uses Habits subcollection. Cleaned up test code. Adds Firestore document ID.
  *   1.4       Leah      Nov-03-2021   Changed empty habit list text to use emptyListView, moved list population to HabitList
+ *   1.5       Eric      Nov-03-2021   Firestore add, edit, delete now part of Habit class. Changes reflected here.
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -24,6 +25,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -92,10 +94,12 @@ public class AllHabits extends Fragment {
     private void habitItemClicked(AdapterView<?> adapterView, View view, int pos, long l) {
         // get the item that the user selected
         Habit itemToSend = (Habit) allHabitsListView.getItemAtPosition(pos);
+        //System.out.println("Sending in the habit class: " + itemToSend.getFirestoreId());
         Intent intent = new Intent(getContext(), HabitDetails.class);
 
         // Put pressed habit into bundle to send to HabitDetails
         intent.putExtra("habit",itemToSend);
+        intent.putExtra("userData", (Serializable) userData);
         startActivity(intent);
     }
 
@@ -115,11 +119,13 @@ public class AllHabits extends Fragment {
         // show your page from Firestore
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
+
         final Query user = db.collection("Doers")
                                          .document((String) userData.get("username"))
                                          .collection("habits")
                                          .orderBy("title");
         habitAdapter.addSnapshotQuery(user,TAG);
+
 
     }
 }
