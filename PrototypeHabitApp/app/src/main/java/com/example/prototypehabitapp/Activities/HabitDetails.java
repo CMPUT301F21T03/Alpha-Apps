@@ -107,7 +107,7 @@ public class HabitDetails extends AppCompatActivity{
         reason = findViewById(R.id.habitdetails_reason_text);
         date_started = findViewById(R.id.habitdetails_date_started);
         habit_events_title = findViewById(R.id.habitdetails_habit_events_text);
-        //habit_events_scoller = findViewById(R.id.habitdetails_habit_event_list_scroll_view);
+        // habit_events_scoller = findViewById(R.id.habitdetails_habit_event_list_scroll_view);
         done_editing = findViewById(R.id.habitdetails_button_done_editing);
 
         // disable title and reason editablity onCreate
