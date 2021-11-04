@@ -141,6 +141,21 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/frameLayout2" />
 
+        <TextView
+            android:id="@+id/habitdetails_done_habit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="12dp"
+            android:layout_marginStart="15dp"
+            android:shadowColor="@color/gray"
+            android:text="Done"
+            android:textColor="#6ACF50"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            app:layout_constraintStart_toEndOf="@+id/habitdetails_title"
+            app:layout_constraintTop_toBottomOf="@+id/frameLayout2" />
+
         <Button
             android:id="@+id/habitdetails_button_done_editing"
             android:layout_width="wrap_content"
@@ -152,6 +167,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

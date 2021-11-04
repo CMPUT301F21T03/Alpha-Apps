@@ -23,11 +23,14 @@
  *   1.9       Jesse/Moe     Nov-02-2021   Added intent extra to send to habit event details
  *   1.10      Eric      Nov-03-2021   Firestore add, edit, delete now part of Habit class. Changes reflected here.
  *   1.11      Moe       Nov-04-2021   Deleted scroller for displaying HabitEvents
+ *   1.12      Moe       Nov-04-2021   Changed custom dialog to alertDialog for adding habit event
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
 package com.example.prototypehabitapp.Activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -56,6 +59,7 @@ import com.example.prototypehabitapp.R;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class HabitDetails extends AppCompatActivity{
 
@@ -63,11 +67,13 @@ public class HabitDetails extends AppCompatActivity{
     // attributes
     private Habit habit;
     private boolean editing;
+    private Event newHabitEvent;
 
     private EditText title;
     private EditText reason;
     private TextView date_started;
     private TextView habit_events_title;
+    private TextView done_habit;
     private Button done_editing;
 
 
@@ -107,6 +113,7 @@ public class HabitDetails extends AppCompatActivity{
         reason = findViewById(R.id.habitdetails_reason_text);
         date_started = findViewById(R.id.habitdetails_date_started);
         habit_events_title = findViewById(R.id.habitdetails_habit_events_text);
+        done_habit = findViewById(R.id.habitdetails_done_habit);
         done_editing = findViewById(R.id.habitdetails_button_done_editing);
 
         // disable title and reason editablity onCreate
@@ -215,12 +222,7 @@ public class HabitDetails extends AppCompatActivity{
             public boolean onMenuItemClick(MenuItem menuItem) {
 
                 if (menuItem.getItemId() == R.id.mark_done) {
-                    // TODO mark as done
-                    Event event = new Event(habit.getTitle(), LocalDateTime.now(), "", false, false);
-                    events.add(event);
-                    habit.setEventList(events);
-                    HabitEventDialog dialog = new HabitEventDialog(HabitDetails.this, event, habit);
-                    dialog.show();
+                    addHabitEvent();
 
                 } else if (menuItem.getItemId() == R.id.edit_habit) {
                     prepareForEdit();
@@ -299,4 +301,41 @@ public class HabitDetails extends AppCompatActivity{
             weekButtons.get(i).setClickable(false);
         }
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void addHabitEvent() {
+
+        AlertDialog.Builder markdoneBuilder = new AlertDialog.Builder(this);
+        markdoneBuilder.setMessage("Do you want to mark this habit as done?")
+                .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        newHabitEvent = new Event(habit.getTitle(), LocalDateTime.now(), "", false, false);
+                        events.add(newHabitEvent);
+                        habit.setEventList(events);
+
+                        done_habit.setVisibility(View.VISIBLE);
+                        eventsAdapter.notifyDataSetChanged();
+
+                        AlertDialog.Builder loghabitBuilder = new AlertDialog.Builder(HabitDetails.this);
+                        loghabitBuilder.setMessage("Do you want to log this habit?")
+                                .setPositiveButton("Log habit", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Intent intent = new Intent(HabitDetails.this, EditHabitEvent.class);
+                                        intent.putExtra("EVENT", newHabitEvent);
+                                        startActivity(intent);
+                                    }
+                                })
+                                .setNegativeButton("Cancel", null);
+                        AlertDialog alert2 = loghabitBuilder.create();
+                        alert2.show();
+                    }
+                })
+                .setNegativeButton("Cancel", null);
+        AlertDialog alert = markdoneBuilder.create();
+        alert.show();
+
+    }
+
 }
