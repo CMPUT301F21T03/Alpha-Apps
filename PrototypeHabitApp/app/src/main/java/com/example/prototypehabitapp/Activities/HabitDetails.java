@@ -22,6 +22,7 @@
  *   1.8       Moe       Nov-01-2021   Removed log habit in the popup menu
  *   1.9       Jesse/Moe     Nov-02-2021   Added intent extra to send to habit event details
  *   1.10      Eric      Nov-03-2021   Firestore add, edit, delete now part of Habit class. Changes reflected here.
+ *   1.11      Moe       Nov-04-2021   Deleted scroller for displaying HabitEvents
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -67,7 +68,6 @@ public class HabitDetails extends AppCompatActivity{
     private EditText reason;
     private TextView date_started;
     private TextView habit_events_title;
-    private HorizontalScrollView habit_events_scoller;
     private Button done_editing;
 
 
@@ -107,7 +107,6 @@ public class HabitDetails extends AppCompatActivity{
         reason = findViewById(R.id.habitdetails_reason_text);
         date_started = findViewById(R.id.habitdetails_date_started);
         habit_events_title = findViewById(R.id.habitdetails_habit_events_text);
-        habit_events_scoller = findViewById(R.id.habitdetails_habit_event_list_scroll_view);
         done_editing = findViewById(R.id.habitdetails_button_done_editing);
 
         // disable title and reason editablity onCreate
@@ -279,7 +278,6 @@ public class HabitDetails extends AppCompatActivity{
     private void prepareForEdit() {
         editing = true; // set editing flag to true (for popup menu)
         habit_events_title.setVisibility(View.GONE); // hide Habit Events
-        habit_events_scoller.setVisibility(View.GONE);
         done_editing.setVisibility(View.VISIBLE); // show done editing button
         title.setEnabled(true); // enable title and reason EditTexts
         reason.setEnabled(true);
@@ -291,7 +289,6 @@ public class HabitDetails extends AppCompatActivity{
     private void prepareForFinishEditing() {
         editing = false; // set editing flag to false (for popup menu)
         habit_events_title.setVisibility(View.VISIBLE); // show Habit Events
-        habit_events_scoller.setVisibility(View.VISIBLE);
         done_editing.setVisibility(View.GONE); // hide done editing button
         title.setEnabled(false); // disable title and reason EditTexts
         title.setTextColor(Color.BLACK);
