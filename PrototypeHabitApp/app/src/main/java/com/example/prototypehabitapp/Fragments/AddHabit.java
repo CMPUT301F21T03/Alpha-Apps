@@ -15,6 +15,7 @@
  *   1.2       Arthur    Oct-31-2021   Added full functionality
  *   1.3       Leah      Nov-1-2021    Added ability to write to Firestore
  *   1.4       Eric      Nov-03-2021   Changed date picker dialog to display current date by default
+ *   1.5       Eric      Nov-03-2021   Firestore add, edit, delete now part of Habit class. Changes reflected here.
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -142,6 +143,9 @@ public class AddHabit extends Fragment {
             LocalDateTime newDate = LocalDateTime.parse(habitDate, formatter);
             Habit newHabit = new Habit(habitName, habitReason, newDate, frequency);
 
+            newHabit.addHabitToFirestore(userData);
+
+            /*
             // add new Habit to Firestore
             FirebaseFirestore db;
             db = FirebaseFirestore.getInstance();
@@ -159,7 +163,7 @@ public class AddHabit extends Fragment {
                     Log.d(TAG,"failed: "+ e);
                 }
             });
-
+            */
             // go back to Main Activity
             getFragmentManager().popBackStack();
             //navigateToMainAcitivity();
