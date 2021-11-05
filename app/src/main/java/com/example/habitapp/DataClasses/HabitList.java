@@ -129,7 +129,13 @@ public class HabitList extends ArrayAdapter<Habit> implements Serializable {
                             LocalDateTime ldt = newDate;
                             // Convert Firestore's stored days of week to DaysOfWeek
                             Map<String, Boolean> docDaysOfWeek = (Map<String, Boolean>) doc.get("weekOccurence");
-                            Habit habitToAdd = new Habit(doc.getString("title"),doc.getString("reason"),ldt,new DaysOfWeek(docDaysOfWeek));
+                            Habit habitToAdd;
+                            if (doc.getBoolean("privacy") == null) {
+                                 habitToAdd = new Habit(doc.getString("title"),doc.getString("reason"),ldt,new DaysOfWeek(docDaysOfWeek), true);
+                            } else {
+                                 habitToAdd = new Habit(doc.getString("title"),doc.getString("reason"),ldt,new DaysOfWeek(docDaysOfWeek), doc.getBoolean("privacy"));
+                            }
+
                             // Set the document ID in case it needs to be fetched for delete/edits
                             habitToAdd.setFirestoreId(doc.getId());
                             // Add to the ListArray
