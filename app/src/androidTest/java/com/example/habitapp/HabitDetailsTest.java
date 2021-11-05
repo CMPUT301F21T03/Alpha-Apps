@@ -72,7 +72,7 @@ public class HabitDetailsTest {
      */
     @Test
     public void addHabitAndPopulatesDetails(){
-        solo.clickOnMenuItem("Add Habit");
+        solo.clickOnView(solo.getView(R.id.addHabitFragment));
         solo.waitForText("Add", 2, 1000);
 
         // generate random username
@@ -109,7 +109,7 @@ public class HabitDetailsTest {
      */
     @Test
     public void editHabitAndPopulates() {
-        solo.clickOnMenuItem("Add Habit");
+        solo.clickOnView(solo.getView(R.id.addHabitFragment));
         solo.waitForText("Add", 2, 1000);
 
         // generate random username
@@ -170,7 +170,7 @@ public class HabitDetailsTest {
      */
     @Test
     public void deleteHabitAndPopulates(){
-        solo.clickOnMenuItem("Add Habit");
+        solo.clickOnView(solo.getView(R.id.addHabitFragment));
         solo.waitForText("Add", 2, 1000);
 
         // generate random username

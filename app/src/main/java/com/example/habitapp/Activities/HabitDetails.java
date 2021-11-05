@@ -93,7 +93,7 @@ public class HabitDetails extends AppCompatActivity{
 
     public ListView eventsListview;
     private EventList eventsAdapter;
-    private ArrayList<Event> events = new ArrayList<>();
+    public ArrayList<Event> events = new ArrayList<>();
 
 
     private Map userData;
