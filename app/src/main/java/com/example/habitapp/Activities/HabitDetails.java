@@ -199,7 +199,6 @@ public class HabitDetails extends AppCompatActivity{
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void habitDetailsMoreButtonPressed(View view) {
-        //TODO open a dialog as defined in the figma storyboard
         popupMenu = new PopupMenu(this, view);
         popupMenu.getMenuInflater().inflate(R.menu.habit_more_menu, popupMenu.getMenu());
         if (editing) {
@@ -216,9 +215,7 @@ public class HabitDetails extends AppCompatActivity{
                     prepareForEdit();
 
                 } else if (menuItem.getItemId() == R.id.delete_habit) {
-                    // TODO delete habit in Firestore here
                     Habit habit_to_delete = (Habit) intent.getSerializableExtra("habit");
-                    //System.out.println("ID to delete: " + habit_to_delete.getFirestoreId());
                     habit_to_delete.removeHabitFromFirestore(userData);
                     finish();
                 }
@@ -241,8 +238,6 @@ public class HabitDetails extends AppCompatActivity{
         Habit habit_to_edit = (Habit) intent.getSerializableExtra("habit");
         habit_to_edit.setTitle(title.getText().toString());
         habit_to_edit.setReason(reason.getText().toString());
-
-
 
         boolean sundayVal = sunday_button.isChecked();
         boolean mondayVal = monday_button.isChecked();
