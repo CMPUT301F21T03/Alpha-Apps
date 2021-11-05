@@ -39,6 +39,7 @@ import com.example.habitapp.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -74,10 +75,12 @@ public class TodayHabits extends Fragment {
     private void habitItemClicked(AdapterView<?> adapterView, View view, int pos, long l) {
         // get the item that the user selected
         Habit itemToSend = (Habit) todaysHabitsListView.getItemAtPosition(pos);
+        //System.out.println("Sending in the habit class: " + itemToSend.getFirestoreId());
         Intent intent = new Intent(getContext(), HabitDetails.class);
 
-        // go to the habit details class with that item
+        // Put pressed habit into bundle to send to HabitDetails
         intent.putExtra("habit",itemToSend);
+        intent.putExtra("userData", (Serializable) userData);
         startActivity(intent);
     }
 
