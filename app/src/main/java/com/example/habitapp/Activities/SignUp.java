@@ -17,6 +17,7 @@
  *   1.2       Leah      Nov-01-2021   Removed test habit data.
  *   1.3       Leah      Nov-02-2021   Fixed crash on blank field
  *   1.4       Eric      Nov-03-2021   Fixed other crashes on blank fields
+ *   1.5       Eric      Nov-04-2021   Renamed email references to username
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -77,8 +78,8 @@ public class SignUp extends AppCompatActivity {
 
         EditText getName = (EditText)findViewById(R.id.signupscreen_name_alias);
         String name = getName.getText().toString();
-        EditText getEmail = (EditText)findViewById(R.id.signupscreen_email);
-        String email = getEmail.getText().toString();
+        EditText getUsername = (EditText)findViewById(R.id.signupscreen_username);
+        String username = getUsername.getText().toString();
         EditText getPassword = (EditText)findViewById(R.id.signupscreen_password);
         String password = getPassword.getText().toString();
 
@@ -101,13 +102,13 @@ public class SignUp extends AppCompatActivity {
         Context signupContext = this;
 
         // try obtaining a reference to the email field
-        if(name.isEmpty() || email.isEmpty() || password.isEmpty()){
+        if(name.isEmpty() || username.isEmpty() || password.isEmpty()){
             // name/username/password error
             signupAlert.setMessage("Please enter your name, your username and, password.");
             signupAlert.show();
 
         } else {
-            final DocumentReference findUserRef = db.collection("Doers").document(email);
+            final DocumentReference findUserRef = db.collection("Doers").document(username);
             findUserRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -118,7 +119,7 @@ public class SignUp extends AppCompatActivity {
                             // TODO: initiate name and other user profile details here
                             // Must change habit format later
                             Map userData = new HashMap<>();
-                            userData.put("username",email);
+                            userData.put("username",username);
                             userData.put("password",password);
                             userData.put("name",name);
 
@@ -135,7 +136,7 @@ public class SignUp extends AppCompatActivity {
                                                 //  button to take the user back to the log in page
                                                 //  send a state through the intent bundle?
                                                 Intent intent = new Intent(signupContext, Main.class);
-                                                intent.putExtra(MESSAGE, email);
+                                                intent.putExtra(MESSAGE, username);
                                                 // bundle the user info into Serializable and send through Intent
                                                 intent.putExtra("userData",(Serializable) userData);
                                                 // start Main Activity
