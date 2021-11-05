@@ -14,6 +14,7 @@
  *   1.1       Mathew    Oct-21-2021   Added some navigation features to and from this page
  *   1.2       Mathew    Nov-01-2021   Added logic to the frame as well as changed its associated
  *                                      layout file. Refactored navigation to go to new frames.
+ *   1.3       Leah      Nov-05-2021   Added profile info from user. Sends data back to Firestore if edited.
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -33,8 +34,14 @@ import androidx.fragment.app.Fragment;
 
 import com.example.habitapp.Activities.BootScreen;
 import com.example.habitapp.Activities.FollowingFollowers;
+import com.example.habitapp.Activities.Main;
 import com.example.habitapp.DataClasses.User;
 import com.example.habitapp.R;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class Profile extends Fragment {
@@ -47,14 +54,17 @@ public class Profile extends Fragment {
     private boolean allowedToEdit = false;
     private User profile;
     private View usernameView;
+    Map userData;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         // set the editability of the profile editText to false
+
         usernameView = view.findViewById(R.id.profilelistentry_username);
         usernameView.setEnabled(false);
+
         // get the current user's data
         getUserData();
 
@@ -78,30 +88,10 @@ public class Profile extends Fragment {
     public void getUserData(){
 
         //add some test data
-        profile = new User("uniqueID1234567890", "my_name2", "my_email2", "my_password2");
-
-//        // show your page from Firestore
-//        FirebaseFirestore db;
-//        db = FirebaseFirestore.getInstance();
-//        final CollectionReference user = db.collection("Doers").document((String) userData.get("username")).collection("habits");
-//        user.addSnapshotListener(new EventListener<QuerySnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable QuerySnapshot querySnapshot,
-//                                @Nullable FirebaseFirestoreException e) {
-//                if (e != null) {
-//                    // if error occurs
-//                    Log.w(TAG, "Listen failed.", e);
-//                    return;
-//                }
-//
-//                //TODO grab this user's profile data (only 1 item should be retrieved)
-//                profile = new User();
-//
-//
-//            }
-//        });
-//        // END REMOVE HERE
-//
+        //profile = new User("uniqueID1234567890", "my_name2", "my_email2", "my_password2");
+        Main activity = (Main) getActivity();
+        userData = activity.getUserData();
+        profile = new User(userData.get("username").toString(),userData.get("name").toString(),userData.get("username").toString(),userData.get("password").toString());
     }
 
     private void setButtonListeners(View view){
@@ -170,7 +160,13 @@ public class Profile extends Fragment {
             //TODO get the updated profile picture
 
             //TODO put all of the updated info above into firebase in place of the old data
-
+            // Puts new username into Firestore
+            FirebaseFirestore db;
+            db = FirebaseFirestore.getInstance();
+            Map<String, Object> data = new HashMap<>();
+            data.put("name", newUsername);
+            db.collection("Doers").document(userData.get("username").toString())
+                    .set(data, SetOptions.merge());
 
 
         }
