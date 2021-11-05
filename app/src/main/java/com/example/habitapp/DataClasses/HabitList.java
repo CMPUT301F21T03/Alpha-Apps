@@ -143,14 +143,13 @@ public class HabitList extends ArrayAdapter<Habit> implements Serializable {
     }
 
     public void addHabit(Habit habit){
-        if(!habitList.contains(habit)){
-            habitList.add(habit);
+        if (habitList.contains(habit)) {
+            throw new IllegalArgumentException();
         }
+        habitList.add(habit);
     }
     public List<Habit> getHabits() {
-        ArrayList<Habit> list = habitList;
-
-        return list;
+        return habitList;
     }
 
 
