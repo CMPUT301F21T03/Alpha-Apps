@@ -17,6 +17,8 @@
  *   1.3       Mathew    Oct-31-2021   Fix imports
  *   1.4       Moe       Nov-01-2021   Added delete button
  *   1.5       Jesse     Nov-02-2021   Implemented delete event
+ *   1.6       Moe       Nov-04-2021   Added extra value for intent
+ *   1.7       Moe       Nov-04-2021   Firestore delete for HabitEvent
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -26,6 +28,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -33,11 +36,16 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.habitapp.DataClasses.Event;
+import com.example.habitapp.DataClasses.EventList;
 import com.example.habitapp.DataClasses.Habit;
 import com.example.habitapp.R;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
+import java.io.Serializable;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Map;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class HabitEventDetails extends AppCompatActivity {
@@ -50,6 +58,8 @@ public class HabitEventDetails extends AppCompatActivity {
     private Boolean hasPhotograph;
     private Boolean hasLocation;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private Map userData;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +69,9 @@ public class HabitEventDetails extends AppCompatActivity {
 
         //get details from bundle
         Intent sentIntent = getIntent();
-        event = (Event) sentIntent.getSerializableExtra("EVENT");
-        habit = (Habit) sentIntent.getSerializableExtra("HABIT");
+        event = (Event) sentIntent.getSerializableExtra("event");
+        habit = (Habit) sentIntent.getSerializableExtra("habit");
+        userData = (Map) sentIntent.getSerializableExtra("userData");
 
         //update fields with Event info
         habitName = event.getName();
@@ -88,17 +99,21 @@ public class HabitEventDetails extends AppCompatActivity {
     private void habitEventDetailsEditButtonPressed(View view) {
         // navigate to the edit an event activity
         Intent intent = new Intent(this, EditHabitEvent.class);
-        intent.putExtra("EVENT", event);
-        intent.putExtra("HABIT", habit);
+        intent.putExtra("event", event);
+        intent.putExtra("habit", habit);
+        intent.putExtra("userData", (Serializable) userData);
+        intent.putExtra("activity", "HabitEventDetails");
         startActivity(intent);
     }
 
     private void habitEventDetailsDeleteButtonPressed(View view) {
-        // TODO add confirm delete dialog
-        ArrayList<Event> events = habit.getEventList();
-        events.remove(event);
-        finish();
+        event.removeEventFromFirestore(userData, habit);
+        Intent intent;
+        intent = new Intent(this, HabitDetails.class);
+        intent.putExtra("habit", habit);
+        intent.putExtra("userData", (Serializable) userData);
+        startActivity(intent);
     }
-//
-//    @Override
+
+
 }
