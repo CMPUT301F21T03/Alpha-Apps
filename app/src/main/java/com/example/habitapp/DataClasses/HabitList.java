@@ -148,26 +148,48 @@ public class HabitList extends ArrayAdapter<Habit> implements Serializable {
         });
     }
 
+    /**
+     * Adds a Habit type object to our internal ArrayList
+     * Also executes a check to see if Habit already exists in list,
+     * and will throw an exception in that case.
+     * @param habit The Habit object to add to the ArrayList
+     */
     public void addHabit(Habit habit){
         if (habitList.contains(habit)) {
             throw new IllegalArgumentException();
         }
         habitList.add(habit);
     }
+
+    /**
+     * Grabs the entire ArrayList containing the habits for use in certain siutations.
+     * @return habitlist attribute that is the ArrayList containing the Habit objects
+     */
     public List<Habit> getHabits() {
         return habitList;
     }
 
-
-
-        public Habit getHabitAtPosition(Integer pos){
+    /**
+     * Grabs the Habit object at a specified index in the ArrayList
+     * @param pos index of Habit object desired in ArrayList
+     * @return Habit object at specified index
+     */
+    public Habit getHabitAtPosition(Integer pos){
         return habitList.get(pos);
     }
 
+    /**
+     * Clears the ArrayList containing all the Habit objects
+     */
     public void clearHabitList(){
         habitList.clear();
     }
 
+    /**
+     * Returns a boolean that's true if the ArrayList storing the Habit objects is empty,
+     * false otherwise
+     * @return boolean if Habit ArrayList is empty or not
+     */
     public Boolean getHabitListEmpty() {
         return habitList.isEmpty();
     }
