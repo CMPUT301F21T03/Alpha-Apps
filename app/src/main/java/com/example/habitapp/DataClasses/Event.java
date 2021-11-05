@@ -16,15 +16,29 @@
  *                                      getters/setters
  *   1.2       Jesse     Oct-31-2021   Altered Event to implement Serializable
  *   1.3       Mathew    Oct-31-2021   Added Javadocs
+ *   1.4       Moe       Nov-04-2021   Firestore add, delete, edit for Event
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
 package com.example.habitapp.DataClasses;
 
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 public class Event implements Serializable {
+
+    private final String TAG = "addEventTAG";
 
     private String name;
 
@@ -38,6 +52,8 @@ public class Event implements Serializable {
 
     // TODO change the below attribute (and all other instances) to properly represent a location
     private Boolean hasLocation;
+
+    private String firestoreId;
 
     /**
      * creates an event with the specified values. If the value is null it means it was not given by the user
@@ -59,9 +75,9 @@ public class Event implements Serializable {
             // TODO make a function that terminates the program (or handle the error in another way)
         }
         // TODO set the photograph and location attributes
-        
+
     }
-    
+
     // =========================== GETTERS AND SETTERS ===========================
     //TODO create getters and setters for the location and photograph as needed
 
@@ -93,6 +109,91 @@ public class Event implements Serializable {
         }
         this.comment = comment;
     }
+
+    public String getFirestoreId() {
+        return firestoreId;
+    }
+
+    public void setFirestoreId(String firestoreId) {
+        this.firestoreId = firestoreId;
+    }
+
+    public void addEventToFirestore(Map userData, Habit habit) {
+        FirebaseFirestore db;
+        db = FirebaseFirestore.getInstance();
+        final CollectionReference eventsref = db.collection("Doers")
+                .document((String)userData.get("username"))
+                .collection("habits")
+                .document(habit.getFirestoreId())
+                .collection("events");
+
+        eventsref.add(this)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG,"success");
+                        setFirestoreId(documentReference.getId());
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG,"failed: "+ e);
+            }
+        });
+    }
+
+    public void removeEventFromFirestore(Map userData, Habit habit) {
+        FirebaseFirestore db;
+        db = FirebaseFirestore.getInstance();
+        final CollectionReference eventsref = db.collection("Doers")
+                .document((String)userData.get("username"))
+                .collection("habits")
+                .document(habit.getFirestoreId())
+                .collection("events");
+        eventsref.document(getFirestoreId())
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d(TAG, "successfully deleted");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "failed deletion");
+
+                    }
+                });
+    }
+
+    public void editEventInFirestore(Map userData, Habit habit) {
+        FirebaseFirestore db;
+        db = FirebaseFirestore.getInstance();
+        final CollectionReference eventsref = db.collection("Doers")
+                .document((String)userData.get("username"))
+                .collection("habits")
+                .document(habit.getFirestoreId())
+                .collection("events");
+
+        eventsref.document(getFirestoreId())
+                .set(this)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d(TAG,"successfully updated");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG,"failed update");
+                    }
+                });
+
+    }
+
 
 
 }

@@ -13,6 +13,7 @@
  *   1.0       Jesse     Oct-31-2021    Created
  *   1.1       Mathew    Oct-31-2021    Fix imports
  *   1.2     Jesse/Moe     Nov-03-2021    Add layout inflater
+ *   1.3       Moe       Nov-04         Added addSnapshotQuery to display HabitEvent from Firestore
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -20,6 +21,7 @@ package com.example.habitapp.DataClasses;
 
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,9 +33,17 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import com.example.habitapp.R;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class EventList extends ArrayAdapter<Event> {
@@ -66,5 +76,46 @@ public class EventList extends ArrayAdapter<Event> {
         date.setText(event.getDateCompleted().format(formatter));
 
         return view;
+    }
+
+    @NonNull
+    public void addSnapshotQuery(Query query, String TAG) {
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onEvent(@Nullable QuerySnapshot querySnapshot, @Nullable FirebaseFirestoreException e) {
+                if (e!=null) {
+                    Log.w(TAG, "Listener failed", e);
+                    return;
+                }
+                clearEventList();
+                if (!querySnapshot.isEmpty()) {
+                    List<String> eventStrs = new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : querySnapshot) {
+                        if (doc.get("name") != null) {
+                            Map getDate = (Map) doc.get("dateCompleted");
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss");
+                            String newDateStr = getDate.get("year").toString() + "-" +
+                                    getDate.get("monthValue").toString() + "-" +
+                                    getDate.get("dayOfMonth").toString() + " 00:00:00";;
+                            LocalDateTime newDate = LocalDateTime.parse(newDateStr, formatter);
+                            String comment = doc.getString("comment");
+                            // TODO store location and photograph after halfway
+                            Event eventToAdd = new Event(doc.getString("name"),newDate, comment, false, false);
+                            eventToAdd.setFirestoreId(doc.getId());
+                            if (!events.contains(eventToAdd)) {
+                                events.add(eventToAdd);
+                            }
+
+                        }
+                    }
+                }
+                notifyDataSetChanged();
+            }
+        });
+    }
+
+    public void clearEventList() {
+        events.clear();
     }
 }

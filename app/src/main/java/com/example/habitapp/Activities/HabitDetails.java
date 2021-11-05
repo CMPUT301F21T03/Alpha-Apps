@@ -22,11 +22,16 @@
  *   1.8       Moe       Nov-01-2021   Removed log habit in the popup menu
  *   1.9       Jesse/Moe     Nov-02-2021   Added intent extra to send to habit event details
  *   1.10      Eric      Nov-03-2021   Firestore add, edit, delete now part of Habit class. Changes reflected here.
+ *   1.11      Moe       Nov-04-2021   Deleted scroller for displaying HabitEvents
+ *   1.12      Moe       Nov-04-2021   Changed custom dialog to alertDialog for adding habit event
+ *   1.13      Moe       Nov-04-2021   Updated EventAdapter to display all the HabitEvents
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
 package com.example.habitapp.Activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -39,22 +44,26 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.habitapp.DataClasses.DaysOfWeek;
-import com.example.habitapp.DataClasses.Event;
 import com.example.habitapp.DataClasses.EventList;
 import com.example.habitapp.DataClasses.Habit;
+import com.example.habitapp.DataClasses.Event;
 import com.example.habitapp.R;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class HabitDetails extends AppCompatActivity{
 
@@ -62,12 +71,13 @@ public class HabitDetails extends AppCompatActivity{
     // attributes
     private Habit habit;
     private boolean editing;
+    private Event newHabitEvent;
 
     private EditText title;
     private EditText reason;
     private TextView date_started;
     private TextView habit_events_title;
-    //private HorizontalScrollView habit_events_scoller;
+    private TextView done_habit;
     private Button done_editing;
 
 
@@ -80,8 +90,8 @@ public class HabitDetails extends AppCompatActivity{
     CheckBox saturday_button;
 
     private ListView eventsListview;
-    private ArrayList<Event> events;
-    private ArrayAdapter<Event> eventsAdapter;
+    private EventList eventsAdapter;
+    private ArrayList<Event> events = new ArrayList<>();
 
 
     private Map userData;
@@ -107,7 +117,7 @@ public class HabitDetails extends AppCompatActivity{
         reason = findViewById(R.id.habitdetails_reason_text);
         date_started = findViewById(R.id.habitdetails_date_started);
         habit_events_title = findViewById(R.id.habitdetails_habit_events_text);
-        //habit_events_scoller = findViewById(R.id.habitdetails_habit_event_list_scroll_view);
+        done_habit = findViewById(R.id.habitdetails_done_habit);
         done_editing = findViewById(R.id.habitdetails_button_done_editing);
 
         // disable title and reason editablity onCreate
@@ -151,22 +161,7 @@ public class HabitDetails extends AppCompatActivity{
             weekButtons.get(i).setClickable(false);
         }
 
-        eventsListview = findViewById(R.id.habitdetails_habit_event_list);
-
-        //add test habit data (remove later)
-        habit = new Habit("title", "reason", LocalDateTime.now(), new DaysOfWeek());
-        events = habit.getEventList();
-
-        Event newEvent = new Event("title", LocalDateTime.now(), "comment", false, false);
-        Event newEvent2 = new Event("title", LocalDateTime.now(), "comment", false, false);
-
-        events.add(newEvent);
-        events.add(newEvent2);
-        habit.setEventList(events);
-
-        eventsAdapter = new EventList(this, events);
-        eventsListview.setAdapter(eventsAdapter);
-
+        setHabitEventAdapter();
 
         //set a listener for if the editHabit layout is pressed by the user
         eventsListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -216,13 +211,7 @@ public class HabitDetails extends AppCompatActivity{
             public boolean onMenuItemClick(MenuItem menuItem) {
 
                 if (menuItem.getItemId() == R.id.mark_done) {
-                    // TODO mark as done
-                    Event event = new Event(habit.getTitle(), LocalDateTime.now(), "", false, false);
-                    events.add(event);
-                    habit.setEventList(events);
-                    HabitEventDialog dialog = new HabitEventDialog(HabitDetails.this, event, habit);
-                    dialog.show();
-
+                    addHabitEvent();
                 } else if (menuItem.getItemId() == R.id.edit_habit) {
                     prepareForEdit();
 
@@ -240,8 +229,9 @@ public class HabitDetails extends AppCompatActivity{
 
     private void habitDetailsHabitEventLayoutPressed(Event event){
         Intent intent = new Intent(this, HabitEventDetails.class);
-        intent.putExtra("EVENT", event);
-        intent.putExtra("HABIT", habit);
+        intent.putExtra("event", event);
+        intent.putExtra("habit", habit);
+        intent.putExtra("userData", (Serializable) userData);
         startActivity(intent);
     }
 
@@ -279,7 +269,6 @@ public class HabitDetails extends AppCompatActivity{
     private void prepareForEdit() {
         editing = true; // set editing flag to true (for popup menu)
         habit_events_title.setVisibility(View.GONE); // hide Habit Events
-        //habit_events_scoller.setVisibility(View.GONE);
         done_editing.setVisibility(View.VISIBLE); // show done editing button
         title.setEnabled(true); // enable title and reason EditTexts
         reason.setEnabled(true);
@@ -291,7 +280,6 @@ public class HabitDetails extends AppCompatActivity{
     private void prepareForFinishEditing() {
         editing = false; // set editing flag to false (for popup menu)
         habit_events_title.setVisibility(View.VISIBLE); // show Habit Events
-        //habit_events_scoller.setVisibility(View.VISIBLE);
         done_editing.setVisibility(View.GONE); // hide done editing button
         title.setEnabled(false); // disable title and reason EditTexts
         title.setTextColor(Color.BLACK);
@@ -302,4 +290,68 @@ public class HabitDetails extends AppCompatActivity{
             weekButtons.get(i).setClickable(false);
         }
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void addHabitEvent() {
+
+        AlertDialog.Builder markdoneBuilder = new AlertDialog.Builder(this);
+        markdoneBuilder.setMessage("Do you want to mark this habit as done?")
+                .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        newHabitEvent = new Event(habit.getTitle(), LocalDateTime.now(), "", false, false);
+
+                        newHabitEvent.addEventToFirestore(userData, habit);
+                        done_habit.setVisibility(View.VISIBLE);
+
+                        AlertDialog.Builder loghabitBuilder = new AlertDialog.Builder(HabitDetails.this);
+                        loghabitBuilder.setMessage("Do you want to log this habit?")
+                                .setPositiveButton("Log habit", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Intent intent = new Intent(HabitDetails.this, EditHabitEvent.class);
+                                        intent.putExtra("event", newHabitEvent);
+                                        intent.putExtra("habit", habit);
+                                        intent.putExtra("userData", (Serializable) userData);
+                                        intent.putExtra("activity", "HabitDetails");
+                                        startActivity(intent);
+                                    }
+                                })
+                                .setNegativeButton("Cancel", null);
+                        AlertDialog alert2 = loghabitBuilder.create();
+                        alert2.show();
+                    }
+                })
+                .setNegativeButton("Cancel", null);
+        AlertDialog alert = markdoneBuilder.create();
+        alert.show();
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void setHabitEventAdapter() {
+        eventsListview = findViewById(R.id.habitdetails_habit_event_list);
+        eventsAdapter = new EventList(this, events);
+        eventsListview.setAdapter(eventsAdapter);
+        getHabitEventList(eventsAdapter);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void getHabitEventList(EventList eventsAdapter) {
+        FirebaseFirestore db;
+        db = FirebaseFirestore.getInstance();
+
+        final Query user = db.collection("Doers")
+                .document((String) userData.get("username"))
+                .collection("habits")
+                .document(habit.getFirestoreId())
+                .collection("events")
+                .orderBy("dateCompleted");
+
+        eventsAdapter.addSnapshotQuery(user, TAG);
+
+    }
+
+
+
 }
