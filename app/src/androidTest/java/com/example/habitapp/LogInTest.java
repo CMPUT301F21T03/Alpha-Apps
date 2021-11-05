@@ -57,7 +57,7 @@ public class LogInTest {
         // user: test
         // password: abc123
         solo.assertCurrentActivity("Wrong Activity", LogIn.class);
-        solo.enterText((EditText) solo.getView(R.id.loginscreen_email), "test");
+        solo.enterText((EditText) solo.getView(R.id.loginscreen_username), "test");
         solo.enterText((EditText) solo.getView(R.id.loginscreen_password), "abc123");
         solo.clickOnView(solo.getView(R.id.signupscreen_sign_up)); // misleading button name
         solo.sleep(5); // wait for communication w/ server
@@ -78,15 +78,15 @@ public class LogInTest {
         solo.assertCurrentActivity("Wrong Activity", LogIn.class);
 
         // first test bad username w/ password entered (since the password entered won't matter)
-        solo.enterText((EditText) solo.getView(R.id.loginscreen_email), "tes");
+        solo.enterText((EditText) solo.getView(R.id.loginscreen_username), "tes");
         solo.enterText((EditText) solo.getView(R.id.loginscreen_password), "abc123");
         solo.clickOnView(solo.getView(R.id.signupscreen_sign_up)); // misleading button name
         assertTrue(solo.waitForText("Username does not exist", 1, 5000));
         solo.clickOnButton("OK");
 
         // then test good username w/ bad password
-        solo.clearEditText((EditText) solo.getView(R.id.loginscreen_email));
-        solo.enterText((EditText) solo.getView(R.id.loginscreen_email), "test");
+        solo.clearEditText((EditText) solo.getView(R.id.loginscreen_username));
+        solo.enterText((EditText) solo.getView(R.id.loginscreen_username), "test");
         solo.clearEditText((EditText) solo.getView(R.id.loginscreen_password));
         solo.enterText((EditText) solo.getView(R.id.loginscreen_password), "abc");
         solo.clickOnView(solo.getView(R.id.signupscreen_sign_up)); // misleading button name
@@ -106,29 +106,29 @@ public class LogInTest {
         solo.assertCurrentActivity("Wrong Activity", LogIn.class);
 
         // test blank username w/ password entered
-        solo.clearEditText((EditText) solo.getView(R.id.loginscreen_email));
+        solo.clearEditText((EditText) solo.getView(R.id.loginscreen_username));
         solo.enterText((EditText) solo.getView(R.id.loginscreen_password), "abc");
         solo.clickOnView(solo.getView(R.id.signupscreen_sign_up)); // misleading button name
         assertTrue(solo.waitForText("Please enter your username and password", 1, 1000));
         solo.clickOnButton("OK");
 
         // then test blank password w/ valid username entered
-        solo.enterText((EditText) solo.getView(R.id.loginscreen_email), "tes");
+        solo.enterText((EditText) solo.getView(R.id.loginscreen_username), "tes");
         solo.clearEditText((EditText) solo.getView(R.id.loginscreen_password));
         solo.clickOnView(solo.getView(R.id.signupscreen_sign_up)); // misleading button name
         assertTrue(solo.waitForText("Please enter your username and password", 1, 1000));
         solo.clickOnButton("OK");
 
         // then test blank password w/ invalid username entered
-        solo.clearEditText((EditText) solo.getView(R.id.loginscreen_email));
-        solo.enterText((EditText) solo.getView(R.id.loginscreen_email), "tes");
+        solo.clearEditText((EditText) solo.getView(R.id.loginscreen_username));
+        solo.enterText((EditText) solo.getView(R.id.loginscreen_username), "tes");
         solo.clearEditText((EditText) solo.getView(R.id.loginscreen_password));
         solo.clickOnView(solo.getView(R.id.signupscreen_sign_up)); // misleading button name
         assertTrue(solo.waitForText("Please enter your username and password", 1, 1000));
         solo.clickOnButton("OK");
 
         // then test both blank user and pass
-        solo.clearEditText((EditText) solo.getView(R.id.loginscreen_email));
+        solo.clearEditText((EditText) solo.getView(R.id.loginscreen_username));
         solo.clearEditText((EditText) solo.getView(R.id.loginscreen_password));
         solo.clickOnView(solo.getView(R.id.signupscreen_sign_up)); // misleading button name
         assertTrue(solo.waitForText("Please enter your username and password", 1, 1000));

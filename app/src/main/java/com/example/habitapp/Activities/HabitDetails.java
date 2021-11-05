@@ -89,7 +89,7 @@ public class HabitDetails extends AppCompatActivity{
     CheckBox friday_button;
     CheckBox saturday_button;
 
-    private ListView eventsListview;
+    public ListView eventsListview;
     private EventList eventsAdapter;
     private ArrayList<Event> events = new ArrayList<>();
 
