@@ -188,7 +188,7 @@ public class HabitList extends ArrayAdapter<Habit> implements Serializable {
     /**
      * Returns a boolean that's true if the ArrayList storing the Habit objects is empty,
      * false otherwise
-     * @return boolean if Habit ArrayList is empty
+     * @return boolean if Habit ArrayList is empty or not
      */
     public Boolean getHabitListEmpty() {
         return habitList.isEmpty();
