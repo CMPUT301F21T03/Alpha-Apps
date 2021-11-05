@@ -72,6 +72,8 @@ public class Habit implements Serializable {
     private LocalDateTime dateEventChecked;
     //==================================================================================
 
+    private boolean privacy;
+
 
 
     /**
@@ -80,9 +82,10 @@ public class Habit implements Serializable {
      * @param reason a reason about why the user wants to complete the habit
      * @param dateStarted the date the habit is scheduled to start
      * @param weekOccurence the weekly frequency that the user specifies the habit should take place
+     * @param privacy the privacy setting of the habit
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Habit(String title, String reason, LocalDateTime dateStarted, DaysOfWeek weekOccurence){
+    public Habit(String title, String reason, LocalDateTime dateStarted, DaysOfWeek weekOccurence, boolean privacy){
         // set the eventList to be empty
         setEventList(new ArrayList<Event>());
         // set the last day that was checked for habit completion to be one day ago
@@ -97,6 +100,7 @@ public class Habit implements Serializable {
         setReason(reason);
         setDateStarted(dateStarted);
         setWeekOccurence(weekOccurence);
+        setPrivacy(privacy);
     }
 
 
@@ -171,6 +175,14 @@ public class Habit implements Serializable {
 
     public void setFirestoreId(String firestoreId) {
         this.firestoreId = firestoreId;
+    }
+
+    public boolean getPrivacy() {
+        return privacy;
+    }
+
+    public void setPrivacy(boolean privacy) {
+        this.privacy = privacy;
     }
 
     public void addHabitToFirestore(Map userData) {

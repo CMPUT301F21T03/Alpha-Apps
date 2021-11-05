@@ -47,6 +47,7 @@ import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
+import android.widget.Spinner;
 import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -79,15 +80,16 @@ public class HabitDetails extends AppCompatActivity{
     private TextView habit_events_title;
     private TextView done_habit;
     private Button done_editing;
+    private Spinner privacy_spinner;
 
 
-    CheckBox sunday_button;
-    CheckBox monday_button;
-    CheckBox tuesday_button;
-    CheckBox wednesday_button;
-    CheckBox thursday_button;
-    CheckBox friday_button;
-    CheckBox saturday_button;
+    private CheckBox sunday_button;
+    private CheckBox monday_button;
+    private CheckBox tuesday_button;
+    private CheckBox wednesday_button;
+    private CheckBox thursday_button;
+    private CheckBox friday_button;
+    private CheckBox saturday_button;
 
     public ListView eventsListview;
     private EventList eventsAdapter;
@@ -97,11 +99,11 @@ public class HabitDetails extends AppCompatActivity{
     private Map userData;
 
 
-    PopupMenu popupMenu;
+    private PopupMenu popupMenu;
 
-    Intent intent;
+    private Intent intent;
 
-    ArrayList<CheckBox> weekButtons;
+    private ArrayList<CheckBox> weekButtons;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -119,6 +121,13 @@ public class HabitDetails extends AppCompatActivity{
         habit_events_title = findViewById(R.id.habitdetails_habit_events_text);
         done_habit = findViewById(R.id.habitdetails_done_habit);
         done_editing = findViewById(R.id.habitdetails_button_done_editing);
+        privacy_spinner = findViewById(R.id.habitdetails_privacy_spinner);
+
+        String[] items = new String[]{"Private", "Public"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
+        privacy_spinner.setAdapter(adapter);
+        privacy_spinner.setEnabled(false);
+
 
         // disable title and reason editablity onCreate
         title.setEnabled(false);
@@ -152,6 +161,13 @@ public class HabitDetails extends AppCompatActivity{
         title.setText(habit.getTitle());
         reason.setText(habit.getReason());
         date_started.setText(habit.getDateStarted().toString());
+
+        if (habit.getPrivacy())  {
+            privacy_spinner.setSelection(0);
+        } else {
+            privacy_spinner.setSelection(1);
+        }
+
         ArrayList<Boolean> weekOccurenceList = habit.getWeekOccurence().getAll();
         for (int i = 0; i < 7; i++) {
             setBoxesChecked(weekButtons.get(i), weekOccurenceList.get(i));
@@ -250,6 +266,12 @@ public class HabitDetails extends AppCompatActivity{
         DaysOfWeek frequency = new DaysOfWeek(sundayVal,mondayVal, tuesdayVal, wednesdayVal,thursdayVal, fridayVal, saturdayVal);
 
         habit_to_edit.setWeekOccurence(frequency);
+
+        if (privacy_spinner.getSelectedItem().toString() == "Private")  {
+            habit_to_edit.setPrivacy(true);
+        } else {
+            habit_to_edit.setPrivacy(false);
+        }
         habit_to_edit.editHabitInFirestore(userData);
     }
 
@@ -270,6 +292,7 @@ public class HabitDetails extends AppCompatActivity{
         for (int i = 0; i < 7; i++) { // enable frequency click boxes
             weekButtons.get(i).setClickable(true);
         }
+        privacy_spinner.setEnabled(true);
     }
 
     private void prepareForFinishEditing() {
@@ -280,6 +303,7 @@ public class HabitDetails extends AppCompatActivity{
         title.setTextColor(Color.BLACK);
         reason.setEnabled(false);
         reason.setTextColor(Color.BLACK);
+        privacy_spinner.setEnabled(false);
 
         for (int i = 0; i < 7; i++) { // disable frequency click boxes
             weekButtons.get(i).setClickable(false);
