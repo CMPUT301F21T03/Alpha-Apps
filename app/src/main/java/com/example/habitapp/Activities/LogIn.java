@@ -16,6 +16,7 @@
  *   1.1       Leah      Oct-30-2021   Added Firestore functionality
  *   1.2       Leah      Nov-02-2021   Fixed crash on blank field
  *   1.3       Eric      Nov-03-2021   Fixed other crashes on blank fields
+ *   1.4       Eric      Nov-04-2021   Renamed email references to username
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -72,8 +73,8 @@ public class LogIn extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         // get the Strings inside the editText views
-        EditText emailEdit = (EditText)findViewById(R.id.loginscreen_email);
-        String email = emailEdit.getText().toString();
+        EditText userNameEdit = (EditText)findViewById(R.id.loginscreen_username);
+        String username = userNameEdit.getText().toString();
         EditText passwordEdit = (EditText)findViewById(R.id.loginscreen_password);
         String password = passwordEdit.getText().toString();
 
@@ -87,13 +88,13 @@ public class LogIn extends AppCompatActivity {
         Context loginContext = this;
 
         // try obtaining a reference to the email field
-        if(email.isEmpty() || password.isEmpty()){
+        if(username.isEmpty() || password.isEmpty()){
             // username/password error
             loginAlert.setMessage("Please enter your username and password.");
             loginAlert.show();
         }
         else{
-            final DocumentReference findUserRef = db.collection("Doers").document(email);
+            final DocumentReference findUserRef = db.collection("Doers").document(username);
             findUserRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -110,7 +111,7 @@ public class LogIn extends AppCompatActivity {
                                 //  send a state through the intent bundle?
                                 Intent intent = new Intent(loginContext, Main.class);
                                 //
-                                intent.putExtra(MESSAGE, email);
+                                intent.putExtra(MESSAGE, username);
                                 // bundle the user info into Serializable and send through Intent
                                 intent.putExtra("userData",(Serializable) userData);
                                 // start Main Activity
