@@ -67,7 +67,7 @@ public class AllHabitsTest {
      */
     @Test
     public void addHabitAndPopulates(){
-        solo.clickOnMenuItem("Add Habit");
+        solo.clickOnView(solo.getView(R.id.addHabitFragment));
         solo.waitForText("Add", 2, 1000);
 
         // generate random username
@@ -94,7 +94,7 @@ public class AllHabitsTest {
      */
     @Test
     public void deleteHabitAndPopulates(){
-        solo.clickOnMenuItem("Add Habit");
+        solo.clickOnView(solo.getView(R.id.addHabitFragment));
         solo.waitForText("Add", 2, 1000);
 
         // generate random username

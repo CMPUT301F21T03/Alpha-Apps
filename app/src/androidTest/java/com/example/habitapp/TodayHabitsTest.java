@@ -69,7 +69,7 @@ public class TodayHabitsTest {
      */
     @Test
     public void addHabitAndPopulatesDetails(){
-        solo.clickOnMenuItem("Add Habit");
+        solo.clickOnView(solo.getView(R.id.addHabitFragment));
         solo.waitForText("Add", 2, 1000);
 
         // generate random username
