@@ -54,7 +54,7 @@ public class Profile extends Fragment {
     private boolean allowedToEdit = false;
     private User profile;
     private View usernameView;
-    Map userData;
+    private Map userData;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
