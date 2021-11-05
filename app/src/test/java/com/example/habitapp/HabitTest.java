@@ -18,7 +18,8 @@ public class HabitTest {
         DaysOfWeek frequency = new DaysOfWeek(false,true, false, true,false, true, false);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss");
         LocalDateTime date = LocalDateTime.parse("2021-02-02 00:00:00", formatter);
-        Habit habit = new Habit("Exercise", "Get fit", date, frequency);
+        boolean privacy = true;
+        Habit habit = new Habit("Exercise", "Get fit", date, frequency, privacy);
 
         return habit;
     }
