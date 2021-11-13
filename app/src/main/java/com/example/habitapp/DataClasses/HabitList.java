@@ -27,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -82,13 +83,16 @@ public class HabitList extends ArrayAdapter<Habit> implements Serializable {
         Habit habit = getHabitAtPosition(pos);
 
         // get the text views set up for each field
-        TextView habitTitle = view.findViewById(R.id.habitentry_habit_title);
-        TextView habitProgress = view.findViewById(R.id.habitentry_habit_progress);
+        TextView habitTitle = view.findViewById(R.id.habitentry_habit_name);
+        TextView habitProgressText = view.findViewById(R.id.habitentry_habit_progress);
+        ProgressBar habitProgressBar = view.findViewById(R.id.habitentry_progress_bar);
 
 
         // set the text in each view to its corresponding data
         habitTitle.setText(habit.getTitle());
-        habitProgress.setText(habit.getProgress().toString());
+        habitProgressText.setText(habit.getProgress().toString()+ "%");
+        habitProgressBar.setProgress(habit.getProgress().intValue());
+
 
 
         return view;
