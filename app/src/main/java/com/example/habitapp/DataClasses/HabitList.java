@@ -14,6 +14,7 @@
  *   1.1       Mathew    Oct-31-2021   Added Javadocs
  *   1.2       Leah      Nov-03-2021   Added addSnapshotQuery to better modularize data. Updated Javadocs accordingly
  *   1.3       Leah      Nov-03-2021   Fixed empty list glitch
+ *   1.4       Mathew    Nov-12-2021   Updated the look of the HabitListView to be more aesthetically pleasing
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
