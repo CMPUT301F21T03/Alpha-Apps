@@ -13,6 +13,7 @@
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Mathew    Oct-21-2021   Created
  *   1.1       Mathew    Oct-24-2021   Test commit (no changes to the code)
+ *   1.2       Mathew    Nov-12-2021   Changed the look of the notifications button to be an image
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
