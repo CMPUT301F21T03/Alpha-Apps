@@ -33,6 +33,7 @@ package com.example.habitapp.Activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -318,7 +319,7 @@ public class HabitDetails extends AppCompatActivity{
                 .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        newHabitEvent = new Event(habit.getTitle(), LocalDateTime.now(), "", false, false);
+                        newHabitEvent = new Event(habit.getTitle(), LocalDateTime.now(), "", null, false);
 
                         newHabitEvent.addEventToFirestore(userData, habit);
                         done_habit.setVisibility(View.VISIBLE);

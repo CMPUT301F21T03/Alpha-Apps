@@ -17,14 +17,21 @@
  *   1.2       Jesse     Oct-31-2021   Altered Event to implement Serializable
  *   1.3       Mathew    Oct-31-2021   Added Javadocs
  *   1.4       Moe       Nov-04-2021   Firestore add, delete, edit for Event
+ *   1.5       Mathew    Nov-16-2021   Altered Event to implement Parcelable so it is able to package
+ *                                     up an image to allow it to be passed between activities
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
 package com.example.habitapp.DataClasses;
 
+import android.graphics.Bitmap;
+import android.os.Build;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,10 +40,12 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Map;
 
-public class Event implements Serializable {
+public class Event implements Parcelable {
 
     private final String TAG = "addEventTAG";
 
@@ -47,8 +56,8 @@ public class Event implements Serializable {
     // a subjective comment about the habit event entered by the user (optional)
     private String comment;
 
-    // TODO change the below attribute (and all other instances) to properly represent an image
-    private Boolean hasPhotograph;
+    // a bitmap to represent the actual an image of the event (optional)
+    private Bitmap photograph;
 
     // TODO change the below attribute (and all other instances) to properly represent a location
     private Boolean hasLocation;
@@ -60,10 +69,10 @@ public class Event implements Serializable {
      * @param name the name of the habit event
      * @param dateCompleted the day that the event was completed
      * @param comment an optional comment about the event
-     * @param hasPhotograph a placeholder for the photograph object that will be implemented later
+     * @param photograph a bitmap that is used to store an image relating to the event
      * @param hasLocation a placeholder for the location object that will be implemented later
      */
-    public Event(String name, LocalDateTime dateCompleted, String comment, Boolean hasPhotograph, Boolean hasLocation){
+    public Event(String name, LocalDateTime dateCompleted, String comment, Bitmap photograph, Boolean hasLocation){
 
         setName(name);
         setDateCompleted(dateCompleted);
@@ -74,48 +83,10 @@ public class Event implements Serializable {
             System.out.println("comment too long, programs fails");
             // TODO make a function that terminates the program (or handle the error in another way)
         }
-        // TODO set the photograph and location attributes
 
-    }
+        setPhotograph(photograph);
+        // TODO set the location attribute
 
-    // =========================== GETTERS AND SETTERS ===========================
-    //TODO create getters and setters for the location and photograph as needed
-
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public LocalDateTime getDateCompleted() {
-        return dateCompleted;
-    }
-
-    public void setDateCompleted(LocalDateTime dateCompleted) {
-        this.dateCompleted = dateCompleted;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) throws IllegalArgumentException{
-        // if the comment field is not empty and the comment is over 20 characters, raise an error
-        if (comment != null && comment.length() > 20){
-            throw new IllegalArgumentException();
-        }
-        this.comment = comment;
-    }
-
-    public String getFirestoreId() {
-        return firestoreId;
-    }
-
-    public void setFirestoreId(String firestoreId) {
-        this.firestoreId = firestoreId;
     }
 
     public void addEventToFirestore(Map userData, Habit habit) {
@@ -194,6 +165,90 @@ public class Event implements Serializable {
 
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
+    public static final Creator<Event> CREATOR = new Creator<Event>() {
+        @RequiresApi(api = Build.VERSION_CODES.O)
+        @Override
+        public Event createFromParcel(Parcel in) {
+            return new Event(in);
+        }
+
+        @Override
+        public Event[] newArray(int size) {
+            return new Event[size];
+        }
+    };
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(getName());
+        LocalDate date = getDateCompleted().toLocalDate();
+        LocalTime time = getDateCompleted().toLocalTime();
+        parcel.writeSerializable(date);
+        parcel.writeSerializable(time);
+        parcel.writeString(getComment());
+        parcel.writeValue(getPhotograph());
+    }
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public Event(Parcel parcel){
+        this.name = parcel.readString();
+        LocalDate date = (LocalDate) parcel.readSerializable();
+        LocalTime time = (LocalTime) parcel.readSerializable();
+        this.dateCompleted = date.atTime(time);
+        this.comment = parcel.readString();
+        this.photograph = parcel.readParcelable(Bitmap.class.getClassLoader());
+    }
+
+    // =========================== GETTERS AND SETTERS ===========================
+    //TODO create getters and setters for the location as needed
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public LocalDateTime getDateCompleted() {
+        return dateCompleted;
+    }
+
+    public void setDateCompleted(LocalDateTime dateCompleted) {
+        this.dateCompleted = dateCompleted;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) throws IllegalArgumentException{
+        // if the comment field is not empty and the comment is over 20 characters, raise an error
+        if (comment != null && comment.length() > 20){
+            throw new IllegalArgumentException();
+        }
+        this.comment = comment;
+    }
+
+    public String getFirestoreId() {
+        return firestoreId;
+    }
+
+    public void setFirestoreId(String firestoreId) {
+        this.firestoreId = firestoreId;
+    }
+
+    public Bitmap getPhotograph() {
+        return photograph;
+    }
+
+    public void setPhotograph(Bitmap photograph) {
+        this.photograph = photograph;
+    }
 
 }

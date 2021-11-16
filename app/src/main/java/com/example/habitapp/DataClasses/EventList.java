@@ -14,6 +14,7 @@
  *   1.1       Mathew    Oct-31-2021    Fix imports
  *   1.2     Jesse/Moe     Nov-03-2021    Add layout inflater
  *   1.3       Moe       Nov-04         Added addSnapshotQuery to display HabitEvent from Firestore
+ *   1.4       Mathew    Nov-16-2021    Added an imageView to show the user selected image for an event
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -26,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -70,10 +72,17 @@ public class EventList extends ArrayAdapter<Event> {
         TextView name = view.findViewById(R.id.eventslistviewcontent_name_text);
         TextView comment = view.findViewById(R.id.eventslistviewcontent_comment_text);
         TextView date = view.findViewById(R.id.eventslistviewcontent_date_text);
+        ImageView image = view.findViewById(R.id.eventslistviewcontent_image);
 
         name.setText(event.getName());
         comment.setText(event.getComment());
         date.setText(event.getDateCompleted().format(formatter));
+        // if there is no photograph saved to the event object, make the imageView invisible
+        if (event.getPhotograph() == null){
+            image.setVisibility(View.GONE);
+        }else{
+            image.setImageBitmap(event.getPhotograph());
+        }
 
         return view;
     }
@@ -101,7 +110,7 @@ public class EventList extends ArrayAdapter<Event> {
                             LocalDateTime newDate = LocalDateTime.parse(newDateStr, formatter);
                             String comment = doc.getString("comment");
                             // TODO store location and photograph after halfway
-                            Event eventToAdd = new Event(doc.getString("name"),newDate, comment, false, false);
+                            Event eventToAdd = new Event(doc.getString("name"),newDate, comment, null, false);
                             eventToAdd.setFirestoreId(doc.getId());
                             if (!events.contains(eventToAdd)) {
                                 events.add(eventToAdd);
