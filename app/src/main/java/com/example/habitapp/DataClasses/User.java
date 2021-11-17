@@ -15,10 +15,18 @@
  *   1.0       Mathew    Oct-13-2021   Created
  *   1.1       Mathew    Oct-31-2021   Added Javadocs
  *   1.2       Mathew    Nov-01-2021   Added a stand in attribute for a profile picture
+ *   1.3       Mathew    Nov-16-2021   Added following/followers lists and the pfp bitmap
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
 package com.example.habitapp.DataClasses;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
+import com.example.habitapp.R;
+
+import java.util.ArrayList;
 
 public class User {
 
@@ -33,8 +41,14 @@ public class User {
     // whether or not the user has set their account to private
     private boolean privateAccount;
     // a profile picture of the user
-    //TODO make this an actual picture
-    private String photoStandIn;
+    private Bitmap profilePic;
+    // a list containing all the IDs of the profiles that this user follows
+    private ArrayList<String> followingList;
+    // a list containing all the IDs of the profiles that this follow this user
+    private ArrayList<String> followersList;
+    // a list containing all the IDs of the profiles that this user requests to follow
+    private ArrayList<String> requestedList;
+
 
     /**
      * create a User. Their profile picture is the default picture upon creation.
@@ -51,8 +65,15 @@ public class User {
         setPassword(password);
         // default the account to be public, NOT private
         setPrivateAccount(false);
+
         // set the account's profile picture to be a default
-        setPhotoStandIn("default photo");
+        Bitmap defaultPFP = BitmapFactory.decodeResource(ContextGetter.getContext().getResources(), R.drawable.default_user_icon);
+        setProfilePic(defaultPFP);
+
+        // set the following and follower lists to be empty
+        followingList = new ArrayList<>();
+        followersList = new ArrayList<>();
+        requestedList = new ArrayList<>();
     }
 
     // =========================== GETTERS AND SETTERS ===========================
@@ -96,11 +117,35 @@ public class User {
         this.privateAccount = privateAccount;
     }
 
-    public String getPhotoStandIn() {
-        return photoStandIn;
+    public Bitmap getProfilePic() {
+        return profilePic;
     }
 
-    public void setPhotoStandIn(String photoStandIn) {
-        this.photoStandIn = photoStandIn;
+    public void setProfilePic(Bitmap profilePic) {
+        this.profilePic = profilePic;
+    }
+
+    public ArrayList<String> getFollowingList() {
+        return followingList;
+    }
+
+    public void setFollowingList(ArrayList<String> followingList) {
+        this.followingList = followingList;
+    }
+
+    public ArrayList<String> getFollowersList() {
+        return followersList;
+    }
+
+    public void setFollowersList(ArrayList<String> followersList) {
+        this.followersList = followersList;
+    }
+
+    public ArrayList<String> getRequestedList() {
+        return requestedList;
+    }
+
+    public void setRequestedList(ArrayList<String> requestedList) {
+        this.requestedList = requestedList;
     }
 }

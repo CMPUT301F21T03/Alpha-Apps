@@ -11,7 +11,8 @@
  *
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
- *   1.0       Mathew    Oct-21-2020   Created
+ *   1.0       Mathew    Oct-21-2021   Created
+ *   1.1       Mathew    Nov-16-2021   Changed to be an image button
  * =|=======|=|======|===|====|========|===========|================================================
  */
 package com.example.habitapp.Fragments;
@@ -21,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -38,7 +40,7 @@ public class GoBack extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         // sets a listener for when the button is clicked
-        Button goBackButton = view.findViewById(R.id.go_to_last_page);
+        ImageButton goBackButton = view.findViewById(R.id.go_to_last_page);
         goBackButton.setOnClickListener(this::goBackButtonPressed);
 
     }
