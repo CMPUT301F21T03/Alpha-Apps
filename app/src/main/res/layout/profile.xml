@@ -9,7 +9,7 @@
         android:id="@+id/constraintLayout"
         android:layout_width="0dp"
         android:layout_height="75dp"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="15dp"
         android:layout_marginTop="30dp"
         android:layout_marginEnd="10dp"
         app:layout_constraintEnd_toStartOf="@+id/profile_edit"
@@ -19,7 +19,7 @@
         <include
             layout="@layout/profile_list_entry"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="80dp"
             android:layout_weight="1" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -30,6 +30,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:text="Your Profile"
+        android:textColor="#000000"
         android:textSize="34sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -52,20 +53,11 @@
     </FrameLayout>
 
     <Button
-        android:id="@+id/profile_edit"
-        android:layout_width="80dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="30dp"
-        android:text="Edit"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/constraintLayout" />
-
-    <Button
         android:id="@+id/profile_following"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="40dp"
         android:text="Following"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
@@ -74,7 +66,7 @@
         android:id="@+id/profile_followers"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="28dp"
+        android:layout_marginEnd="30dp"
         android:text="Followers"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/profile_following" />
@@ -84,11 +76,31 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
-        android:layout_marginTop="50dp"
         android:layout_marginEnd="30dp"
+        android:layout_marginBottom="100dp"
         android:text="Log out"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_followers" />
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/profile_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintBottom_toBottomOf="@+id/constraintLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/constraintLayout"
+        app:srcCompat="@android:drawable/ic_menu_edit" />
+
+    <ImageButton
+        android:id="@+id/profile_save_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintBottom_toBottomOf="@+id/constraintLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/constraintLayout"
+        app:srcCompat="@android:drawable/ic_menu_save" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

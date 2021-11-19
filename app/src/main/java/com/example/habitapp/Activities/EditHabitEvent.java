@@ -17,20 +17,30 @@
  *   1.4       Moe       Nov-04-2021   Changed the editHabitEventCompleteButtonPressed function
  *                                      depending on the activity that is passed from
  *   1.5       Moe       Nov-04-2021   Firestore edit for HabitEvent
+ *   1.6       Mathew    Nov-16-2021   Implemented camera functionality, and made some aesthetic changes
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
 package com.example.habitapp.Activities;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.habitapp.DataClasses.Event;
@@ -53,6 +63,11 @@ public class EditHabitEvent extends AppCompatActivity {
     private Map userData;
     private TextView habitName;
 
+    // camera related variables
+    private static final int CAMERA_REQUEST = 1888;
+    private ImageView cameraImage;
+    private static final int MY_CAMERA_PERMISSION_CODE = 100;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,20 +76,65 @@ public class EditHabitEvent extends AppCompatActivity {
 
         //get details from bundle
         Intent sentIntent = getIntent();
-        event = (Event) sentIntent.getSerializableExtra("event");
+        event = (Event) sentIntent.getParcelableExtra("event");
         habit = (Habit) sentIntent.getSerializableExtra("habit");
         userData = (Map) sentIntent.getSerializableExtra("userData");
         prevActivity = (String) sentIntent.getSerializableExtra("activity");
         previousActivity = getCallingActivity();
 
         habitName = findViewById(R.id.edithabitevent_habitname);
-        habitName.setText(event.getName());
+        habitName.setText("Log Habit: " + event.getName());
 
         comments = findViewById(R.id.edithabitevent_comment);
         comments.setText(event.getComment());
 
+        cameraImage = this.findViewById(R.id.edithabitevent_camera_image);
+        if (event.getPhotograph() == null){
+            cameraImage.setVisibility(View.GONE);
+        }
+
+        setButtonListenters();
+    }
+
+    private void setButtonListenters(){
         Button completeButton = findViewById(R.id.edithabitevent_complete);
         completeButton.setOnClickListener(this::editHabitEventCompleteButtonPressed);
+
+        cameraImage.setOnClickListener(this::editHabitEventCameraImagePressed);
+
+        ImageView cameraButton = findViewById(R.id.edithabitevent_camera_button);
+        cameraButton.setOnClickListener(this::editHabitEventCameraButtonPressed);
+
+        ImageView deleteCameraButton = findViewById(R.id.edithabitevent_delete_image_button);
+        deleteCameraButton.setOnClickListener(this::editHabitEventDeleteImageButtonPressed);
+    }
+
+    // if the camera image was selected, treat it as if the add button was pressed
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void editHabitEventCameraImagePressed(View view){
+        editHabitEventCameraButtonPressed(view);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void editHabitEventCameraButtonPressed(View view){
+        // check to make sure that the user allows the use of their camera
+        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
+        {
+            // if they don't allow the camera, ask them if they want to
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
+        }
+        else
+        {
+            // if the user allows the camera, request the phone for access to the camera
+            // and start to take a picture
+            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+            startActivityForResult(cameraIntent, CAMERA_REQUEST);
+        }
+    }
+
+    public void editHabitEventDeleteImageButtonPressed(View view){
+        event.setPhotograph(null);
+        cameraImage.setVisibility(View.GONE);
     }
 
     public void editHabitEventCompleteButtonPressed(View view) {
@@ -91,5 +151,38 @@ public class EditHabitEvent extends AppCompatActivity {
         }
         finish();
 
+    }
+
+    // this code executes after the user is asked about if they want to allow the app to use their camera
+    // it will start the camera intent if the user allows access
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == MY_CAMERA_PERMISSION_CODE)
+        {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+                Toast.makeText(this, "camera permission granted", Toast.LENGTH_LONG).show();
+                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(cameraIntent, CAMERA_REQUEST);
+            }
+            else
+            {
+                Toast.makeText(this, "camera permission denied", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    // after the user takes an image, it stores the image as a bitmap
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+            event.setPhotograph(photo);
+            cameraImage.setVisibility(View.VISIBLE);
+            cameraImage.setImageBitmap(photo);
+        }
     }
 }

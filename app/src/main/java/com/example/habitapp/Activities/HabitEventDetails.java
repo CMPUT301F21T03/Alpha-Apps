@@ -25,11 +25,13 @@
 package com.example.habitapp.Activities;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
@@ -55,7 +57,7 @@ public class HabitEventDetails extends AppCompatActivity {
     private String habitName;
     private String comment;
     private String date;
-    private Boolean hasPhotograph;
+    private Bitmap photograph;
     private Boolean hasLocation;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private Map userData;
@@ -69,7 +71,7 @@ public class HabitEventDetails extends AppCompatActivity {
 
         //get details from bundle
         Intent sentIntent = getIntent();
-        event = (Event) sentIntent.getSerializableExtra("event");
+        event = (Event) sentIntent.getParcelableExtra("event");
         habit = (Habit) sentIntent.getSerializableExtra("habit");
         userData = (Map) sentIntent.getSerializableExtra("userData");
 
