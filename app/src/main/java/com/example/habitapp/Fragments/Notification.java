@@ -13,6 +13,7 @@
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Mathew    Oct-21-2021   Created
  *   1.1       Mathew    Oct-24-2021   Test commit (no changes to the code)
+ *   1.2       Mathew    Nov-12-2021   Changed the look of the notifications button to be an image
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -23,6 +24,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -40,7 +43,7 @@ public class Notification extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         // sets a listener for when the button is clicked
-        Button notifButton = view.findViewById(R.id.notification_button);
+        ImageView notifButton = view.findViewById(R.id.notification_image);
         notifButton.setOnClickListener(this::notificationsButtonPressed);
 
     }

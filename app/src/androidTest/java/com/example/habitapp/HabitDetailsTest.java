@@ -40,7 +40,7 @@ public class HabitDetailsTest {
         // user: test
         // password: abc123
         solo.assertCurrentActivity("Wrong Activity", LogIn.class);
-        solo.enterText((EditText) solo.getView(R.id.loginscreen_email), "test");
+        solo.enterText((EditText) solo.getView(R.id.loginscreen_username), "test");
         solo.enterText((EditText) solo.getView(R.id.loginscreen_password), "abc123");
         solo.clickOnView(solo.getView(R.id.signupscreen_sign_up)); // misleading button name
         solo.sleep(5); // wait for communication w/ server
@@ -72,7 +72,7 @@ public class HabitDetailsTest {
      */
     @Test
     public void addHabitAndPopulatesDetails(){
-        solo.clickOnMenuItem("Add Habit");
+        solo.clickOnView(solo.getView(R.id.addHabitFragment));
         solo.waitForText("Add", 2, 1000);
 
         // generate random username
@@ -109,7 +109,7 @@ public class HabitDetailsTest {
      */
     @Test
     public void editHabitAndPopulates() {
-        solo.clickOnMenuItem("Add Habit");
+        solo.clickOnView(solo.getView(R.id.addHabitFragment));
         solo.waitForText("Add", 2, 1000);
 
         // generate random username
@@ -170,7 +170,7 @@ public class HabitDetailsTest {
      */
     @Test
     public void deleteHabitAndPopulates(){
-        solo.clickOnMenuItem("Add Habit");
+        solo.clickOnView(solo.getView(R.id.addHabitFragment));
         solo.waitForText("Add", 2, 1000);
 
         // generate random username

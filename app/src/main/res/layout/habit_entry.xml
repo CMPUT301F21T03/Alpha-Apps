@@ -1,28 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="5dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/habitentry_habit_title"
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="SampleTextName" />
+            android:layout_gravity="center">
 
-        <TextView
-            android:id="@+id/habitentry_habit_progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="SampleTextProgress" />
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/habitentry_progress_bar"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:background="@drawable/progress_bar_background"
+                android:progress="0"
+                app:indicatorColor="#7CFDF1"
+                app:trackColor="#FFFFFF"
+                app:trackCornerRadius="14dp"
+                app:trackThickness="40dp" />
+
+            <TextView
+                android:id="@+id/habitentry_habit_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignLeft="@id/habitentry_progress_bar"
+                android:paddingLeft="20dp"
+                android:text="Sample Text"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/habitentry_habit_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@id/habitentry_progress_bar"
+                android:layout_alignBottom="@id/habitentry_progress_bar"
+                android:paddingEnd="10dp"
+                android:paddingBottom="3dp"
+                android:text="sampletext" />
+        </RelativeLayout>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -114,6 +114,10 @@ public class AddHabit extends Fragment {
         String habitReason = reasonText.getText().toString();
         String habitDate = dateText.getText().toString() + " 00:00:00";
         String habitPrivacy = privacyText.getSelectedItem().toString();
+        boolean privacyBool = false;
+        if (habitPrivacy == "Private") {
+            privacyBool = true;
+        }
 
         boolean sundayVal = sunday.isChecked();
         boolean mondayVal = monday.isChecked();
@@ -133,7 +137,7 @@ public class AddHabit extends Fragment {
             DaysOfWeek frequency = new DaysOfWeek(sundayVal,mondayVal, tuesdayVal, wednesdayVal,thursdayVal, fridayVal, saturdayVal);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss");
             LocalDateTime newDate = LocalDateTime.parse(habitDate, formatter);
-            Habit newHabit = new Habit(habitName, habitReason, newDate, frequency);
+            Habit newHabit = new Habit(habitName, habitReason, newDate, frequency, privacyBool);
 
             newHabit.addHabitToFirestore(userData);
 

@@ -14,6 +14,7 @@
  *   1.1       Mathew    Oct-31-2021   Added Javadocs
  *   1.2       Leah      Nov-03-2021   Added addSnapshotQuery to better modularize data. Updated Javadocs accordingly
  *   1.3       Leah      Nov-03-2021   Fixed empty list glitch
+ *   1.4       Mathew    Nov-12-2021   Updated the look of the HabitListView to be more aesthetically pleasing
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -27,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -82,13 +84,16 @@ public class HabitList extends ArrayAdapter<Habit> implements Serializable {
         Habit habit = getHabitAtPosition(pos);
 
         // get the text views set up for each field
-        TextView habitTitle = view.findViewById(R.id.habitentry_habit_title);
-        TextView habitProgress = view.findViewById(R.id.habitentry_habit_progress);
+        TextView habitTitle = view.findViewById(R.id.habitentry_habit_name);
+        TextView habitProgressText = view.findViewById(R.id.habitentry_habit_progress);
+        ProgressBar habitProgressBar = view.findViewById(R.id.habitentry_progress_bar);
 
 
         // set the text in each view to its corresponding data
         habitTitle.setText(habit.getTitle());
-        habitProgress.setText(habit.getProgress().toString());
+        habitProgressText.setText(habit.getProgress().toString()+ "%");
+        habitProgressBar.setProgress(habit.getProgress().intValue());
+
 
 
         return view;
@@ -129,7 +134,13 @@ public class HabitList extends ArrayAdapter<Habit> implements Serializable {
                             LocalDateTime ldt = newDate;
                             // Convert Firestore's stored days of week to DaysOfWeek
                             Map<String, Boolean> docDaysOfWeek = (Map<String, Boolean>) doc.get("weekOccurence");
-                            Habit habitToAdd = new Habit(doc.getString("title"),doc.getString("reason"),ldt,new DaysOfWeek(docDaysOfWeek));
+                            Habit habitToAdd;
+                            if (doc.getBoolean("privacy") == null) {
+                                 habitToAdd = new Habit(doc.getString("title"),doc.getString("reason"),ldt,new DaysOfWeek(docDaysOfWeek), true);
+                            } else {
+                                 habitToAdd = new Habit(doc.getString("title"),doc.getString("reason"),ldt,new DaysOfWeek(docDaysOfWeek), doc.getBoolean("privacy"));
+                            }
+
                             // Set the document ID in case it needs to be fetched for delete/edits
                             habitToAdd.setFirestoreId(doc.getId());
                             // Add to the ListArray
@@ -142,26 +153,48 @@ public class HabitList extends ArrayAdapter<Habit> implements Serializable {
         });
     }
 
+    /**
+     * Adds a Habit type object to our internal ArrayList
+     * Also executes a check to see if Habit already exists in list,
+     * and will throw an exception in that case.
+     * @param habit The Habit object to add to the ArrayList
+     */
     public void addHabit(Habit habit){
         if (habitList.contains(habit)) {
             throw new IllegalArgumentException();
         }
         habitList.add(habit);
     }
+
+    /**
+     * Grabs the entire ArrayList containing the habits for use in certain siutations.
+     * @return habitlist attribute that is the ArrayList containing the Habit objects
+     */
     public List<Habit> getHabits() {
         return habitList;
     }
 
-
-
-        public Habit getHabitAtPosition(Integer pos){
+    /**
+     * Grabs the Habit object at a specified index in the ArrayList
+     * @param pos index of Habit object desired in ArrayList
+     * @return Habit object at specified index
+     */
+    public Habit getHabitAtPosition(Integer pos){
         return habitList.get(pos);
     }
 
+    /**
+     * Clears the ArrayList containing all the Habit objects
+     */
     public void clearHabitList(){
         habitList.clear();
     }
 
+    /**
+     * Returns a boolean that's true if the ArrayList storing the Habit objects is empty,
+     * false otherwise
+     * @return boolean if Habit ArrayList is empty or not
+     */
     public Boolean getHabitListEmpty() {
         return habitList.isEmpty();
     }

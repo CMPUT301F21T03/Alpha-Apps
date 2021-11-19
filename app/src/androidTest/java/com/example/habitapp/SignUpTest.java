@@ -65,7 +65,7 @@ public class SignUpTest {
 
         // enter data
         solo.enterText((EditText) solo.getView(R.id.signupscreen_name_alias), "John Doe");
-        solo.enterText((EditText) solo.getView(R.id.signupscreen_email), new_username);
+        solo.enterText((EditText) solo.getView(R.id.signupscreen_username), new_username);
         solo.enterText((EditText) solo.getView(R.id.signupscreen_password), "abc123");
         solo.clickOnView(solo.getView(R.id.signupscreen_sign_up));
         solo.sleep(5); // wait for communication w/ server
@@ -81,7 +81,7 @@ public class SignUpTest {
 
         // enter data
         solo.enterText((EditText) solo.getView(R.id.signupscreen_name_alias), "John Doe");
-        solo.enterText((EditText) solo.getView(R.id.signupscreen_email), "test");
+        solo.enterText((EditText) solo.getView(R.id.signupscreen_username), "test");
         solo.enterText((EditText) solo.getView(R.id.signupscreen_password), "abc123");
         solo.clickOnView(solo.getView(R.id.signupscreen_sign_up));
         assertTrue(solo.waitForText("Username already exists", 1, 5000));
@@ -96,8 +96,8 @@ public class SignUpTest {
 
         // enter data
         // name is still there from before
-        solo.clearEditText((EditText) solo.getView(R.id.signupscreen_email)); // replace name w/ a unique username
-        solo.enterText((EditText) solo.getView(R.id.signupscreen_email), new_username);
+        solo.clearEditText((EditText) solo.getView(R.id.signupscreen_username)); // replace name w/ a unique username
+        solo.enterText((EditText) solo.getView(R.id.signupscreen_username), new_username);
         solo.clearEditText((EditText) solo.getView(R.id.signupscreen_password));
         solo.enterText((EditText) solo.getView(R.id.signupscreen_password), "a");
         solo.clickOnView(solo.getView(R.id.signupscreen_sign_up));
@@ -117,7 +117,7 @@ public class SignUpTest {
 
         // test a blank name w/ username and password entered
         solo.clearEditText((EditText) solo.getView(R.id.signupscreen_name_alias));
-        solo.enterText((EditText) solo.getView(R.id.signupscreen_email), "test");
+        solo.enterText((EditText) solo.getView(R.id.signupscreen_username), "test");
         solo.enterText((EditText) solo.getView(R.id.signupscreen_password), "abc123");
         solo.clickOnView(solo.getView(R.id.signupscreen_sign_up));
         assertTrue(solo.waitForText("Please enter your name, your username and, password", 1, 1000));
@@ -125,7 +125,7 @@ public class SignUpTest {
 
         // test a blank username w/ name and password entered
         solo.enterText((EditText) solo.getView(R.id.signupscreen_name_alias), "John Doe");
-        solo.clearEditText((EditText) solo.getView(R.id.signupscreen_email));
+        solo.clearEditText((EditText) solo.getView(R.id.signupscreen_username));
         // password still there from before
         solo.clickOnView(solo.getView(R.id.signupscreen_sign_up));
         assertTrue(solo.waitForText("Please enter your name, your username and, password", 1, 1000));
@@ -133,7 +133,7 @@ public class SignUpTest {
 
         // test a blank password w/ name and username entered
         // name still there from before
-        solo.enterText((EditText) solo.getView(R.id.signupscreen_email), "test");
+        solo.enterText((EditText) solo.getView(R.id.signupscreen_username), "test");
         solo.clearEditText((EditText) solo.getView(R.id.signupscreen_password));
         solo.clickOnView(solo.getView(R.id.signupscreen_sign_up));
         assertTrue(solo.waitForText("Please enter your name, your username and, password", 1, 1000));
@@ -141,7 +141,7 @@ public class SignUpTest {
 
         // test all three blank
         solo.clearEditText((EditText) solo.getView(R.id.signupscreen_name_alias));
-        solo.clearEditText((EditText) solo.getView(R.id.signupscreen_email));
+        solo.clearEditText((EditText) solo.getView(R.id.signupscreen_username));
         solo.clearEditText((EditText) solo.getView(R.id.signupscreen_password));
         solo.clickOnView(solo.getView(R.id.signupscreen_sign_up));
         assertTrue(solo.waitForText("Please enter your name, your username and, password", 1, 1000));
@@ -149,7 +149,7 @@ public class SignUpTest {
 
         // test name and username blank w/ password entered
         solo.clearEditText((EditText) solo.getView(R.id.signupscreen_name_alias));
-        solo.clearEditText((EditText) solo.getView(R.id.signupscreen_email));
+        solo.clearEditText((EditText) solo.getView(R.id.signupscreen_username));
         solo.enterText((EditText) solo.getView(R.id.signupscreen_password), "abc123");
         solo.clickOnView(solo.getView(R.id.signupscreen_sign_up));
         assertTrue(solo.waitForText("Please enter your name, your username and, password", 1, 1000));
@@ -157,7 +157,7 @@ public class SignUpTest {
 
         // test username and password blank w/ name entered
         solo.enterText((EditText) solo.getView(R.id.signupscreen_name_alias), "John Doe");
-        solo.clearEditText((EditText) solo.getView(R.id.signupscreen_email));
+        solo.clearEditText((EditText) solo.getView(R.id.signupscreen_username));
         solo.clearEditText((EditText) solo.getView(R.id.signupscreen_password));
         solo.clickOnView(solo.getView(R.id.signupscreen_sign_up));
         assertTrue(solo.waitForText("Please enter your name, your username and, password", 1, 1000));
@@ -165,7 +165,7 @@ public class SignUpTest {
 
         // test name and password blank w/ username entered
         solo.clearEditText((EditText) solo.getView(R.id.signupscreen_name_alias));
-        solo.enterText((EditText) solo.getView(R.id.signupscreen_email), "test");
+        solo.enterText((EditText) solo.getView(R.id.signupscreen_username), "test");
         solo.clearEditText((EditText) solo.getView(R.id.signupscreen_password));
         solo.clickOnView(solo.getView(R.id.signupscreen_sign_up));
         assertTrue(solo.waitForText("Please enter your name, your username and, password", 1, 1000));

@@ -119,8 +119,8 @@
             android:layout_marginTop="5dp"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="Reason text"
             android:maxLength="30"
+            android:text="Reason text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -134,8 +134,8 @@
             android:layout_marginTop="10dp"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="Title"
             android:maxLength="20"
+            android:text="Title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -154,20 +154,40 @@
             android:textStyle="bold"
             android:visibility="invisible"
             app:layout_constraintStart_toEndOf="@+id/habitdetails_title"
-            app:layout_constraintTop_toBottomOf="@+id/frameLayout2" />
+            app:layout_constraintTop_toTopOf="@+id/habitdetails_title" />
 
         <Button
             android:id="@+id/habitdetails_button_done_editing"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
+            android:layout_width="88dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="16dp"
             android:onClick="habitDetailsDoneEditingPressed"
             android:text="Done"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent" />
 
+        <Spinner
+            android:id="@+id/habitdetails_privacy_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="20dp"
+
+            android:spinnerMode="dropdown"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/habitdetails_select_privacy" />
+
+        <TextView
+            android:id="@+id/habitdetails_select_privacy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="20dp"
+            android:text="Habit Privacy"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/include" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
