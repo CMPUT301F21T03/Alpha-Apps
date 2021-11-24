@@ -23,90 +23,105 @@
             android:id="@+id/sunday_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="S"
-            android:button="@null"
-            android:gravity="center"
-            android:background="@drawable/checkbox_selector"
-            android:checked="false"
-            android:textColor="@color/black"
             android:layout_marginRight="5dp"
-            android:textStyle="bold"/>
+            android:background="@drawable/checkbox_selector"
+            android:button="@null"
+            android:checked="false"
+            android:fontFamily="@font/montserrat"
+            android:gravity="center"
+            android:text="S"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <CheckBox
             android:id="@+id/monday_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="M"
-            android:button="@null"
-            android:gravity="center"
-            android:background="@drawable/checkbox_selector"
-            android:checked="false"
-            android:textColor="@color/black"
             android:layout_marginRight="5dp"
-            android:textStyle="bold"/>
+            android:background="@drawable/checkbox_selector"
+            android:button="@null"
+            android:checked="false"
+            android:fontFamily="@font/montserrat"
+            android:gravity="center"
+            android:text="M"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
         <CheckBox
             android:id="@+id/tuesday_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="T"
-            android:button="@null"
-            android:gravity="center"
-            android:background="@drawable/checkbox_selector"
-            android:checked="false"
-            android:textColor="@color/black"
             android:layout_marginRight="5dp"
-            android:textStyle="bold"/>
+            android:background="@drawable/checkbox_selector"
+            android:button="@null"
+            android:checked="false"
+            android:fontFamily="@font/montserrat"
+            android:gravity="center"
+            android:text="T"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <CheckBox
             android:id="@+id/wednesday_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="W"
-            android:button="@null"
-            android:gravity="center"
-            android:background="@drawable/checkbox_selector"
-            android:checked="false"
-            android:textColor="@color/black"
             android:layout_marginRight="5dp"
-            android:textStyle="bold"/>
+            android:background="@drawable/checkbox_selector"
+            android:button="@null"
+            android:checked="false"
+            android:fontFamily="@font/montserrat"
+            android:gravity="center"
+            android:text="W"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <CheckBox
             android:id="@+id/thursday_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="T"
-            android:button="@null"
-            android:gravity="center"
-            android:background="@drawable/checkbox_selector"
-            android:checked="false"
-            android:textColor="@color/black"
             android:layout_marginRight="5dp"
-            android:textStyle="bold"/>
+            android:background="@drawable/checkbox_selector"
+            android:button="@null"
+            android:checked="false"
+            android:fontFamily="@font/montserrat"
+            android:gravity="center"
+            android:text="T"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <CheckBox
             android:id="@+id/friday_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="F"
-            android:button="@null"
-            android:gravity="center"
-            android:background="@drawable/checkbox_selector"
-            android:checked="false"
-            android:textColor="@color/black"
             android:layout_marginRight="5dp"
-            android:textStyle="bold"/>
+            android:background="@drawable/checkbox_selector"
+            android:button="@null"
+            android:checked="false"
+            android:fontFamily="@font/montserrat"
+            android:gravity="center"
+            android:text="F"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <CheckBox
             android:id="@+id/saturday_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="S"
-            android:button="@null"
-            android:gravity="center"
             android:background="@drawable/checkbox_selector"
+            android:button="@null"
             android:checked="false"
+            android:fontFamily="@font/montserrat"
+            android:gravity="center"
+            android:text="S"
             android:textColor="@color/black"
-            android:textStyle="bold"/>
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
 
         <!--<Button
