@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -38,7 +39,7 @@ public class GoBack extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         // sets a listener for when the button is clicked
-        Button goBackButton = view.findViewById(R.id.go_to_last_page);
+        ImageButton goBackButton = view.findViewById(R.id.go_to_last_page);
         goBackButton.setOnClickListener(this::goBackButtonPressed);
 
     }
