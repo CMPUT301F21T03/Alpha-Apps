@@ -8,12 +8,12 @@
 
     <ImageView
         android:id="@+id/notification_image"
-        android:layout_width="42dp"
-        android:layout_height="50dp"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
         android:scaleType="fitXY"
         android:focusable="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="@drawable/notification_bell" />
+        android:background="@drawable/notification_bell_init" />
 </androidx.constraintlayout.widget.ConstraintLayout>
