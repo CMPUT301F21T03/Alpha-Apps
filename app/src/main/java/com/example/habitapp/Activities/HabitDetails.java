@@ -25,6 +25,8 @@
  *   1.11      Moe       Nov-04-2021   Deleted scroller for displaying HabitEvents
  *   1.12      Moe       Nov-04-2021   Changed custom dialog to alertDialog for adding habit event
  *   1.13      Moe       Nov-04-2021   Updated EventAdapter to display all the HabitEvents
+ *   1.14      Mathew    Nov-23-2021   Can no longer add 2 habit events on the same day, added logic
+ *                                      update progress bars
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -33,20 +35,16 @@ package com.example.habitapp.Activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.HorizontalScrollView;
-import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -64,10 +62,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class HabitDetails extends AppCompatActivity implements EventList.OnEventListener{
 
@@ -224,6 +222,12 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
         if (editing) {
             popupMenu.getMenu().removeItem(R.id.edit_habit);
         }
+
+        // if a habit event already exists for today, make the "mark as done" button not visible
+        if (habit.getDateLastChecked().toLocalDate().isEqual(LocalDate.now())){
+            popupMenu.getMenu().removeItem(R.id.mark_done);
+        }
+
         popupMenu.show();
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
@@ -252,6 +256,7 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
 //        startActivity(intent);
 //    }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void habitDetailsDoneEditingPressed(View view) {
         prepareForFinishEditing();
         // TODO update information in Firestore here
@@ -324,6 +329,7 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
                     public void onClick(DialogInterface dialog, int which) {
                         newHabitEvent = new Event(habit.getTitle(), LocalDateTime.now(), "", null, false);
 
+                        increaseEventCompletionCount();
                         newHabitEvent.addEventToFirestore(userData, habit);
                         done_habit.setVisibility(View.VISIBLE);
 
@@ -349,6 +355,58 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
         AlertDialog alert = markdoneBuilder.create();
         alert.show();
 
+    }
+
+    /**
+     * if the habit was supposed to be completed on this day, increment its completion counter by one
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void increaseEventCompletionCount() {
+        // increase the date that the event has been checked to, along with its count
+        habit.setDateLastChecked(LocalDateTime.now());
+        habit.setDaysTotal(habit.getDaysTotal() + 1);
+
+        LocalDate today = LocalDate.now();
+        switch(today.getDayOfWeek()){
+            case SUNDAY:
+                if (habit.getWeekOccurence().getSunday()){
+                    habit.setDaysCompleted(habit.getDaysCompleted() + 1);
+                }
+                break;
+            case MONDAY:
+                if (habit.getWeekOccurence().getMonday()){
+                    habit.setDaysCompleted(habit.getDaysCompleted() + 1);
+                }
+                break;
+            case TUESDAY:
+                if (habit.getWeekOccurence().getTuesday()){
+                    habit.setDaysCompleted(habit.getDaysCompleted() + 1);
+                }
+                break;
+            case WEDNESDAY:
+                if (habit.getWeekOccurence().getWednesday()){
+                    habit.setDaysCompleted(habit.getDaysCompleted() + 1);
+                }
+                break;
+            case THURSDAY:
+                if (habit.getWeekOccurence().getThursday()){
+                    habit.setDaysCompleted(habit.getDaysCompleted() + 1);
+                }
+                break;
+            case FRIDAY:
+                if (habit.getWeekOccurence().getFriday()){
+                    habit.setDaysCompleted(habit.getDaysCompleted() + 1);
+                }
+                break;
+            case SATURDAY:
+                if (habit.getWeekOccurence().getSaturday()){
+                    habit.setDaysCompleted(habit.getDaysCompleted() + 1);
+                }
+                break;
+            default:
+                break;
+        }
+        System.out.println("inside" + habit.getProgress());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
