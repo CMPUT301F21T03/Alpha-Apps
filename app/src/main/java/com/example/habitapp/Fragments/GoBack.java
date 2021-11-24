@@ -11,7 +11,8 @@
  *
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
- *   1.0       Mathew    Oct-21-2020   Created
+ *   1.0       Mathew    Oct-21-2021   Created
+ *   1.1       Mathew    Nov-16-2021   Changed to be an image button
  * =|=======|=|======|===|====|========|===========|================================================
  */
 package com.example.habitapp.Fragments;

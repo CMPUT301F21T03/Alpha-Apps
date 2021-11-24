@@ -33,6 +33,7 @@ package com.example.habitapp.Activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -51,6 +52,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.habitapp.DataClasses.DaysOfWeek;
 import com.example.habitapp.DataClasses.EventList;
@@ -66,7 +69,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class HabitDetails extends AppCompatActivity{
+public class HabitDetails extends AppCompatActivity implements EventList.OnEventListener{
 
     private static final String TAG = "habitdetailsTAG";
     // attributes
@@ -91,7 +94,8 @@ public class HabitDetails extends AppCompatActivity{
     private CheckBox friday_button;
     private CheckBox saturday_button;
 
-    public ListView eventsListview;
+//    public ListView eventsListview;
+    private RecyclerView recyclerView;
     private EventList eventsAdapter;
     public ArrayList<Event> events = new ArrayList<>();
 
@@ -179,14 +183,14 @@ public class HabitDetails extends AppCompatActivity{
 
         setHabitEventAdapter();
 
-        //set a listener for if the editHabit layout is pressed by the user
-        eventsListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Event event = (Event) eventsListview.getItemAtPosition(i);
-                habitDetailsHabitEventLayoutPressed(event);
-            }
-        });
+//        //set a listener for if the editHabit layout is pressed by the user
+//        recyclerView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                Event event = (Event) recyclerView.getItemAtPosition(i);
+//                habitDetailsHabitEventLayoutPressed(event);
+//            }
+//        });
 
         // most likely out of date code
         // set a listener for if the more button is pressed by the user
@@ -240,13 +244,13 @@ public class HabitDetails extends AppCompatActivity{
         });
     }
 
-    private void habitDetailsHabitEventLayoutPressed(Event event){
-        Intent intent = new Intent(this, HabitEventDetails.class);
-        intent.putExtra("event", event);
-        intent.putExtra("habit", habit);
-        intent.putExtra("userData", (Serializable) userData);
-        startActivity(intent);
-    }
+//    private void habitDetailsHabitEventLayoutPressed(Event event){
+//        Intent intent = new Intent(this, HabitEventDetails.class);
+//        intent.putExtra("event", event);
+//        intent.putExtra("habit", habit);
+//        intent.putExtra("userData", (Serializable) userData);
+//        startActivity(intent);
+//    }
 
     public void habitDetailsDoneEditingPressed(View view) {
         prepareForFinishEditing();
@@ -318,7 +322,7 @@ public class HabitDetails extends AppCompatActivity{
                 .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        newHabitEvent = new Event(habit.getTitle(), LocalDateTime.now(), "", false, false);
+                        newHabitEvent = new Event(habit.getTitle(), LocalDateTime.now(), "", null, false);
 
                         newHabitEvent.addEventToFirestore(userData, habit);
                         done_habit.setVisibility(View.VISIBLE);
@@ -349,9 +353,11 @@ public class HabitDetails extends AppCompatActivity{
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void setHabitEventAdapter() {
-        eventsListview = findViewById(R.id.habitdetails_habit_event_list);
-        eventsAdapter = new EventList(this, events);
-        eventsListview.setAdapter(eventsAdapter);
+
+        recyclerView = findViewById(R.id.habitdetails_habit_event_list);
+        eventsAdapter = new EventList(events, this);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        recyclerView.setAdapter(eventsAdapter);
         getHabitEventList(eventsAdapter);
     }
 
@@ -372,5 +378,13 @@ public class HabitDetails extends AppCompatActivity{
     }
 
 
-
+    @Override
+    public void onEventClick(int position) {
+        Event event = events.get(position);
+        Intent intent = new Intent(this, HabitEventDetails.class);
+        intent.putExtra("event", event);
+        intent.putExtra("habit", habit);
+        intent.putExtra("userData", (Serializable) userData);
+        startActivity(intent);
+    }
 }

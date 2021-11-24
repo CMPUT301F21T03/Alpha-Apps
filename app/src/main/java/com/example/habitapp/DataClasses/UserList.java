@@ -11,6 +11,7 @@
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Mathew    Nov-01-2021    Created
+ *   1.1       Mathew    Nov-16-2021    Added an imageview to store a user's pfp
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -22,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -56,11 +58,11 @@ public class UserList extends ArrayAdapter<User> {
         User profile = profiles.get(position);
         TextView username = view.findViewById(R.id.profilelistentry_username);
         TextView id = view.findViewById(R.id.profilelistentry_id);
-        TextView photoStandIn = view.findViewById(R.id.profilelistentry_photo);
+        ImageView photoView = view.findViewById(R.id.profilelistentry_photo);
 
         username.setText(profile.getName());
         id.setText(profile.getUniqueID());
-        photoStandIn.setText(profile.getPhotoStandIn());
+        photoView.setImageBitmap(profile.getProfilePic());
 
         return view;
     }
