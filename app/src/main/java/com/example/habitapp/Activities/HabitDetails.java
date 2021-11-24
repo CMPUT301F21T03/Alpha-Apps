@@ -25,6 +25,7 @@
  *   1.11      Moe       Nov-04-2021   Deleted scroller for displaying HabitEvents
  *   1.12      Moe       Nov-04-2021   Changed custom dialog to alertDialog for adding habit event
  *   1.13      Moe       Nov-04-2021   Updated EventAdapter to display all the HabitEvents
+ *   1.14      Jesse     Nov-22-2021   Changed ListView adapter to RecyclerView adapter
  * =|=======|=|======|===|====|========|===========|================================================
  */
 

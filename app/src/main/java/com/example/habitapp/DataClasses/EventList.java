@@ -15,6 +15,7 @@
  *   1.2     Jesse/Moe     Nov-03-2021    Add layout inflater
  *   1.3       Moe       Nov-04         Added addSnapshotQuery to display HabitEvent from Firestore
  *   1.4       Mathew    Nov-16-2021    Added an imageView to show the user selected image for an event
+ *   1.5       Jesse     Nov-22-2021    Changed from ListView to RecyclerView
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
