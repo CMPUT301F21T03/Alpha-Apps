@@ -26,9 +26,10 @@ import android.graphics.BitmapFactory;
 
 import com.example.habitapp.R;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class User {
+public class User implements Serializable {
 
     // a unique string of characters to organize users
     private String uniqueID;
@@ -57,8 +58,9 @@ public class User {
      * @param name the name that the user gives themselves
      * @param email the email that the user links with their account
      * @param password the password that the user sets for their account
+     * @param profilePic the URL to the profile picture of the user
      */
-    public User(String uniqueID, String name, String email, String password){
+    public User(String uniqueID, String name, String email, String password, String profilePic){
         setUniqueID(uniqueID);
         setName(name);
         setEmail(email);
@@ -69,6 +71,7 @@ public class User {
         // set the account's profile picture to be a default
         Bitmap defaultPFP = BitmapFactory.decodeResource(ContextGetter.getContext().getResources(), R.drawable.default_user_icon);
         setProfilePic(defaultPFP);
+
 
         // set the following and follower lists to be empty
         followingList = new ArrayList<>();

@@ -15,6 +15,7 @@
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Mathew    Nov-01-2021   Created
  *   1.1       Mathew    Nov-03-2021   Forgot to add dynamic title last time (now added)
+ *   1.2       Leah      Nov-24-2021   Added basic display functionality
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -23,20 +24,28 @@ package com.example.habitapp.Activities;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.habitapp.DataClasses.User;
 import com.example.habitapp.DataClasses.UserList;
 import com.example.habitapp.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class FollowingFollowers extends AppCompatActivity {
 
@@ -45,7 +54,8 @@ public class FollowingFollowers extends AppCompatActivity {
     // prep the following/followers screen related objects
     private ListView followListView;
     private ArrayAdapter<User> followAdapter;
-    private ArrayList<User> followDataList;
+    private ArrayList<User> followDataList = new ArrayList();
+    private ArrayList<String> followUsernameList;
     private boolean following;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -56,29 +66,35 @@ public class FollowingFollowers extends AppCompatActivity {
 
         // set if the page should show the following users or follower users
         setFrameType();
-
-        getUserDataList();
         setUserListAdapter();
+        getUserDataList();
+
         // set an on click listener for if a habit is pressed
         followListView.setOnItemClickListener(this::followItemClicked);
 
     }
 
     private void setFrameType() {
+        // TODO: rename to something more appropriate, used to set all related info to following/followers
         TextView titleText = findViewById(R.id.followingfollowers_title_type);
 
         Intent sentIntent = getIntent();
         String sentFollowString = (String) sentIntent.getStringExtra("FOLLOWING?");
         System.out.println(sentFollowString);
+        Map user = (Map) sentIntent.getSerializableExtra("userProfile");
         if (sentFollowString.equalsIgnoreCase("following")){
             following = true;
             // set the title of the frame to be 'following'
             titleText.setText("Following");
+
+            followUsernameList = (ArrayList<String>) user.get("following");
+
         }else{
             // set the title of the frame to be 'followers'
             following = false;
             titleText.setText("Followers");
             System.out.println("here");
+            followUsernameList = (ArrayList<String>) user.get("followers");
         }
     }
 
@@ -87,8 +103,36 @@ public class FollowingFollowers extends AppCompatActivity {
         System.out.println("follower @ pos " + pos + " clicked");
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void getUserDataList(){
-        followDataList = new ArrayList<>();
+        // followDataList = new ArrayList<>();
+        FirebaseFirestore db;
+        db = FirebaseFirestore.getInstance();
+        for(String e : followUsernameList){
+            DocumentReference user = db.collection("Doers").document(e);
+            user.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            Map userData = document.getData();
+                            followDataList.add(new User(userData.get("username").toString(),
+                                                        userData.get("name").toString(),
+                                                        userData.get("username").toString(),
+                                                        userData.get("password").toString(),
+                                                        userData.get("profilePic").toString()));
+                            followAdapter.notifyDataSetChanged();
+                        } else {
+                            Log.d(TAG, "User does not exist");
+                        }
+                    } else {
+                        Log.d(TAG, "get failed with ", task.getException());
+                    }
+                }
+            });
+
+        }
         //TODO get different data based on the 'following' attribute
 
 //        // show your page from Firestore
