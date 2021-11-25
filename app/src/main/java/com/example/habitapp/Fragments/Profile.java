@@ -17,6 +17,7 @@
  *   1.3       Leah      Nov-05-2021   Added profile info from user. Sends data back to Firestore if edited.
  *   1.4       Mathew    Nov-16-2021   Added profile picture selection from the users gallery, made aesthetic changes
  *                                     updated some of the frame logic
+ *   1.5       Mathew    Nov-24-2021   Added a pending button to see all the pending follow requests of a user
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -151,6 +152,11 @@ public class Profile extends Fragment {
     }
 
     private void setButtonListeners(View view){
+
+        // set a listener for if the pending button is pressed
+        Button pendingButton = view.findViewById(R.id.profile_pending_button);
+        pendingButton.setOnClickListener(this::profilePendingButtonPressed);
+
         // set a listener for if the edit button is pressed
         ImageButton editButton = view.findViewById(R.id.profile_edit);
         editButton.setOnClickListener(this::profileEditButtonPressed);
@@ -176,6 +182,12 @@ public class Profile extends Fragment {
         // set a listener for if the photo of the persons profile is pressed
         profilePicView.setSoundEffectsEnabled(false);
         profilePicView.setOnClickListener(this::profilePhotoPressed);
+    }
+
+    private void profilePendingButtonPressed(View view){
+        Intent intent = new Intent(getContext(), FollowingFollowers.class);
+        intent.putExtra("FOLLOWING?", "requested");
+        startActivity(intent);
     }
 
     private void profilePhotoPressed(View view) {
