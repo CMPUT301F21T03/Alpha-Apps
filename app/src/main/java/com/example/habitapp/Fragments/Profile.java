@@ -32,7 +32,10 @@ import android.graphics.ImageDecoder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -50,13 +53,19 @@ import com.example.habitapp.Activities.FollowingFollowers;
 import com.example.habitapp.Activities.Main;
 import com.example.habitapp.DataClasses.User;
 import com.example.habitapp.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import android.graphics.Bitmap;
@@ -111,12 +120,34 @@ public class Profile extends Fragment {
     }
 
     public void getUserData(){
-
-        //add some test data
-        //profile = new User("uniqueID1234567890", "my_name2", "my_email2", "my_password2");
+        // fetch user data from activity in Main
         Main activity = (Main) getActivity();
         userData = activity.getUserData();
+        // convert to a User
         profile = new User(userData.get("username").toString(),userData.get("name").toString(),userData.get("username").toString(),userData.get("password").toString());
+        if(userData.containsKey("profilePicture")){
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        URL url = new URL(userData.get("profilePicture").toString());
+                        Bitmap imageBitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                        profile.setProfilePic(imageBitmap);
+                        new Handler(Looper.getMainLooper()).post(new Runnable(){
+                            @Override
+                            public void run() {
+                                profilePicView.setImageBitmap(profile.getProfilePic());
+                            }
+                        });
+                        Log.d(TAG, "Successfully set image");
+                    } catch (Exception e) {
+                        Log.d(TAG, e.toString());
+                    }
+                }
+            });
+
+            thread.start();
+        }
     }
 
     private void setButtonListeners(View view){
@@ -171,8 +202,48 @@ public class Profile extends Fragment {
 
         // after cropping the image, set the result to the profile picture bitmap
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-            Uri imageUri = CropImage.getActivityResult(data).getUri();
+            // prepare references
+            FirebaseFirestore db;
+            db = FirebaseFirestore.getInstance();
+            FirebaseStorage storage = FirebaseStorage.getInstance("gs://alpha-apps-41471.appspot.com");
+            StorageReference storageRef = storage.getReference();
+
+            CropImage.ActivityResult imageData = CropImage.getActivityResult(data);
+
+            // set profile image
+            Uri imageUri = imageData.getUri();
             profilePicView.setImageURI(imageUri);
+
+            // format bytes to be stored in storage
+            StorageReference docuRef = storageRef.child("images/"+imageUri.getLastPathSegment());
+            UploadTask uploadTask = docuRef.putFile(imageUri);
+            uploadTask.addOnFailureListener(exception -> Log.d(TAG,"Failed upload"))
+                    .addOnSuccessListener(taskSnapshot -> Log.d(TAG,"Successful upload"));
+            uploadTask.continueWithTask(task -> {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+
+                // Continue with the task to get the download URL
+                return docuRef.getDownloadUrl();
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        Uri downloadUri = task.getResult();
+                        Log.d(TAG,downloadUri.toString());
+                        // upload to the user document in Firestore
+                        Map userData = new HashMap<>();
+                        userData.put("profilePicture",downloadUri.toString());
+                        db.collection("Doers").document(profile.getUniqueID())
+                                .update(userData);
+
+
+                    } else {
+                        Log.d(TAG,"Failed to get download URL");
+                    }
+                }
+            });
         }
 
     }
