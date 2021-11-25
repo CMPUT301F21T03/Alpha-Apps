@@ -17,9 +17,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="5dp"
+            android:fontFamily="@font/montserrat"
             android:text="Date started"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:textSize="24sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/habitdetails_reason_text" />
 
@@ -42,9 +43,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
+            android:fontFamily="@font/montserrat"
             android:text="Frequency"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:textSize="24sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/habitdetails_title" />
 
@@ -54,9 +56,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="5dp"
+            android:fontFamily="@font/montserrat"
             android:text="Reason"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:textSize="24sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/include" />
 
@@ -66,8 +69,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="5dp"
+            android:fontFamily="@font/montserrat"
             android:text="2021-10-12"
-            android:textSize="16sp"
+            android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView22" />
 
@@ -77,8 +81,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
+            android:fontFamily="@font/montserrat"
             android:text="Habit Events"
-            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/habitdetails_date_started" />
@@ -91,6 +97,9 @@
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
             android:text="More"
+            android:visibility="gone"
+            app:icon="@drawable/ic_baseline_more_horiz_24"
+            app:iconTint="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -111,31 +120,55 @@
                 android:layout_weight="1" />
         </FrameLayout>
 
+        <FrameLayout
+            android:id="@+id/frameLayout3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/more_button"
+                android:name="com.example.habitapp.Fragments.More"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </FrameLayout>
+
         <EditText
             android:id="@+id/habitdetails_reason_text"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="5dp"
+            android:layout_marginEnd="20dp"
             android:ems="10"
+            android:fontFamily="@font/montserrat"
             android:inputType="textPersonName"
             android:maxLength="30"
             android:text="Reason text"
+            android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView20" />
 
         <EditText
             android:id="@+id/habitdetails_title"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
             android:ems="10"
+            android:fontFamily="@font/montserrat"
             android:inputType="textPersonName"
             android:maxLength="20"
             android:text="Title"
+            android:textSize="34sp"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -156,26 +189,17 @@
             app:layout_constraintStart_toEndOf="@+id/habitdetails_title"
             app:layout_constraintTop_toTopOf="@+id/habitdetails_title" />
 
-        <Button
-            android:id="@+id/habitdetails_button_done_editing"
-            android:layout_width="88dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="16dp"
-            android:onClick="habitDetailsDoneEditingPressed"
-            android:text="Done"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
         <Spinner
             android:id="@+id/habitdetails_privacy_spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="39dp"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="20dp"
-
+            android:fontFamily="@font/montserrat"
             android:spinnerMode="dropdown"
+
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/habitdetails_select_privacy"
             app:layout_constraintTop_toBottomOf="@+id/habitdetails_select_privacy" />
 
         <TextView
@@ -184,10 +208,33 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="20dp"
+            android:fontFamily="@font/montserrat"
             android:text="Habit Privacy"
-            android:textSize="16sp"
+            android:textAlignment="textEnd"
+            android:textColor="@color/black"
+            android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/include" />
+            app:layout_constraintTop_toBottomOf="@+id/habitdetails_reason_text" />
+
+        <Button
+            android:id="@+id/habitdetails_button_done_editing"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="5dp"
+            android:fontFamily="@font/montserrat"
+            android:onClick="habitDetailsDoneEditingPressed"
+            android:text="Complete"
+            android:textAllCaps="false"
+            android:textSize="24sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/habitdetails_date_started" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -204,4 +251,5 @@
         android:layout_marginBottom="20dp">
 
     </androidx.recyclerview.widget.RecyclerView>
+
 </RelativeLayout>

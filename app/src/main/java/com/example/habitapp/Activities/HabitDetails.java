@@ -25,7 +25,8 @@
  *   1.11      Moe       Nov-04-2021   Deleted scroller for displaying HabitEvents
  *   1.12      Moe       Nov-04-2021   Changed custom dialog to alertDialog for adding habit event
  *   1.13      Moe       Nov-04-2021   Updated EventAdapter to display all the HabitEvents
- *   1.14      Mathew    Nov-23-2021   Can no longer add 2 habit events on the same day, added logic
+ *   1.14      Jesse     Nov-22-2021   Changed ListView adapter to RecyclerView adapter
+ *   1.15      Mathew    Nov-23-2021   Can no longer add 2 habit events on the same day, added logic
  *                                      update progress bars
  * =|=======|=|======|===|====|========|===========|================================================
  */
@@ -36,6 +37,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -126,7 +128,7 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
         privacy_spinner = findViewById(R.id.habitdetails_privacy_spinner);
 
         String[] items = new String[]{"Private", "Public"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, items);
         privacy_spinner.setAdapter(adapter);
         privacy_spinner.setEnabled(false);
 
@@ -216,7 +218,7 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void habitDetailsMoreButtonPressed(View view) {
+    public void habitDetailsMoreButtonPressed(View view) {
         popupMenu = new PopupMenu(this, view);
         popupMenu.getMenuInflater().inflate(R.menu.habit_more_menu, popupMenu.getMenu());
         if (editing) {
@@ -246,6 +248,8 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
                 return true;
             }
         });
+
+
     }
 
 //    private void habitDetailsHabitEventLayoutPressed(Event event){
@@ -445,4 +449,6 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
         intent.putExtra("userData", (Serializable) userData);
         startActivity(intent);
     }
+
+
 }
