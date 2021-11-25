@@ -18,6 +18,7 @@
  *                                      depending on the activity that is passed from
  *   1.5       Moe       Nov-04-2021   Firestore edit for HabitEvent
  *   1.6       Mathew    Nov-16-2021   Implemented camera functionality, and made some aesthetic changes
+ *   1.7       Leah      Nov-23-2021   Implemented basic storage of images to Firebase Storage
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -29,9 +30,11 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -46,14 +49,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.habitapp.DataClasses.Event;
 import com.example.habitapp.DataClasses.Habit;
 import com.example.habitapp.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.theartofdev.edmodo.cropper.CropImage;
 
+import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public class EditHabitEvent extends AppCompatActivity {
-
+    private String TAG = "editHabitEventTAG";
     private Event event;
     private Habit habit;
     private String prevActivity;
@@ -183,6 +195,49 @@ public class EditHabitEvent extends AppCompatActivity {
             event.setPhotograph(photo);
             cameraImage.setVisibility(View.VISIBLE);
             cameraImage.setImageBitmap(photo);
+            // prepare references
+            FirebaseFirestore db;
+            db = FirebaseFirestore.getInstance();
+            FirebaseStorage storage = FirebaseStorage.getInstance("gs://alpha-apps-41471.appspot.com");
+            StorageReference storageRef = storage.getReference();
+
+
+            // set profile image
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            photo.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] imageData = baos.toByteArray();
+
+            // format bytes to be stored in storage
+            StorageReference docuRef = storageRef.child("images/"+imageData.hashCode());
+            UploadTask uploadTask = docuRef.putBytes(imageData);
+            uploadTask.addOnFailureListener(exception -> Log.d(TAG,"Failed upload"))
+                    .addOnSuccessListener(taskSnapshot -> Log.d(TAG,"Successful upload"));
+            uploadTask.continueWithTask(task -> {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+
+                // Continue with the task to get the download URL
+                return docuRef.getDownloadUrl();
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        Uri downloadUri = task.getResult();
+                        Log.d(TAG,downloadUri.toString());
+                        // upload to the user document in Firestore
+                        Map userData = new HashMap<>();
+                        userData.put("profilePicture",downloadUri.toString());
+                        db.collection("Doers").document((String) userData.get("username"))
+                                .update(userData);
+
+
+                    } else {
+                        Log.d(TAG,"Failed to get download URL");
+                    }
+                }
+            });
+
         }
     }
 }
