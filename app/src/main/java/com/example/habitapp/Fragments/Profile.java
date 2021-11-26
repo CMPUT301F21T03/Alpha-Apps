@@ -35,6 +35,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -66,7 +67,9 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import android.graphics.Bitmap;
@@ -125,13 +128,23 @@ public class Profile extends Fragment {
         Main activity = (Main) getActivity();
         userData = activity.getUserData();
         // convert to a User
-        profile = new User(userData.get("username").toString(),userData.get("name").toString(),userData.get("username").toString(),userData.get("password").toString());
-        if(userData.containsKey("profilePicture")){
+        // TODO: initialize profilePic, follower, and following at default
+        profile = new User(userData.get("username").toString(),
+                           userData.get("name").toString(),
+                           userData.get("username").toString(),
+                           userData.get("password").toString(),
+                           userData.get("profilePic").toString());
+        // check for following/followers
+        if(userData.containsKey("following")){
+            profile.setFollowingList((ArrayList<String>) userData.get("following"));
+        }
+        // check for profile picture
+        if(userData.containsKey("profilePic")){
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        URL url = new URL(userData.get("profilePicture").toString());
+                        URL url = new URL(userData.get("profilePic").toString());
                         Bitmap imageBitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
                         profile.setProfilePic(imageBitmap);
                         new Handler(Looper.getMainLooper()).post(new Runnable(){
@@ -246,7 +259,7 @@ public class Profile extends Fragment {
                         Log.d(TAG,downloadUri.toString());
                         // upload to the user document in Firestore
                         Map userData = new HashMap<>();
-                        userData.put("profilePicture",downloadUri.toString());
+                        userData.put("profilePic",downloadUri.toString());
                         db.collection("Doers").document(profile.getUniqueID())
                                 .update(userData);
 
@@ -267,16 +280,19 @@ public class Profile extends Fragment {
     }
 
     private void profileFollowersButtonPressed(View view) {
-        Intent intent = new Intent(getContext(), FollowingFollowers.class);
-        intent.putExtra("FOLLOWING?", "follower");
-        startActivity(intent);
+        this.navigateFollowingFollowers("follower");
     }
 
     private void profileFollowingButtonPressed(View view) {
-        Intent intent = new Intent(getContext(), FollowingFollowers.class);
-        intent.putExtra("FOLLOWING?", "following");
-        startActivity(intent);
+        this.navigateFollowingFollowers("following");
 
+    }
+
+    private void navigateFollowingFollowers(String follow){
+        Intent intent = new Intent(getContext(), FollowingFollowers.class);
+        intent.putExtra("FOLLOWING?", follow);
+        intent.putExtra("userProfile", (Serializable) userData);
+        startActivity(intent);
     }
 
     private void profileEditButtonPressed(View view) {
