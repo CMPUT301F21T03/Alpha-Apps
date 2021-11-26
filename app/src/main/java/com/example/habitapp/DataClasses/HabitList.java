@@ -15,6 +15,7 @@
  *   1.2       Leah      Nov-03-2021   Added addSnapshotQuery to better modularize data. Updated Javadocs accordingly
  *   1.3       Leah      Nov-03-2021   Fixed empty list glitch
  *   1.4       Mathew    Nov-12-2021   Updated the look of the HabitListView to be more aesthetically pleasing
+ *   1.5       Eric      Nov-24-2021   Reworked  to make use of a RecyclerView for reordering
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -28,12 +29,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.habitapp.R;
 import com.google.firebase.firestore.EventListener;
@@ -49,54 +52,120 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class HabitList extends ArrayAdapter<Habit> implements Serializable {
+public class HabitList extends RecyclerView.Adapter<HabitList.ViewHolder> implements Serializable {
 
     private ArrayList<Habit> habitList;
     private Context context;
 
+    private HabitList.OnHabitListener onHabitListener;
+
     /**
      * creates a list of habit objects. As this class extends an array adapter this object must
      * contain the context of its use so other functions may use this value later
-     * @param context the context into which the habit list is created in
+     *
      * @param habitList the raw data of the habit list which will be formatted by this class
      */
-    public HabitList(Context context, ArrayList<Habit> habitList){
-        super(context, 0, habitList);
+    public HabitList(ArrayList<Habit> habitList, OnHabitListener onHabitListener){
         this.habitList = habitList;
-        this.context = context;
+        this.onHabitListener = onHabitListener;
     }
 
     /**
-     * Returns a View that represents a list of habitdata
-     * @param pos the position in the habitdatalist that the function is on
-     * @param convertView
-     * @param parent
-     * @return the view of the object after it has been formatted with habit data
+     * ViewHolder class specialized for RecyclerView
+     * Attaches to views in each cell's layout, and provides getters to access them.
      */
-    @NonNull
-    @Override
-    public View getView(int pos, @Nullable View convertView, @NonNull ViewGroup parent) {
-        //TODO change the second text view to whatever is necessary to show the progress report
-        View view = convertView;
-        if(view == null){
-            view = LayoutInflater.from(context).inflate(R.layout.habit_entry, parent, false);
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        TextView habitTitle;
+        TextView habitProgressText;
+        ProgressBar habitProgressBar;
+        HabitList.OnHabitListener onHabitListener;
+
+        /**
+         * Constructor for ViewHolder. Brings in the current view, and the listener
+         * allows for onClick handling
+         * @param view current view
+         * @param onHabitListener listener instance to allow for onClick
+         */
+
+        public ViewHolder(View view, HabitList.OnHabitListener onHabitListener){
+            super(view);
+            habitTitle = view.findViewById(R.id.habitentry_habit_name);
+            habitProgressText = view.findViewById(R.id.habitentry_habit_progress);
+            habitProgressBar = view.findViewById(R.id.habitentry_progress_bar);
+
+            this.onHabitListener = onHabitListener;
+            view.setOnClickListener(this);
         }
-        Habit habit = getHabitAtPosition(pos);
 
-        // get the text views set up for each field
-        TextView habitTitle = view.findViewById(R.id.habitentry_habit_name);
-        TextView habitProgressText = view.findViewById(R.id.habitentry_habit_progress);
-        ProgressBar habitProgressBar = view.findViewById(R.id.habitentry_progress_bar);
+        /**
+         * Gets the Habit title's TextView
+         * @return Habit title's TextView
+         */
+        public TextView getHabitTitle() {
+            return habitTitle;
+        }
+
+        /**
+         * Gets the Habit progress text's TextView
+         * @return Habit progress text's TextView
+         */
+        public TextView getHabitProgressText() {
+            return habitProgressText;
+        }
 
 
-        // set the text in each view to its corresponding data
-        habitTitle.setText(habit.getTitle());
-        habitProgressText.setText(habit.getProgress().toString()+ "%");
-        habitProgressBar.setProgress(habit.getProgress().intValue());
+        /**
+         * Gets the Habit progress bar object
+         * @return Habit progress bar object
+         */
+        public ProgressBar getHabitProgressBar() {
+            return habitProgressBar;
+        }
 
+        /**
+         * onClick handler that passes the onClick functionality to the interface
+         * @param view parent view
+         */
+        @Override
+        public void onClick(View view) {
+            onHabitListener.onHabitClick(getAdapterPosition());
+        }
+    }
 
+    /**
+     * Interface to allow for onClick method when tapping on
+     * cell in RecyclerView
+     */
+    public interface OnHabitListener{
+        void onHabitClick(int position);
+    }
 
-        return view;
+    /**
+     * Once connected to a holder in the RecyclerView, inflates it with relevant cell layout
+     * belonging to a habit
+     * @param parent ViewGroup parent to get context from
+     * @param viewType viewType number
+     */
+    @Override
+    public HabitList.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        View listItem = layoutInflater.inflate(R.layout.habit_entry, parent, false);
+        return new HabitList.ViewHolder(listItem, onHabitListener);
+    }
+
+    /**
+     * Once connected to a holder in the RecyclerView, populates it with relevant data
+     * belonging to a habit
+     * @param holder the "cell" in question in the RecyclerView
+     * @param position the index of the position of the cell in the RecyclerView
+     */
+    @Override
+    public void onBindViewHolder(HabitList.ViewHolder holder, final int position){
+        final Habit habit = habitList.get(position);
+        holder.getHabitTitle().setText(habit.getTitle());
+        holder.getHabitProgressText().setText(habit.getProgress().toString()+  "%");
+        holder.getHabitProgressBar().setProgress(habit.getProgress().intValue());
     }
 
     /**
@@ -104,6 +173,7 @@ public class HabitList extends ArrayAdapter<Habit> implements Serializable {
      * @param query The document and query to find Habits from in the Firestore
      * @param TAG The tag associated with the context it is called from, in case an error occurs
      */
+
     @NonNull
     public void addSnapshotQuery(Query query, String TAG){
         query.addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -135,10 +205,10 @@ public class HabitList extends ArrayAdapter<Habit> implements Serializable {
                             // Convert Firestore's stored days of week to DaysOfWeek
                             Map<String, Boolean> docDaysOfWeek = (Map<String, Boolean>) doc.get("weekOccurence");
                             Habit habitToAdd;
-                            if (doc.getBoolean("privacy") == null) {
-                                 habitToAdd = new Habit(doc.getString("title"),doc.getString("reason"),ldt,new DaysOfWeek(docDaysOfWeek), true);
+                            if (doc.getBoolean("privacy") == null || (doc.get("allHabitsIndex") == null) || (doc.get("todayHabitsIndex") == null) ) {
+                                 habitToAdd = new Habit(doc.getString("title"),doc.getString("reason"),ldt,new DaysOfWeek(docDaysOfWeek), true, -1, -1);
                             } else {
-                                 habitToAdd = new Habit(doc.getString("title"),doc.getString("reason"),ldt,new DaysOfWeek(docDaysOfWeek), doc.getBoolean("privacy"));
+                                 habitToAdd = new Habit(doc.getString("title"),doc.getString("reason"),ldt,new DaysOfWeek(docDaysOfWeek), doc.getBoolean("privacy"), ((Long) doc.get("allHabitsIndex")).intValue(), ((Long) doc.get("todayHabitsIndex")).intValue());
                             }
 
                             // Set the document ID in case it needs to be fetched for delete/edits
@@ -152,6 +222,7 @@ public class HabitList extends ArrayAdapter<Habit> implements Serializable {
             }
         });
     }
+
 
     /**
      * Adds a Habit type object to our internal ArrayList
@@ -197,5 +268,10 @@ public class HabitList extends ArrayAdapter<Habit> implements Serializable {
      */
     public Boolean getHabitListEmpty() {
         return habitList.isEmpty();
+    }
+
+    @Override
+    public int getItemCount(){
+        return habitList.size();
     }
 }

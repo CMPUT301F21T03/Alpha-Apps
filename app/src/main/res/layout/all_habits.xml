@@ -26,24 +26,29 @@
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="5dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginBottom="50dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/textView10">
 
-        <ListView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/allhabits_habit_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:divider="@null">
+            android:divider="@null" />
 
-        </ListView>
+        <!--        <ListView-->
+        <!--            android:id="@+id/allhabits_habit_list"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="match_parent"-->
+        <!--            android:divider="@null">-->
+        <!---->
+        <!--        </ListView>-->
     </LinearLayout>
 
     <TextView
@@ -73,14 +78,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="40dp"
-        android:textColor="#000000"
         android:text="You've got no habits to track!"
+        android:textColor="#00000000"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView10" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
