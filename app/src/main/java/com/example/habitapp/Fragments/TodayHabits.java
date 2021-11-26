@@ -95,10 +95,19 @@ public class TodayHabits extends Fragment implements HabitList.OnHabitListener{
     }
 
     private RecyclerView.AdapterDataObserver myObserver = new RecyclerView.AdapterDataObserver() {
+        @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         public void onChanged() {
             super.onChanged();
 
+            Integer dayWeek = LocalDate.now().getDayOfWeek().ordinal()+1;
+            System.out.println("Day of week index:");
+            System.out.println(dayWeek);
+            for (int i = 0; i < habitDataList.size(); i++) {
+                if (habitDataList.get(i).getWeekOccurence().getAll().get(dayWeek) == Boolean.FALSE) {
+                    habitDataList.remove(i);
+                }
+            }
 
             if (getView()  != null) {
                 TextView hiddenText = getView().findViewById(R.id.today_habits_hidden_textview);
@@ -148,15 +157,21 @@ public class TodayHabits extends Fragment implements HabitList.OnHabitListener{
         // get the day of the week
         String dayWeek = LocalDate.now().getDayOfWeek().name().toLowerCase(Locale.ROOT);
 
+
         // initialize firestore
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
         // only get the ones for today
-        final Query user = db.collection("Doers")
+        /*final Query user = db.collection("Doers")
                                            .document((String) userData.get("username"))
                                            .collection("habits")
                                            .whereEqualTo("weekOccurence."+dayWeek,true)
-                                           .orderBy("todayHabitsIndex");
+                                           .orderBy("todayHabitsIndex"); */
+
+        final Query user = db.collection("Doers")
+                .document((String) userData.get("username"))
+                .collection("habits")
+                .orderBy("todayHabitsIndex");
         habitAdapter.addSnapshotQuery(user,TAG);
     }
 
