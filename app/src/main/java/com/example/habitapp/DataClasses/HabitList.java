@@ -73,10 +73,10 @@ public class HabitList extends ArrayAdapter<Habit> implements Serializable {
      * @param parent
      * @return the view of the object after it has been formatted with habit data
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @NonNull
     @Override
     public View getView(int pos, @Nullable View convertView, @NonNull ViewGroup parent) {
-        //TODO change the second text view to whatever is necessary to show the progress report
         View view = convertView;
         if(view == null){
             view = LayoutInflater.from(context).inflate(R.layout.habit_entry, parent, false);

@@ -56,10 +56,10 @@ public class HabitEventDetails extends AppCompatActivity {
     private Event event;
     private String habitName;
     private String comment;
-    private String date;
+    //private String date;
     private Bitmap photograph;
     private Boolean hasLocation;
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    //private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private Map userData;
 
 
@@ -78,22 +78,21 @@ public class HabitEventDetails extends AppCompatActivity {
         //update fields with Event info
         habitName = event.getName();
         comment = event.getComment();
-        date = event.getDateCompleted().format(formatter);
+        //date = event.getDateCompleted().format(formatter);
 
         TextView nameText = findViewById(R.id.habiteventdetails_title);
         TextView commentText = findViewById(R.id.habiteventdetails_comment);
         //TextView locationText = findViewById(R.id.habiteventdetails_location);
-        TextView dateText = findViewById(R.id.habiteventdetails_date);
 
-        nameText.setText(habitName);
+        nameText.setText("Habit Event: " + habitName);
         commentText.setText(comment);
-        dateText.setText(date);
 
 
         // set a listener for the edit button
         Button editButton = findViewById(R.id.habiteventdetails_edit);
         editButton.setOnClickListener(this::habitEventDetailsEditButtonPressed);
 
+        //ImageView deleteButton = findViewById(R.id.habiteventdetails_delete);
         Button deleteButton = findViewById(R.id.habiteventdetails_delete);
         deleteButton.setOnClickListener(this::habitEventDetailsDeleteButtonPressed);
     }
