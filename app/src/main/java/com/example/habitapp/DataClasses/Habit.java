@@ -15,8 +15,9 @@
  *   1.0       Mathew    Oct-13-2021   Created
  *   1.1       Mathew    Oct-31-2021   Added Javadocs
  *   1.2       Leah      Nov-02-2021   Added FirestoreId to allow for edits and deletes
- *   1.3       Eric      Nov-03-2021   Firestore add, edit, delete now part of Habit class. Changes reflected here.
+ *   1.3       Eric      Nov-03-2021   Firestore add, edit, delete now part of Habit class. Changes reflected here.  
  *   1.4       Mathew    Nov-23-2021   Added logic to update progress bars
+ *   1.4       Eric      Nov-24-2021   Stores index for use with reordering on All/Today Habit frames
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -72,6 +73,13 @@ public class Habit implements Serializable {
 
     // records how well the user is keeping up with this specific habit
     private Double progress;
+
+    // records whether a habit is private with friends or not
+    private boolean privacy;
+
+    // records placement in lists for user display
+    private Integer allHabitsIndex;
+    private Integer todayHabitsIndex;
     //==================================================================================
 
     // program data objects
@@ -88,9 +96,6 @@ public class Habit implements Serializable {
     private Integer daysTotal = 0;
     //==================================================================================
 
-    private boolean privacy;
-
-
 
     /**
      * create a Habit object with the specified values
@@ -99,9 +104,11 @@ public class Habit implements Serializable {
      * @param dateStarted the date the habit is scheduled to start
      * @param weekOccurence the weekly frequency that the user specifies the habit should take place
      * @param privacy the privacy setting of the habit
+     * @param allHabitsIndex the index of where the habit should go on the All Habits frame
+     * @param todayHabitsIndex the index of where the habits should go on the Today Habits frame
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Habit(String title, String reason, LocalDateTime dateStarted, DaysOfWeek weekOccurence, boolean privacy){
+    public Habit(String title, String reason, LocalDateTime dateStarted, DaysOfWeek weekOccurence, boolean privacy, Integer allHabitsIndex, Integer todayHabitsIndex){
         // set the eventList to be empty
         setEventList(new ArrayList<>());
         // set the last day that was checked for habit completion to be one day ago
@@ -115,6 +122,8 @@ public class Habit implements Serializable {
         setDateStarted(dateStarted);
         setWeekOccurence(weekOccurence);
         setPrivacy(privacy);
+        setAllHabitsIndex(allHabitsIndex);
+        setTodayHabitsIndex(todayHabitsIndex);
     }
 
     /**
@@ -273,6 +282,22 @@ public class Habit implements Serializable {
 
     public void setPrivacy(boolean privacy) {
         this.privacy = privacy;
+    }
+
+    public Integer getAllHabitsIndex() {
+        return allHabitsIndex;
+    }
+
+    public void setAllHabitsIndex(Integer allHabitsIndex) {
+        this.allHabitsIndex = allHabitsIndex;
+    }
+
+    public Integer getTodayHabitsIndex() {
+        return todayHabitsIndex;
+    }
+
+    public void setTodayHabitsIndex(Integer todayHabitsIndex) {
+        this.todayHabitsIndex = todayHabitsIndex;
     }
 
     public void addHabitToFirestore(Map userData) {

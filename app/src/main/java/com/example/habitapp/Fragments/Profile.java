@@ -276,6 +276,7 @@ public class Profile extends Fragment {
     private void profileLogOutButtonPressed(View view) {
         //TODO sign the user out AND dont allow them to get back to this page using the back button
         Intent intent = new Intent(getContext(), BootScreen.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
 
