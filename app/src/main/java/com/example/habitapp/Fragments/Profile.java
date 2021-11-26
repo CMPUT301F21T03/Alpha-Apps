@@ -17,6 +17,7 @@
  *   1.3       Leah      Nov-05-2021   Added profile info from user. Sends data back to Firestore if edited.
  *   1.4       Mathew    Nov-16-2021   Added profile picture selection from the users gallery, made aesthetic changes
  *                                     updated some of the frame logic
+ *   1.5       Mathew    Nov-24-2021   Added a pending button to see all the pending follow requests of a user
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -32,7 +33,11 @@ import android.graphics.ImageDecoder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -50,13 +55,21 @@ import com.example.habitapp.Activities.FollowingFollowers;
 import com.example.habitapp.Activities.Main;
 import com.example.habitapp.DataClasses.User;
 import com.example.habitapp.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Serializable;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import android.graphics.Bitmap;
@@ -111,15 +124,52 @@ public class Profile extends Fragment {
     }
 
     public void getUserData(){
-
-        //add some test data
-        //profile = new User("uniqueID1234567890", "my_name2", "my_email2", "my_password2");
+        // fetch user data from activity in Main
         Main activity = (Main) getActivity();
         userData = activity.getUserData();
-        profile = new User(userData.get("username").toString(),userData.get("name").toString(),userData.get("username").toString(),userData.get("password").toString());
+        // convert to a User
+        // TODO: initialize profilePic, follower, and following at default
+        profile = new User(userData.get("username").toString(),
+                           userData.get("name").toString(),
+                           userData.get("username").toString(),
+                           userData.get("password").toString(),
+                           userData.get("profilePic").toString());
+        // check for following/followers
+        if(userData.containsKey("following")){
+            profile.setFollowingList((ArrayList<String>) userData.get("following"));
+        }
+        // check for profile picture
+        if(userData.containsKey("profilePic")){
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        URL url = new URL(userData.get("profilePic").toString());
+                        Bitmap imageBitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                        profile.setProfilePic(imageBitmap);
+                        new Handler(Looper.getMainLooper()).post(new Runnable(){
+                            @Override
+                            public void run() {
+                                profilePicView.setImageBitmap(profile.getProfilePic());
+                            }
+                        });
+                        Log.d(TAG, "Successfully set image");
+                    } catch (Exception e) {
+                        Log.d(TAG, e.toString());
+                    }
+                }
+            });
+
+            thread.start();
+        }
     }
 
     private void setButtonListeners(View view){
+
+        // set a listener for if the pending button is pressed
+        Button pendingButton = view.findViewById(R.id.profile_pending_button);
+        pendingButton.setOnClickListener(this::profilePendingButtonPressed);
+
         // set a listener for if the edit button is pressed
         ImageButton editButton = view.findViewById(R.id.profile_edit);
         editButton.setOnClickListener(this::profileEditButtonPressed);
@@ -147,6 +197,12 @@ public class Profile extends Fragment {
         profilePicView.setOnClickListener(this::profilePhotoPressed);
     }
 
+    private void profilePendingButtonPressed(View view){
+        Intent intent = new Intent(getContext(), FollowingFollowers.class);
+        intent.putExtra("FOLLOWING?", "requested");
+        startActivity(intent);
+    }
+
     private void profilePhotoPressed(View view) {
         if (allowedToEdit) {
             Intent galleryIntent = new Intent();
@@ -171,8 +227,48 @@ public class Profile extends Fragment {
 
         // after cropping the image, set the result to the profile picture bitmap
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-            Uri imageUri = CropImage.getActivityResult(data).getUri();
+            // prepare references
+            FirebaseFirestore db;
+            db = FirebaseFirestore.getInstance();
+            FirebaseStorage storage = FirebaseStorage.getInstance("gs://alpha-apps-41471.appspot.com");
+            StorageReference storageRef = storage.getReference();
+
+            CropImage.ActivityResult imageData = CropImage.getActivityResult(data);
+
+            // set profile image
+            Uri imageUri = imageData.getUri();
             profilePicView.setImageURI(imageUri);
+
+            // format bytes to be stored in storage
+            StorageReference docuRef = storageRef.child("images/"+imageUri.getLastPathSegment());
+            UploadTask uploadTask = docuRef.putFile(imageUri);
+            uploadTask.addOnFailureListener(exception -> Log.d(TAG,"Failed upload"))
+                    .addOnSuccessListener(taskSnapshot -> Log.d(TAG,"Successful upload"));
+            uploadTask.continueWithTask(task -> {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+
+                // Continue with the task to get the download URL
+                return docuRef.getDownloadUrl();
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        Uri downloadUri = task.getResult();
+                        Log.d(TAG,downloadUri.toString());
+                        // upload to the user document in Firestore
+                        Map userData = new HashMap<>();
+                        userData.put("profilePic",downloadUri.toString());
+                        db.collection("Doers").document(profile.getUniqueID())
+                                .update(userData);
+
+
+                    } else {
+                        Log.d(TAG,"Failed to get download URL");
+                    }
+                }
+            });
         }
 
     }
@@ -185,16 +281,19 @@ public class Profile extends Fragment {
     }
 
     private void profileFollowersButtonPressed(View view) {
-        Intent intent = new Intent(getContext(), FollowingFollowers.class);
-        intent.putExtra("FOLLOWING?", "follower");
-        startActivity(intent);
+        this.navigateFollowingFollowers("follower");
     }
 
     private void profileFollowingButtonPressed(View view) {
-        Intent intent = new Intent(getContext(), FollowingFollowers.class);
-        intent.putExtra("FOLLOWING?", "following");
-        startActivity(intent);
+        this.navigateFollowingFollowers("following");
 
+    }
+
+    private void navigateFollowingFollowers(String follow){
+        Intent intent = new Intent(getContext(), FollowingFollowers.class);
+        intent.putExtra("FOLLOWING?", follow);
+        intent.putExtra("userProfile", (Serializable) userData);
+        startActivity(intent);
     }
 
     private void profileEditButtonPressed(View view) {

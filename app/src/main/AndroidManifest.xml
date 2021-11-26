@@ -22,10 +22,11 @@
         <activity android:name=".Activities.HabitDetails"/>
         <activity android:name=".Activities.EditHabitEvent"/>
         <activity android:name=".Activities.HabitEventDetails"/>
+        <activity android:name=".Activities.FollowUserView"/>
         <activity android:name=".Activities.FollowingFollowers"/>
         <activity android:name=".Activities.SignUp"/>
         <activity android:name=".Activities.Main"
-            android:windowSoftInputMode="adjustNothing"/>
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".Activities.BootScreen"
             android:label="@string/app_name"

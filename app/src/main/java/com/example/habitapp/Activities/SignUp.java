@@ -57,6 +57,8 @@ public class SignUp extends AppCompatActivity {
     //get the list view for the all habits page
     ArrayAdapter<Habit> habitAdapter;
     ArrayList<Habit> habitDataList;
+    ArrayList<String> defaultFollowList = new ArrayList();
+    String defaultProfilePic = "https://firebasestorage.googleapis.com/v0/b/alpha-apps-41471.appspot.com/o/images%2Fdefault_user_icon.png?alt=media&token=e43c5457-b853-4d35-94c8-bd27ca615370";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +124,9 @@ public class SignUp extends AppCompatActivity {
                             userData.put("username",username);
                             userData.put("password",password);
                             userData.put("name",name);
+                            userData.put("following",defaultFollowList);
+                            userData.put("followers",defaultFollowList);
+                            userData.put("profilePic",defaultProfilePic);
 
                             // Validating password
                             // TODO change this later to something other than random 3
