@@ -147,7 +147,22 @@ public class Event implements Parcelable {
                 .collection("habits")
                 .document(habit.getFirestoreId())
                 .collection("events");
+        if(getFirestoreId() == null){
+            eventsref.add(this)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            Log.d(TAG,"success");
+                            setFirestoreId(documentReference.getId());
 
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d(TAG,"failed: "+ e);
+                     }});
+            return;
+        }
         eventsref.document(getFirestoreId())
                 .set(this)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {

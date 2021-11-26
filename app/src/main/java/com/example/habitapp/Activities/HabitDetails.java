@@ -327,7 +327,6 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
                     public void onClick(DialogInterface dialog, int which) {
                         newHabitEvent = new Event(habit.getTitle(), LocalDateTime.now(), "", null, false);
 
-                        newHabitEvent.addEventToFirestore(userData, habit);
                         done_habit.setVisibility(View.VISIBLE);
 
                         AlertDialog.Builder loghabitBuilder = new AlertDialog.Builder(HabitDetails.this);
@@ -386,6 +385,7 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
         Event event = events.get(position);
         Intent intent = new Intent(this, HabitEventDetails.class);
         intent.putExtra("event", event);
+        intent.putExtra("firestoreId",event.getFirestoreId());
         intent.putExtra("habit", habit);
         intent.putExtra("userData", (Serializable) userData);
         startActivity(intent);
