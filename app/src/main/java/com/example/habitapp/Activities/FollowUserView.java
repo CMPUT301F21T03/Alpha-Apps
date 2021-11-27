@@ -37,6 +37,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.habitapp.DataClasses.Event;
 import com.example.habitapp.DataClasses.Habit;
 import com.example.habitapp.DataClasses.HabitList;
+import com.example.habitapp.DataClasses.OldHabitList;
 import com.example.habitapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -58,7 +59,7 @@ public class FollowUserView extends AppCompatActivity {
     private static final int NEITHER = 3;
 
     private ArrayList<Habit> habits = new ArrayList<Habit>();
-    private HabitList habitAdapter;
+    private OldHabitList habitAdapter;
     private ArrayList<Event> events;
     private String followUserName;
     private String followUserID;
@@ -71,7 +72,7 @@ public class FollowUserView extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.follow_user_view);
 
-        habitAdapter = new HabitList(this, habits);
+        habitAdapter = new OldHabitList(this, habits);
 
         Intent intent = getIntent();
         String userID = intent.getStringExtra("userID");

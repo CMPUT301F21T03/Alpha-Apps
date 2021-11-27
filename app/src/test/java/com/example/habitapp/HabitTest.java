@@ -19,7 +19,7 @@ public class HabitTest {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss");
         LocalDateTime date = LocalDateTime.parse("2021-02-02 00:00:00", formatter);
         boolean privacy = true;
-        Habit habit = new Habit("Exercise", "Get fit", date, frequency, privacy);
+        Habit habit = new Habit("Exercise", "Get fit", date, frequency, privacy, -1, -1);
 
         return habit;
     }

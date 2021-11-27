@@ -28,6 +28,7 @@
  *   1.14      Jesse     Nov-22-2021   Changed ListView adapter to RecyclerView adapter
  *   1.15      Mathew    Nov-23-2021   Can no longer add 2 habit events on the same day, added logic
  *                                      update progress bars
+ *   1.16      Leah      Nov-25-2021   Fixed crashes when new HabitEvent added/deleted
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -333,8 +334,10 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
                     public void onClick(DialogInterface dialog, int which) {
                         newHabitEvent = new Event(habit.getTitle(), LocalDateTime.now(), "", null, false);
 
+
                         increaseEventCompletionCount();
                         newHabitEvent.addEventToFirestore(userData, habit);
+
                         done_habit.setVisibility(View.VISIBLE);
 
                         AlertDialog.Builder loghabitBuilder = new AlertDialog.Builder(HabitDetails.this);
@@ -445,6 +448,7 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
         Event event = events.get(position);
         Intent intent = new Intent(this, HabitEventDetails.class);
         intent.putExtra("event", event);
+        intent.putExtra("firestoreId",event.getFirestoreId());
         intent.putExtra("habit", habit);
         intent.putExtra("userData", (Serializable) userData);
         startActivity(intent);

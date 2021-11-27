@@ -16,25 +16,32 @@
  *   1.3       Leah      Nov-02-2021   Now uses Habits subcollection. Cleaned up test code. Adds Firestore document ID.
  *   1.4       Leah      Nov-03-2021   Changed empty habit list text to use emptyListView, moved list population to HabitList
  *   1.5       Eric      Nov-03-2021   Firestore add, edit, delete now part of Habit class. Changes reflected here.
+ *   1.6       Eric      Nov-24-2021   Changed to RecyclerView to allow for reorderability
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
 package com.example.habitapp.Fragments;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.habitapp.Activities.HabitDetails;
 import com.example.habitapp.Activities.Main;
+import com.example.habitapp.DataClasses.EventList;
 import com.example.habitapp.DataClasses.Habit;
 import com.example.habitapp.DataClasses.HabitList;
 import com.example.habitapp.R;
@@ -43,9 +50,10 @@ import com.google.firebase.firestore.Query;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 
-public class AllHabits extends Fragment {
+public class AllHabits extends Fragment implements HabitList.OnHabitListener{
 
     private static final String TAG = "allhabitsTAG";
 
@@ -54,7 +62,7 @@ public class AllHabits extends Fragment {
     }
 
     // prep the all_habits screen related objects
-    private ListView allHabitsListView;
+    private RecyclerView allHabitsRecyclerView;
     private HabitList habitAdapter;
     private ArrayList<Habit> habitDataList = new ArrayList<>();
     private Map userData;
@@ -68,32 +76,72 @@ public class AllHabits extends Fragment {
         userData = activity.getUserData();
         Log.d(TAG,"Successfully logged in: " + (String) userData.get("username"));
 
-        setHabitListAdapter(view);
-        // set an on click listener for if a habit is pressed
-        allHabitsListView.setOnItemClickListener(this::habitItemClicked);
+        setHabitRecyclerAdapter();
+
+        // set up reorderability
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(allHabitsRecyclerView);
     }
-
-    private void habitItemClicked(AdapterView<?> adapterView, View view, int pos, long l) {
-        // get the item that the user selected
-        Habit itemToSend = (Habit) allHabitsListView.getItemAtPosition(pos);
-        //System.out.println("Sending in the habit class: " + itemToSend.getFirestoreId());
-        Intent intent = new Intent(getContext(), HabitDetails.class);
-
-        // Put pressed habit into bundle to send to HabitDetails
-        intent.putExtra("habit",itemToSend);
-        intent.putExtra("userData", (Serializable) userData);
-        startActivity(intent);
-    }
-
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void setHabitListAdapter(View view) {
-        allHabitsListView = (ListView) view.findViewById(R.id.allhabits_habit_list);
-        habitAdapter = new HabitList(view.getContext(), habitDataList);
-        allHabitsListView.setAdapter(habitAdapter);
+    private void setHabitRecyclerAdapter() {
+
+        allHabitsRecyclerView = getView().findViewById(R.id.allhabits_habit_list);
+        habitAdapter = new HabitList(habitDataList, this);
+        allHabitsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        allHabitsRecyclerView.setAdapter(habitAdapter);
         getHabitDataList(habitAdapter);
-        allHabitsListView.setEmptyView(view.findViewById(R.id.allhabits_hidden_textview_1));
+        habitAdapter.registerAdapterDataObserver(myObserver);
+
     }
+
+    // manages showing/hiding the empty list message
+    private RecyclerView.AdapterDataObserver myObserver = new RecyclerView.AdapterDataObserver() {
+        @Override
+        public void onChanged() {
+            super.onChanged();
+
+            if (getView()  != null) {
+                TextView hiddenText = getView().findViewById(R.id.allhabits_hidden_textview_1);
+                if (habitAdapter.getItemCount() == 0) {
+                    hiddenText.setVisibility(View.VISIBLE);
+                    hiddenText.setTextColor(Color.parseColor("#000000"));
+                } else {
+                    hiddenText.setTextColor(Color.parseColor("#00000000"));
+                    hiddenText.setVisibility(View.INVISIBLE);
+                }
+            }
+
+        }
+    };
+
+    // handles reorderability
+    ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.START | ItemTouchHelper.END, 0) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            int fromPosition = viewHolder.getAdapterPosition();
+            int toPosition = target.getAdapterPosition();
+
+            Collections.swap(habitDataList, fromPosition, toPosition);
+
+            recyclerView.getAdapter().notifyItemMoved(fromPosition, toPosition);
+
+            for (int i = 0; i < habitDataList.size(); i++) {
+                habitDataList.get(i).setAllHabitsIndex(i);
+            }
+
+            // update in firestore
+            habitDataList.get(fromPosition).editHabitInFirestore(userData);
+            habitDataList.get(toPosition).editHabitInFirestore(userData);
+
+
+            return false;
+        }
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+        }
+    } ;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -105,9 +153,21 @@ public class AllHabits extends Fragment {
         final Query user = db.collection("Doers")
                                          .document((String) userData.get("username"))
                                          .collection("habits")
-                                         .orderBy("title");
+                                         .orderBy("allHabitsIndex");
         habitAdapter.addSnapshotQuery(user,TAG);
 
 
+    }
+
+    @Override
+    public void onHabitClick(int position) {
+        // get the item that the user selected
+        Habit itemToSend = (Habit) habitDataList.get(position);
+        Intent intent = new Intent(getContext(), HabitDetails.class);
+
+        // Put pressed habit into bundle to send to HabitDetails
+        intent.putExtra("habit",itemToSend);
+        intent.putExtra("userData", (Serializable) userData);
+        startActivity(intent);
     }
 }
