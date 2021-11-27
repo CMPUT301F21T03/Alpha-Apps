@@ -72,6 +72,7 @@ public class HabitEventDetails extends AppCompatActivity {
         //get details from bundle
         Intent sentIntent = getIntent();
         event = (Event) sentIntent.getParcelableExtra("event");
+        event.setFirestoreId(sentIntent.getStringExtra("firestoreId"));
         habit = (Habit) sentIntent.getSerializableExtra("habit");
         userData = (Map) sentIntent.getSerializableExtra("userData");
 
@@ -109,6 +110,7 @@ public class HabitEventDetails extends AppCompatActivity {
     }
 
     private void habitEventDetailsDeleteButtonPressed(View view) {
+
         event.removeEventFromFirestore(userData, habit);
         Intent intent;
         intent = new Intent(this, HabitDetails.class);
