@@ -15,7 +15,9 @@
  *   1.0       Mathew    Oct-13-2021   Created
  *   1.1       Mathew    Oct-31-2021   Added Javadocs
  *   1.2       Leah      Nov-02-2021   Added FirestoreId to allow for edits and deletes
- *   1.3       Eric      Nov-03-2021   Firestore add, edit, delete now part of Habit class. Changes reflected here.
+ *   1.3       Eric      Nov-03-2021   Firestore add, edit, delete now part of Habit class. Changes reflected here.  
+ *   1.4       Mathew    Nov-23-2021   Added logic to update progress bars
+ *   1.4       Eric      Nov-24-2021   Stores index for use with reordering on All/Today Habit frames
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -25,19 +27,29 @@ import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class Habit implements Serializable {
 
     private final String TAG = "addhabitTAG";
@@ -62,18 +74,27 @@ public class Habit implements Serializable {
     // records how well the user is keeping up with this specific habit
     private Double progress;
 
-    // records the Firestore document ID in case it must be fetched for edits/deletes
-    private String firestoreId;
+    // records whether a habit is private with friends or not
+    private boolean privacy;
+
+    // records placement in lists for user display
+    private Integer allHabitsIndex;
+    private Integer todayHabitsIndex;
     //==================================================================================
 
     // program data objects
     //==================================================================================
+    // records the Firestore document ID in case it must be fetched for edits/deletes
+    private String firestoreId;
+
     // records the date that the habit was last checked until for habit completion
-    private LocalDateTime dateEventChecked;
+    private LocalDateTime dateLastChecked;
+    private LocalDateTime today = LocalDateTime.now();
+    private LocalDateTime yesterday = today.minusDays(1);
+
+    private Integer daysCompleted = 0;
+    private Integer daysTotal = 0;
     //==================================================================================
-
-    private boolean privacy;
-
 
 
     /**
@@ -83,15 +104,15 @@ public class Habit implements Serializable {
      * @param dateStarted the date the habit is scheduled to start
      * @param weekOccurence the weekly frequency that the user specifies the habit should take place
      * @param privacy the privacy setting of the habit
+     * @param allHabitsIndex the index of where the habit should go on the All Habits frame
+     * @param todayHabitsIndex the index of where the habits should go on the Today Habits frame
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Habit(String title, String reason, LocalDateTime dateStarted, DaysOfWeek weekOccurence, boolean privacy){
+    public Habit(String title, String reason, LocalDateTime dateStarted, DaysOfWeek weekOccurence, boolean privacy, Integer allHabitsIndex, Integer todayHabitsIndex){
         // set the eventList to be empty
-        setEventList(new ArrayList<Event>());
+        setEventList(new ArrayList<>());
         // set the last day that was checked for habit completion to be one day ago
-        LocalDateTime today = LocalDateTime.now();
-        LocalDateTime yesterday = today.minusDays(1);
-        setDateEventChecked(yesterday);
+        setDateLastChecked(yesterday);
         // set the current progress to 0
         setProgress(0.0);
 
@@ -101,10 +122,93 @@ public class Habit implements Serializable {
         setDateStarted(dateStarted);
         setWeekOccurence(weekOccurence);
         setPrivacy(privacy);
+        setAllHabitsIndex(allHabitsIndex);
+        setTodayHabitsIndex(todayHabitsIndex);
     }
 
+    /**
+     * Update the progress value to be the most up-to-date value
+     */
+    public void updateProgress() {
+
+        // if the dateThe Event's were last checked until is not the most recent
+        while (dateLastChecked.toLocalDate().isBefore(yesterday.toLocalDate())){
+            //for each day of the week
+            switch(dateLastChecked.getDayOfWeek()){
+                case SUNDAY:
+                    // if the habit was supposed to occur on that day
+                    if (getWeekOccurence().getSunday()){
+                        daysTotal++;
+                    }
+                    break;
+                case MONDAY:
+                    if (getWeekOccurence().getMonday()){
+                        daysTotal++;
+                    }
+                    break;
+                case TUESDAY:
+                    if (getWeekOccurence().getTuesday()){
+                        daysTotal++;
+                    }
+                    break;
+                case WEDNESDAY:
+                    if (getWeekOccurence().getWednesday()){
+                        daysTotal++;
+                    }
+                    break;
+                case THURSDAY:
+                    if (getWeekOccurence().getThursday()){
+                        daysTotal++;
+                    }
+                    break;
+                case FRIDAY:
+                    if (getWeekOccurence().getFriday()){
+                        daysTotal++;
+                    }
+                    break;
+                case SATURDAY:
+                    if (getWeekOccurence().getSaturday()){
+                        daysTotal++;
+                    }
+                    break;
+            }
+            // check the next day on the next loop
+            dateLastChecked = dateLastChecked.plusDays(1);
+        }
+        if (daysTotal == 0){
+            setProgress(0.0);
+        }else{
+            setProgress((double)daysCompleted/((double)daysTotal));
+        }
+    }
 
     // =========================== GETTERS AND SETTERS ===========================
+
+
+    public LocalDateTime getDateLastChecked() {
+        return dateLastChecked;
+    }
+
+    public void setDateLastChecked(LocalDateTime dateLastChecked) {
+        this.dateLastChecked = dateLastChecked;
+    }
+
+    public Integer getDaysCompleted() {
+        return daysCompleted;
+    }
+
+    public void setDaysCompleted(Integer daysCompleted) {
+        this.daysCompleted = daysCompleted;
+    }
+
+    public Integer getDaysTotal() {
+        return daysTotal;
+    }
+
+    public void setDaysTotal(Integer daysTotal) {
+        this.daysTotal = daysTotal;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -153,15 +257,10 @@ public class Habit implements Serializable {
         this.eventList = eventList;
     }
 
-    public LocalDateTime getDateEventChecked() {
-        return dateEventChecked;
-    }
-
-    public void setDateEventChecked(LocalDateTime dateEventChecked) {
-        this.dateEventChecked = dateEventChecked;
-    }
-
+    // get Progress will also call the update function to make sure that the progress will always
+    // be the most up-to-date value
     public Double getProgress() {
+        updateProgress();
         return progress;
     }
 
@@ -183,6 +282,22 @@ public class Habit implements Serializable {
 
     public void setPrivacy(boolean privacy) {
         this.privacy = privacy;
+    }
+
+    public Integer getAllHabitsIndex() {
+        return allHabitsIndex;
+    }
+
+    public void setAllHabitsIndex(Integer allHabitsIndex) {
+        this.allHabitsIndex = allHabitsIndex;
+    }
+
+    public Integer getTodayHabitsIndex() {
+        return todayHabitsIndex;
+    }
+
+    public void setTodayHabitsIndex(Integer todayHabitsIndex) {
+        this.todayHabitsIndex = todayHabitsIndex;
     }
 
     public void addHabitToFirestore(Map userData) {
@@ -249,7 +364,5 @@ public class Habit implements Serializable {
                         Log.d(TAG,"failed update");
                     }
                 });
-
-
     }
 }

@@ -15,24 +15,30 @@
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Mathew    Nov-01-2021   Created
  *   1.1       Mathew    Nov-03-2021   Forgot to add dynamic title last time (now added)
- *   1.2       Leah      Nov-24-2021   Added basic display functionality
+ *   1.2       Mathew    Nov-23-2021   Set the logic for clicking a user's profile, also added a search function
+ *   1.3       Leah      Nov-24-2021   Added basic display functionality
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
 package com.example.habitapp.Activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.text.InputType;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.habitapp.DataClasses.User;
@@ -57,6 +63,10 @@ public class FollowingFollowers extends AppCompatActivity {
     private ArrayList<User> followDataList = new ArrayList();
     private ArrayList<String> followUsernameList;
     private boolean following;
+    private int followType;
+    private static final int FOLLOWING = 1;
+    private static final int FOLLOWERS = 2;
+    private static final int REQUESTED = 3;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -70,8 +80,44 @@ public class FollowingFollowers extends AppCompatActivity {
         getUserDataList();
 
         // set an on click listener for if a habit is pressed
+
+        // set an on click listener for if a follower is pressed
+
         followListView.setOnItemClickListener(this::followItemClicked);
 
+        // set a listener for if the search button is pressed
+        ImageButton searchButton = findViewById(R.id.followingfollowers_search);
+        searchButton.setOnClickListener(this::searchButtonClicked);
+
+    }
+
+    private void searchButtonClicked(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Please enter another user's ID");
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                openUserFrame(input.getText().toString());
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
+    }
+
+    private void openUserFrame(String userID) {
+        Intent intent = new Intent(this, FollowUserView.class);
+        intent.putExtra(userID, "userID");
+        intent.putExtra("must_be_checked", "followStatus");
+        startActivity(intent);
+        System.out.println("here");
     }
 
     private void setFrameType() {
@@ -83,28 +129,43 @@ public class FollowingFollowers extends AppCompatActivity {
         System.out.println(sentFollowString);
         Map user = (Map) sentIntent.getSerializableExtra("userProfile");
         if (sentFollowString.equalsIgnoreCase("following")){
-            following = true;
+            followType = FOLLOWING;
             // set the title of the frame to be 'following'
             titleText.setText("Following");
 
             followUsernameList = (ArrayList<String>) user.get("following");
 
-        }else{
+
+        }else if (sentFollowString.equalsIgnoreCase("follower")){
             // set the title of the frame to be 'followers'
-            following = false;
+            followType = FOLLOWERS;
             titleText.setText("Followers");
-            System.out.println("here");
             followUsernameList = (ArrayList<String>) user.get("followers");
+        }else if (sentFollowString.equalsIgnoreCase("requested")){
+            // set the title of the frame to be 'pending'
+            followType = REQUESTED;
+            titleText.setText("Pending Requests");
         }
     }
 
     private void followItemClicked(AdapterView<?> adapterView, View view, int pos, long l) {
-        //TODO navigate to this user's page and show all of their public habits
-        System.out.println("follower @ pos " + pos + " clicked");
+        Intent intent = new Intent(this, FollowUserView.class);
+        intent.putExtra(followDataList.get(pos).getUniqueID(), "userID");
+        if (followType == FOLLOWING){
+            intent.putExtra("following", "followStatus");
+        }
+        if (followType == FOLLOWERS){
+            intent.putExtra("must_be_checked", "followStatus");
+        }
+        if (followType == REQUESTED){
+            intent.putExtra("requested", "followStatus");
+        }
+        startActivity(intent);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void getUserDataList(){
+
         // followDataList = new ArrayList<>();
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
@@ -133,31 +194,7 @@ public class FollowingFollowers extends AppCompatActivity {
             });
 
         }
-        //TODO get different data based on the 'following' attribute
 
-//        // show your page from Firestore
-//        FirebaseFirestore db;
-//        db = FirebaseFirestore.getInstance();
-//        final CollectionReference user = db.collection("Doers").document((String) userData.get("username")).collection("habits");
-//        user.addSnapshotListener(new EventListener<QuerySnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable QuerySnapshot querySnapshot,
-//                                @Nullable FirebaseFirestoreException e) {
-//                if (e != null) {
-//                    // if error occurs
-//                    Log.w(TAG, "Listen failed.", e);
-//                    return;
-//                }
-//                followDataList.clear();
-//                for(QueryDocumentSnapshot doc : querySnapshot){
-//                    //TODO get the data from firestore
-//
-//                    // then insert that data into a new user object which gets added to the list
-//                    followDataList.add(new User();
-//                }
-//                followAdapter.notifyDataSetChanged();
-//            }
-//        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
