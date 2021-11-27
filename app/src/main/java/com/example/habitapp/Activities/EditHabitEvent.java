@@ -89,6 +89,7 @@ public class EditHabitEvent extends AppCompatActivity {
         //get details from bundle
         Intent sentIntent = getIntent();
         event = (Event) sentIntent.getParcelableExtra("event");
+        event.setFirestoreId(sentIntent.getStringExtra("firestoreId"));
         habit = (Habit) sentIntent.getSerializableExtra("habit");
         userData = (Map) sentIntent.getSerializableExtra("userData");
         prevActivity = (String) sentIntent.getSerializableExtra("activity");
@@ -149,6 +150,7 @@ public class EditHabitEvent extends AppCompatActivity {
         cameraImage.setVisibility(View.GONE);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void editHabitEventCompleteButtonPressed(View view) {
         String commentStr = (String) comments.getText().toString();
         event.setComment(commentStr);

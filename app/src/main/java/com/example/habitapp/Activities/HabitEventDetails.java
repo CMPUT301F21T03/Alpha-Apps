@@ -19,6 +19,7 @@
  *   1.5       Jesse     Nov-02-2021   Implemented delete event
  *   1.6       Moe       Nov-04-2021   Added extra value for intent
  *   1.7       Moe       Nov-04-2021   Firestore delete for HabitEvent
+ *   1.8       Leah      Nov-27-2021   Fixed bugs for Habit Event creation/deletion/edits
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -102,6 +103,7 @@ public class HabitEventDetails extends AppCompatActivity {
         // navigate to the edit an event activity
         Intent intent = new Intent(this, EditHabitEvent.class);
         intent.putExtra("event", event);
+        intent.putExtra("firestoreId",event.getFirestoreId());
         intent.putExtra("habit", habit);
         intent.putExtra("userData", (Serializable) userData);
         intent.putExtra("activity", "HabitEventDetails");

@@ -51,6 +51,8 @@ import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -61,6 +63,10 @@ import com.example.habitapp.DataClasses.EventList;
 import com.example.habitapp.DataClasses.Habit;
 import com.example.habitapp.DataClasses.Event;
 import com.example.habitapp.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -336,26 +342,50 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
 
 
                         increaseEventCompletionCount();
-                        newHabitEvent.addEventToFirestore(userData, habit);
 
-                        done_habit.setVisibility(View.VISIBLE);
+                        // add to Firestore
+                        FirebaseFirestore db;
+                        db = FirebaseFirestore.getInstance();
+                        final CollectionReference eventsRef = db.collection("Doers")
+                                .document((String)userData.get("username"))
+                                .collection("habits")
+                                .document(habit.getFirestoreId())
+                                .collection("events");
 
-                        AlertDialog.Builder loghabitBuilder = new AlertDialog.Builder(HabitDetails.this);
-                        loghabitBuilder.setMessage("Do you want to log this habit?")
-                                .setPositiveButton("Log habit", new DialogInterface.OnClickListener() {
+                        eventsRef.add(newHabitEvent)
+                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                     @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        Intent intent = new Intent(HabitDetails.this, EditHabitEvent.class);
-                                        intent.putExtra("event", newHabitEvent);
-                                        intent.putExtra("habit", habit);
-                                        intent.putExtra("userData", (Serializable) userData);
-                                        intent.putExtra("activity", "HabitDetails");
-                                        startActivity(intent);
+                                    public void onSuccess(DocumentReference documentReference) {
+                                        Log.d(TAG,"Successful add");
+                                        newHabitEvent.setFirestoreId(documentReference.getId());
+                                        done_habit.setVisibility(View.VISIBLE);
+                                        // ask if user wants to log the Habit with details
+                                        AlertDialog.Builder loghabitBuilder = new AlertDialog.Builder(HabitDetails.this);
+                                        loghabitBuilder.setMessage("Do you want to log this habit?")
+                                                .setPositiveButton("Log habit", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        Intent intent = new Intent(HabitDetails.this, EditHabitEvent.class);
+                                                        intent.putExtra("event", newHabitEvent);
+                                                        intent.putExtra("habit", habit);
+                                                        intent.putExtra("firestoreId",newHabitEvent.getFirestoreId());
+                                                        intent.putExtra("userData", (Serializable) userData);
+                                                        intent.putExtra("activity", "HabitDetails");
+                                                        startActivity(intent);
+                                                    }
+                                                })
+                                                .setNegativeButton("Cancel", null);
+                                        AlertDialog alert2 = loghabitBuilder.create();
+                                        alert2.show();
+
                                     }
-                                })
-                                .setNegativeButton("Cancel", null);
-                        AlertDialog alert2 = loghabitBuilder.create();
-                        alert2.show();
+                                }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d(TAG,"failed: "+ e);
+                            }
+                        });
+                        //
                     }
                 })
                 .setNegativeButton("Cancel", null);

@@ -19,6 +19,7 @@
  *   1.4       Moe       Nov-04-2021   Firestore add, delete, edit for Event
  *   1.5       Mathew    Nov-16-2021   Altered Event to implement Parcelable so it is able to package
  *                                     up an image to allow it to be passed between activities
+ *   1.6       Leah      Nov-27-2021   Removed add to Firestore function to allow smoother adds and deletes of Events
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -89,31 +90,7 @@ public class Event implements Parcelable {
 
     }
 
-    public void addEventToFirestore(Map userData, Habit habit) {
-        FirebaseFirestore db;
-        db = FirebaseFirestore.getInstance();
-        final CollectionReference eventsref = db.collection("Doers")
-                .document((String)userData.get("username"))
-                .collection("habits")
-                .document(habit.getFirestoreId())
-                .collection("events");
-
-        eventsref.add(this)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d(TAG,"success");
-                        setFirestoreId(documentReference.getId());
-
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d(TAG,"failed: "+ e);
-            }
-        });
-    }
-
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void removeEventFromFirestore(Map userData, Habit habit) {
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
@@ -139,6 +116,7 @@ public class Event implements Parcelable {
                 });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void editEventInFirestore(Map userData, Habit habit) {
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
@@ -147,22 +125,6 @@ public class Event implements Parcelable {
                 .collection("habits")
                 .document(habit.getFirestoreId())
                 .collection("events");
-        if(getFirestoreId() == null){
-            eventsref.add(this)
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                        @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            Log.d(TAG,"success");
-                            setFirestoreId(documentReference.getId());
-
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.d(TAG,"failed: "+ e);
-                     }});
-            return;
-        }
         eventsref.document(getFirestoreId())
                 .set(this)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
