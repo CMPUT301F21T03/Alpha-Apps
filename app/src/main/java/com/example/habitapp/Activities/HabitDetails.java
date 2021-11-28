@@ -367,7 +367,7 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
                                         // ask if user wants to log the Habit with details
                                         AlertDialog.Builder loghabitBuilder = new AlertDialog.Builder(HabitDetails.this);
                                         loghabitBuilder.setMessage("Do you want to log this habit?")
-                                                .setPositiveButton("Log habit", new DialogInterface.OnClickListener() {
+                                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
                                                         Intent intent = new Intent(HabitDetails.this, EditHabitEvent.class);
@@ -379,7 +379,7 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
                                                         startActivity(intent);
                                                     }
                                                 })
-                                                .setNegativeButton("Cancel", null);
+                                                .setNegativeButton("No", null);
                                         AlertDialog alert2 = loghabitBuilder.create();
                                         alert2.show();
 
