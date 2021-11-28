@@ -8,10 +8,10 @@
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="25dp"
+        android:layout_marginEnd="30dp"
+        app:layout_constraintBottom_toBottomOf="@+id/textView11"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="@+id/textView11">
 
         <fragment
             android:name="com.example.habitapp.Fragments.Notification"
@@ -25,8 +25,8 @@
         android:id="@+id/textView11"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="25dp"
         android:text="Today"
         android:textColor="#000000"
         android:textSize="34sp"
@@ -43,7 +43,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/today_habits_hidden_textview">
+        app:layout_constraintTop_toBottomOf="@+id/textView11">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/todayhabits_habit_list"

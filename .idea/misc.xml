@@ -7,20 +7,34 @@
         <entry key="app/src/main/res/drawable/boot_login_text.xml" value="0.3888888888888889" />
         <entry key="app/src/main/res/drawable/boot_signup_button.xml" value="0.3888888888888889" />
         <entry key="app/src/main/res/drawable/boot_signup_text.xml" value="0.3888888888888889" />
+        <entry key="app/src/main/res/drawable/checkbox_selected.xml" value="0.31145833333333334" />
+        <entry key="app/src/main/res/drawable/checkbox_selector.xml" value="0.31145833333333334" />
+        <entry key="app/src/main/res/drawable/checkbox_unselected.xml" value="0.31145833333333334" />
+        <entry key="app/src/main/res/drawable/complete_button.xml" value="0.31145833333333334" />
         <entry key="app/src/main/res/drawable/complete_buttonxml.xml" value="0.2359375" />
         <entry key="app/src/main/res/drawable/go_back_button.xml" value="0.3888888888888889" />
+        <entry key="app/src/main/res/drawable/ic_baseline_add_box_24.xml" value="0.31145833333333334" />
+        <entry key="app/src/main/res/drawable/progress_bar_background.xml" value="0.31145833333333334" />
         <entry key="app/src/main/res/drawable/search_engine.xml" value="0.3177083333333333" />
         <entry key="app/src/main/res/font/montserrat.xml" value="0.2359375" />
-        <entry key="app/src/main/res/layout/all_habits.xml" value="0.1983695652173913" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.3880208333333333" />
+        <entry key="app/src/main/res/layout/add_habit.xml" value="0.27943840579710144" />
+        <entry key="app/src/main/res/layout/all_habits.xml" value="0.375" />
         <entry key="app/src/main/res/layout/boot_screen.xml" value="0.1887031408308004" />
         <entry key="app/src/main/res/layout/day_of_week_bar.xml" value="0.1983695652173913" />
+        <entry key="app/src/main/res/layout/events_listview_content.xml" value="0.27943840579710144" />
         <entry key="app/src/main/res/layout/feed.xml" value="0.375" />
-        <entry key="app/src/main/res/layout/following_followers.xml" value="0.1983695652173913" />
+        <entry key="app/src/main/res/layout/follow_user_view.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/following_followers.xml" value="0.1980530285507735" />
         <entry key="app/src/main/res/layout/go_back.xml" value="0.1887031408308004" />
+        <entry key="app/src/main/res/layout/habit_details.xml" value="0.3880208333333333" />
+        <entry key="app/src/main/res/layout/habit_entry.xml" value="0.3880208333333333" />
         <entry key="app/src/main/res/layout/log_in_screen.xml" value="0.1983695652173913" />
         <entry key="app/src/main/res/layout/notifications.xml" value="0.5" />
         <entry key="app/src/main/res/layout/profile.xml" value="0.1887031408308004" />
         <entry key="app/src/main/res/layout/sign_up_screen.xml" value="0.3880208333333333" />
+        <entry key="app/src/main/res/layout/spinner_item.xml" value="0.27943840579710144" />
+        <entry key="app/src/main/res/layout/today_habits.xml" value="0.27943840579710144" />
       </map>
     </option>
   </component>
