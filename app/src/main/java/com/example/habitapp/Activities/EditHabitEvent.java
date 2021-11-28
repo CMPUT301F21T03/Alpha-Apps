@@ -109,10 +109,8 @@ public class EditHabitEvent extends AppCompatActivity {
 
         if (event.getPhotograph() == null){
             cameraImage.setVisibility(View.GONE);
-            cameraButton.setVisibility(View.VISIBLE);
             deleteCameraButton.setVisibility(View.GONE);
         } else {
-            cameraButton.setVisibility(View.GONE);
             deleteCameraButton.setVisibility(View.VISIBLE);
             cameraImage.setVisibility(View.VISIBLE);
             cameraImage.setImageBitmap(Bitmap.createScaledBitmap(event.getPhotograph(), 184, 184, false));
@@ -125,17 +123,9 @@ public class EditHabitEvent extends AppCompatActivity {
         Button completeButton = findViewById(R.id.edithabitevent_complete);
         completeButton.setOnClickListener(this::editHabitEventCompleteButtonPressed);
 
-        cameraImage.setOnClickListener(this::editHabitEventCameraImagePressed);
-
         cameraButton.setOnClickListener(this::editHabitEventCameraButtonPressed);
 
         deleteCameraButton.setOnClickListener(this::editHabitEventDeleteImageButtonPressed);
-    }
-
-    // if the camera image was selected, treat it as if the add button was pressed
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    public void editHabitEventCameraImagePressed(View view){
-        editHabitEventCameraButtonPressed(view);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -157,7 +147,6 @@ public class EditHabitEvent extends AppCompatActivity {
 
     public void editHabitEventDeleteImageButtonPressed(View view){
         event.setPhotograph(null);
-        cameraButton.setVisibility(View.VISIBLE);
         deleteCameraButton.setVisibility(View.GONE);
         cameraImage.setVisibility(View.GONE);
     }
@@ -212,7 +201,6 @@ public class EditHabitEvent extends AppCompatActivity {
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
             event.setPhotograph(photo);
-            cameraButton.setVisibility(View.GONE);
             deleteCameraButton.setVisibility(View.VISIBLE);
             cameraImage.setVisibility(View.VISIBLE);
             cameraImage.setImageBitmap(Bitmap.createScaledBitmap(photo, 300, 150, false));
