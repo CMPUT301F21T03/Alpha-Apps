@@ -19,6 +19,7 @@
  *   1.5       Moe       Nov-04-2021   Firestore edit for HabitEvent
  *   1.6       Mathew    Nov-16-2021   Implemented camera functionality, and made some aesthetic changes
  *   1.7       Leah      Nov-23-2021   Implemented basic storage of images to Firebase Storage
+ *   1.8       Jesse     Nov-26-2021   Changed image ratios and displays of buttons
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -79,6 +80,8 @@ public class EditHabitEvent extends AppCompatActivity {
     private static final int CAMERA_REQUEST = 1888;
     private ImageView cameraImage;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
+    private ImageView cameraButton;
+    private ImageView deleteCameraButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,8 +105,16 @@ public class EditHabitEvent extends AppCompatActivity {
         comments.setText(event.getComment());
 
         cameraImage = this.findViewById(R.id.edithabitevent_camera_image);
+        cameraButton= findViewById(R.id.edithabitevent_camera_button);
+        deleteCameraButton = findViewById(R.id.edithabitevent_delete_image_button);
+
         if (event.getPhotograph() == null){
             cameraImage.setVisibility(View.GONE);
+            deleteCameraButton.setVisibility(View.GONE);
+        } else {
+            deleteCameraButton.setVisibility(View.VISIBLE);
+            cameraImage.setVisibility(View.VISIBLE);
+            cameraImage.setImageBitmap(Bitmap.createScaledBitmap(event.getPhotograph(), 184, 184, false));
         }
 
         setButtonListenters();
@@ -113,19 +124,9 @@ public class EditHabitEvent extends AppCompatActivity {
         Button completeButton = findViewById(R.id.edithabitevent_complete);
         completeButton.setOnClickListener(this::editHabitEventCompleteButtonPressed);
 
-        cameraImage.setOnClickListener(this::editHabitEventCameraImagePressed);
-
-        ImageView cameraButton = findViewById(R.id.edithabitevent_camera_button);
         cameraButton.setOnClickListener(this::editHabitEventCameraButtonPressed);
 
-        ImageView deleteCameraButton = findViewById(R.id.edithabitevent_delete_image_button);
         deleteCameraButton.setOnClickListener(this::editHabitEventDeleteImageButtonPressed);
-    }
-
-    // if the camera image was selected, treat it as if the add button was pressed
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    public void editHabitEventCameraImagePressed(View view){
-        editHabitEventCameraButtonPressed(view);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -147,6 +148,7 @@ public class EditHabitEvent extends AppCompatActivity {
 
     public void editHabitEventDeleteImageButtonPressed(View view){
         event.setPhotograph(null);
+        deleteCameraButton.setVisibility(View.GONE);
         cameraImage.setVisibility(View.GONE);
     }
 
@@ -154,9 +156,11 @@ public class EditHabitEvent extends AppCompatActivity {
     public void editHabitEventCompleteButtonPressed(View view) {
         String commentStr = (String) comments.getText().toString();
         event.setComment(commentStr);
+
         event.editEventInFirestore(userData, habit);
         setResult(RESULT_OK);
         finish();
+
         Intent intent;
         if (Objects.equals("HabitEventDetails", prevActivity)) {
             intent = new Intent(this, HabitEventDetails.class);
@@ -182,6 +186,12 @@ public class EditHabitEvent extends AppCompatActivity {
             {
                 Toast.makeText(this, "camera permission granted", Toast.LENGTH_LONG).show();
                 Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                cameraIntent.putExtra("crop", "true");
+                cameraIntent.putExtra("outputX", 300);
+                cameraIntent.putExtra("outputY", 150);
+                cameraIntent.putExtra("aspectX", 2);
+                cameraIntent.putExtra("aspectY", 1);
+                cameraIntent.putExtra("scale", true);
                 startActivityForResult(cameraIntent, CAMERA_REQUEST);
             }
             else
@@ -197,15 +207,22 @@ public class EditHabitEvent extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
+
             // set the image view
             cameraImage.setVisibility(View.VISIBLE);
             cameraImage.setImageBitmap(photo);
+
+
+            event.setPhotograph(photo);
+            deleteCameraButton.setVisibility(View.VISIBLE);
+            
 
             // prepare references
             FirebaseFirestore db;
             db = FirebaseFirestore.getInstance();
             FirebaseStorage storage = FirebaseStorage.getInstance("gs://alpha-apps-41471.appspot.com");
             StorageReference storageRef = storage.getReference();
+
 
             // set image
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -239,6 +256,7 @@ public class EditHabitEvent extends AppCompatActivity {
                     }
                 }
             });
+
 
         }
     }
