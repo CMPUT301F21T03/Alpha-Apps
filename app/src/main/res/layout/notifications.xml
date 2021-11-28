@@ -8,8 +8,8 @@
 
     <ImageView
         android:id="@+id/notification_image"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:layout_width="33dp"
+        android:layout_height="33dp"
         android:scaleType="fitXY"
         android:focusable="false"
         app:layout_constraintEnd_toEndOf="parent"

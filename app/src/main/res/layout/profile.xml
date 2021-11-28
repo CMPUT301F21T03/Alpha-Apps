@@ -9,9 +9,9 @@
         android:id="@+id/constraintLayout"
         android:layout_width="0dp"
         android:layout_height="75dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="0dp"
         app:layout_constraintEnd_toStartOf="@+id/profile_edit"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView17">
@@ -27,10 +27,11 @@
         android:id="@+id/textView17"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="5dp"
         android:text="Your Profile"
         android:textColor="#000000"
+        android:textStyle="bold"
         android:textSize="34sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -39,10 +40,10 @@
         android:id="@+id/frameLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="25dp"
+        android:layout_marginEnd="30dp"
+        app:layout_constraintBottom_toBottomOf="@+id/textView17"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="@+id/textView17">
 
         <fragment
             android:id="@+id/profile_notification_button"
@@ -52,45 +53,38 @@
             android:layout_weight="1" />
     </FrameLayout>
 
-    <Button
-        android:id="@+id/profile_log_out"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="30dp"
-        android:text="Log out"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
         android:id="@+id/profile_edit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="5dp"
+        android:layout_width="33dp"
+        android:layout_height="33dp"
+        android:layout_marginEnd="28dp"
 
         android:scaleType="fitXY"
+        android:background="@null"
         app:layout_constraintBottom_toBottomOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/constraintLayout"
-        app:srcCompat="@android:drawable/ic_menu_edit" />
+        app:srcCompat="@drawable/edit_icon" />
 
     <ImageButton
         android:id="@+id/profile_save_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
+        android:layout_width="33dp"
+        android:layout_height="33dp"
+        android:layout_marginEnd="28dp"
+        android:scaleType="fitXY"
+        android:background="@null"
         app:layout_constraintBottom_toBottomOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/constraintLayout"
-        app:srcCompat="@android:drawable/ic_menu_save" />
+        app:srcCompat="@drawable/save_icon" />
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:id="@+id/profile_linearlayout"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="30dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -98,43 +92,66 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView18">
 
-        <Button
+        <android.widget.Button
             android:id="@+id/profile_following"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:layout_weight="1"
+            android:layout_marginEnd="5dp"
+            android:layout_weight="0.33"
             android:text="Following"
-            android:textSize="12sp" />
+            android:textAllCaps="false"
+            android:fontFamily="@font/open_sans_semibold"
+            android:textSize="14sp" />
 
-        <Button
+        <android.widget.Button
             android:id="@+id/profile_followers"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_marginEnd="5dp"
+            android:layout_weight="0.33"
             android:text="Followers"
-            android:textSize="12sp" />
+            android:textAllCaps="false"
+            android:fontFamily="@font/open_sans_semibold"
+            android:textSize="14sp" />
 
-        <Button
+        <android.widget.Button
             android:id="@+id/profile_pending_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_weight="1"
+            android:layout_weight="0.33"
             android:text="Pending"
-            android:textSize="12sp" />
+            android:textAllCaps="false"
+            android:fontFamily="@font/open_sans_semibold"
+            android:textSize="14sp" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/textView18"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="20dp"
         android:text="Find Other Users:"
         android:textColor="#000000"
-        android:textSize="24sp"
+        android:textSize="22sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+
+    <android.widget.Button
+        android:id="@+id/profile_log_out"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginBottom="30dp"
+        android:text="Log out"
+        android:textAllCaps="false"
+        android:background="@drawable/transparent_button"
+        android:textColor="@drawable/transparent_button_text"
+        android:fontFamily="@font/open_sans_semibold"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,9 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginStart="30dp"
-    android:layout_marginEnd="30dp">
+    android:layout_height="match_parent">
 
     <!-- nav bar can be safely removed
     <include
@@ -23,7 +21,7 @@
         android:id="@+id/frameLayout3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="30dp"
         app:layout_constraintBottom_toBottomOf="@+id/textView16"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/textView16">
@@ -42,8 +40,11 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/montserrat"
         android:text="Feed"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="25dp"
         android:textColor="@color/black"
-        android:textSize="40sp"
+        android:textStyle="bold"
+        android:textSize="34sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -63,6 +64,8 @@
         android:paddingBottom="7dp"
         android:textColor="#717171"
         android:textSize="16sp"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView16" />

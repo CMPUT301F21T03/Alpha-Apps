@@ -85,7 +85,7 @@ public class EditHabitEvent extends AppCompatActivity {
     private EditText comments;
     private ArrayList<Event> events;
     private Map userData;
-    private TextView habitName;
+    private EditText habitName;
     private Bitmap photoBitmap;
 
     // camera related variables
@@ -109,7 +109,8 @@ public class EditHabitEvent extends AppCompatActivity {
         previousActivity = getCallingActivity();
 
         habitName = findViewById(R.id.edithabitevent_habitname);
-        habitName.setText("Log Habit: " + event.getName());
+        habitName.setEnabled(false);
+        habitName.setText(event.getName());
 
         comments = findViewById(R.id.edithabitevent_comment);
         comments.setText(event.getComment());
