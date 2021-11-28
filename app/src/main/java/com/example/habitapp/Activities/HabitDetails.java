@@ -450,7 +450,7 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
     private void setHabitEventAdapter() {
 
         recyclerView = findViewById(R.id.habitdetails_habit_event_list);
-        eventsAdapter = new EventList(events, this, R.layout.events_listview_content);
+        eventsAdapter = new EventList(events, this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         recyclerView.setAdapter(eventsAdapter);
         getHabitEventList(eventsAdapter);
