@@ -186,7 +186,7 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
                             LocalDateTime newDate = LocalDateTime.parse(newDateStr, formatter);
                             String comment = doc.getString("comment");
                             // TODO store location and photograph after halfway
-                            Event eventToAdd = new Event(doc.getString("name"),newDate, comment, null, false);
+                            Event eventToAdd = new Event(doc.getString("name"),newDate, comment, null);
                             eventToAdd.setFirestoreId(doc.getId());
                             if (!events.contains(eventToAdd)) {
                                 events.add(eventToAdd);

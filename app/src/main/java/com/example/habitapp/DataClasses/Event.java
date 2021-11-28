@@ -19,12 +19,14 @@
  *   1.4       Moe       Nov-04-2021   Firestore add, delete, edit for Event
  *   1.5       Mathew    Nov-16-2021   Altered Event to implement Parcelable so it is able to package
  *                                     up an image to allow it to be passed between activities
+ *   1.6       Mathew    Nov-28-2021   Added the necessary location attributes to the class
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
 package com.example.habitapp.DataClasses;
 
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -59,8 +61,12 @@ public class Event implements Parcelable {
     // a bitmap to represent the actual an image of the event (optional)
     private Bitmap photograph;
 
-    // TODO change the below attribute (and all other instances) to properly represent a location
-    private Boolean hasLocation;
+    // a latitude and longitude value to represent the location of a habit event
+    private Double latitude;
+    private Double longitude;
+
+    // a subjective description of the location given by the user
+    private String locationName;
 
     private String firestoreId;
 
@@ -70,9 +76,8 @@ public class Event implements Parcelable {
      * @param dateCompleted the day that the event was completed
      * @param comment an optional comment about the event
      * @param photograph a bitmap that is used to store an image relating to the event
-     * @param hasLocation a placeholder for the location object that will be implemented later
      */
-    public Event(String name, LocalDateTime dateCompleted, String comment, Bitmap photograph, Boolean hasLocation){
+    public Event(String name, LocalDateTime dateCompleted, String comment, Bitmap photograph){
 
         setName(name);
         setDateCompleted(dateCompleted);
@@ -81,14 +86,15 @@ public class Event implements Parcelable {
             setComment(comment);
         }catch (IllegalArgumentException ex){
             System.out.println("comment too long, programs fails");
-            // TODO make a function that terminates the program (or handle the error in another way)
         }
 
+        setLocationName(null);
+        setLongitude(null);
+        setLatitude(null);
         setPhotograph(photograph);
-        // TODO set the location attribute
-
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void addEventToFirestore(Map userData, Habit habit) {
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
@@ -114,6 +120,7 @@ public class Event implements Parcelable {
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void removeEventFromFirestore(Map userData, Habit habit) {
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
@@ -139,6 +146,7 @@ public class Event implements Parcelable {
                 });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void editEventInFirestore(Map userData, Habit habit) {
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
@@ -205,7 +213,31 @@ public class Event implements Parcelable {
     }
 
     // =========================== GETTERS AND SETTERS ===========================
-    //TODO create getters and setters for the location as needed
+
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getLocationName() {
+        return locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
+    }
 
     public String getName() {
         return name;

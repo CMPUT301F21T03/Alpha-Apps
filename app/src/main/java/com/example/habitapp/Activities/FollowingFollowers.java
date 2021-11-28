@@ -103,7 +103,6 @@ public class FollowingFollowers extends AppCompatActivity {
         intent.putExtra(userID, "userID");
         intent.putExtra("must_be_checked", "followStatus");
         startActivity(intent);
-        System.out.println("here");
     }
 
     private void setFrameType() {
