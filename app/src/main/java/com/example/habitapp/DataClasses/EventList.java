@@ -23,6 +23,7 @@
 package com.example.habitapp.DataClasses;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.media.Image;
 import android.media.MediaDrm;
 import android.os.Build;
@@ -61,7 +62,8 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
     private Map userData;
     private OnEventListener onEventListener;
     private int layoutToUse;
-    //private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
 
     public EventList(ArrayList<Event> events, OnEventListener onEventListener, int layoutToUse) {
         //super(context, 0, events);
@@ -124,11 +126,13 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
         final Event event = events.get(position);
         holder.getName().setText(event.getName());
         holder.getComment().setText(event.getComment());
+        holder.getDate().setText(event.getDateCompleted().format(formatter));
 
         // if there is no photograph saved to the event object, make the imageView invisible
         if (event.getPhotograph() == null){
             holder.getImage().setVisibility(View.GONE);
         }else{
+            holder.getImage().setVisibility(View.VISIBLE);
             holder.getImage().setImageBitmap(event.getPhotograph());
         }
 
@@ -139,33 +143,6 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
     public int getItemCount(){
         return events.size();
     }
-
-//    @NonNull
-//    @Override
-//    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent){
-//        View view = convertView;
-//        if(view == null){
-//            view = LayoutInflater.from(context).inflate(R.layout.events_listview_content, parent,false);
-//        }
-//
-//        Event event = events.get(position);
-//        TextView name = view.findViewById(R.id.eventslistviewcontent_name_text);
-//        TextView comment = view.findViewById(R.id.eventslistviewcontent_comment_text);
-//        TextView date = view.findViewById(R.id.eventslistviewcontent_date_text);
-//        ImageView image = view.findViewById(R.id.eventslistviewcontent_image);
-//
-//        name.setText(event.getName());
-//        comment.setText(event.getComment());
-//        date.setText(event.getDateCompleted().format(formatter));
-//        // if there is no photograph saved to the event object, make the imageView invisible
-//        if (event.getPhotograph() == null){
-//            image.setVisibility(View.GONE);
-//        }else{
-//            image.setImageBitmap(event.getPhotograph());
-//        }
-//
-//        return view;
-//    }
 
     @NonNull
     public void addSnapshotQuery(Query query, String TAG) {
@@ -189,13 +166,20 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
                                     getDate.get("dayOfMonth").toString() + " 00:00:00";;
                             LocalDateTime newDate = LocalDateTime.parse(newDateStr, formatter);
                             String comment = doc.getString("comment");
+
                             String username = doc.getString("username");
                             // TODO store location and photograph after halfway
+                          
+                            // TODO (possibly the wrong way to get a photograph from firestore, *Leah* take a look please
+                            Bitmap photo = (Bitmap) doc.get("photograph");
+                          
+                            // TODO store location
+                          
                             Event eventToAdd;
                             if (username == null) {
-                                eventToAdd = new Event(doc.getString("name"),newDate, comment, null, false, "");
+                                eventToAdd = new Event(doc.getString("name"),newDate, comment, photo, false, "");
                             } else {
-                                eventToAdd = new Event(doc.getString("name"),newDate, comment, null, false, username);
+                                eventToAdd = new Event(doc.getString("name"),newDate, comment, photo, false, username);
                             }
 
                             eventToAdd.setFirestoreId(doc.getId());
