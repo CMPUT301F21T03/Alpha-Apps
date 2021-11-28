@@ -89,6 +89,7 @@ public class EditHabitEvent extends AppCompatActivity {
         //get details from bundle
         Intent sentIntent = getIntent();
         event = (Event) sentIntent.getParcelableExtra("event");
+        event.setFirestoreId(sentIntent.getStringExtra("firestoreId"));
         habit = (Habit) sentIntent.getSerializableExtra("habit");
         userData = (Map) sentIntent.getSerializableExtra("userData");
         prevActivity = (String) sentIntent.getSerializableExtra("activity");
@@ -149,19 +150,23 @@ public class EditHabitEvent extends AppCompatActivity {
         cameraImage.setVisibility(View.GONE);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void editHabitEventCompleteButtonPressed(View view) {
         String commentStr = (String) comments.getText().toString();
         event.setComment(commentStr);
         event.editEventInFirestore(userData, habit);
+        setResult(RESULT_OK);
+        finish();
         Intent intent;
         if (Objects.equals("HabitEventDetails", prevActivity)) {
             intent = new Intent(this, HabitEventDetails.class);
             intent.putExtra("habit", habit);
             intent.putExtra("event", event);
             intent.putExtra("userData", (Serializable) userData);
+            intent.putExtra("firestoreId",event.getFirestoreId());
             startActivity(intent);
         }
-        finish();
+
 
     }
 
@@ -192,17 +197,17 @@ public class EditHabitEvent extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
-            event.setPhotograph(photo);
+            // set the image view
             cameraImage.setVisibility(View.VISIBLE);
             cameraImage.setImageBitmap(photo);
+
             // prepare references
             FirebaseFirestore db;
             db = FirebaseFirestore.getInstance();
             FirebaseStorage storage = FirebaseStorage.getInstance("gs://alpha-apps-41471.appspot.com");
             StorageReference storageRef = storage.getReference();
 
-
-            // set profile image
+            // set image
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             photo.compress(Bitmap.CompressFormat.JPEG, 100, baos);
             byte[] imageData = baos.toByteArray();
@@ -225,11 +230,8 @@ public class EditHabitEvent extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         Uri downloadUri = task.getResult();
                         Log.d(TAG,downloadUri.toString());
-                        // upload to the user document in Firestore
-                        Map userData = new HashMap<>();
-                        userData.put("profilePicture",downloadUri.toString());
-                        db.collection("Doers").document((String) userData.get("username"))
-                                .update(userData);
+                        // set the event photo URL
+                        event.setPhotograph(downloadUri.toString());
 
 
                     } else {

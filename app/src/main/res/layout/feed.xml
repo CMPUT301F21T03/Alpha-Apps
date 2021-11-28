@@ -81,4 +81,13 @@
         app:layout_constraintEnd_toEndOf="@+id/feed_search_field"
         app:layout_constraintTop_toTopOf="@+id/feed_search_field" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/feed_recycler_view"
+        android:layout_width="349dp"
+        android:layout_height="622dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/feed_search_field" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
