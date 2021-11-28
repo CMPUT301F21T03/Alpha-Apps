@@ -29,7 +29,7 @@
         android:layout_marginStart="50dp"
         android:layout_marginEnd="50dp"
         android:layout_marginBottom="10dp"
-        android:background="@drawable/complete_button"
+        android:background="@drawable/full_button"
         android:onClick="logInScreenLogInButtonPressed"
         android:text="Log in"
         android:textAllCaps="false"

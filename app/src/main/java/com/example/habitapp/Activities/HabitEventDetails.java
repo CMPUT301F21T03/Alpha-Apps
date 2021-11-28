@@ -36,6 +36,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -85,14 +86,18 @@ public class HabitEventDetails extends AppCompatActivity {
         //update fields with Event info
         habitName = event.getName();
         comment = event.getComment();
+        if (comment.trim().isEmpty()) {
+            comment = "No comment added";
+        }
         //date = event.getDateCompleted().format(formatter);
 
-        TextView nameText = findViewById(R.id.habiteventdetails_title);
+        EditText nameText = findViewById(R.id.habiteventdetails_title);
         TextView commentText = findViewById(R.id.habiteventdetails_comment);
         ImageView photographView = findViewById(R.id.habiteventdetails_camera_image);
         //TextView locationText = findViewById(R.id.habiteventdetails_location);
 
-        nameText.setText("Habit Event: " + habitName);
+        nameText.setText(habitName);
+        nameText.setEnabled(false);
         commentText.setText(comment);
 
         // run a thread to set the photograph

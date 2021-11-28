@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+
         <Button
             android:id="@+id/habitdetails_more"
             android:layout_width="wrap_content"
@@ -68,12 +69,12 @@
             android:layout_marginEnd="28dp"
             android:ems="10"
             android:fontFamily="@font/montserrat"
-            android:inputType="textPersonName"
+            android:inputType="textMultiLine"
             android:maxLength="20"
             android:text="Title"
-            android:textStyle="bold"
             android:textColor="@color/black"
-            android:textSize="30sp"
+            android:textSize="25sp"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -84,11 +85,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="28dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="10dp"
             android:fontFamily="@font/montserrat"
             android:text="Frequency"
             android:textColor="@color/black"
-            android:textSize="22sp"
+            android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/habitdetails_title" />
 
@@ -111,11 +112,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="28dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="20dp"
             android:fontFamily="@font/montserrat"
             android:text="Reason"
             android:textColor="@color/black"
-            android:textSize="22sp"
+            android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/include" />
 
@@ -130,7 +131,7 @@
             android:ems="10"
             android:fontFamily="@font/montserrat"
             android:hint="Habit Reason"
-            android:inputType="textPersonName"
+            android:inputType="textMultiLine"
             android:maxLength="30"
             android:paddingStart="15dp"
             android:paddingTop="10dp"
@@ -146,7 +147,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="28dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="20dp"
             android:layout_marginEnd="28dp"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
@@ -168,7 +169,7 @@
                     android:fontFamily="@font/montserrat"
                     android:text="Date Started"
                     android:textColor="@color/black"
-                    android:textSize="22sp" />
+                    android:textSize="20sp" />
 
 
                 <TextView
@@ -198,7 +199,7 @@
                     android:fontFamily="@font/montserrat"
                     android:text="Habit Privacy"
                     android:textColor="@color/black"
-                    android:textSize="22sp" />
+                    android:textSize="20sp" />
 
                 <Spinner
                     android:id="@+id/habitdetails_privacy_spinner"
@@ -227,8 +228,8 @@
             android:fontFamily="@font/montserrat"
             android:text="Habit Events"
             android:textColor="@color/black"
-            android:textStyle="bold"
             android:textSize="22sp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/date_privacy_layout" />
 
@@ -254,20 +255,20 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="50dp"
-            android:layout_marginEnd="50dp"
             android:layout_marginTop="200dp"
-            android:background="@drawable/complete_button"
+            android:layout_marginEnd="50dp"
+            android:background="@drawable/full_button"
             android:fontFamily="@font/open_sans_semibold"
             android:onClick="habitDetailsDoneEditingPressed"
             android:text="Complete"
-            android:textColor="@color/white"
             android:textAllCaps="false"
+            android:textColor="@color/white"
             android:textSize="18sp"
             android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@+id/date_privacy_layout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/date_privacy_layout" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

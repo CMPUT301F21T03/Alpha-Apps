@@ -28,6 +28,7 @@
         android:layout_marginTop="5dp"
         android:layout_marginStart="25dp"
         android:text="Today"
+        android:textStyle="bold"
         android:textColor="#000000"
         android:textSize="34sp"
         app:layout_constraintStart_toStartOf="parent"

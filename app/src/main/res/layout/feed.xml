@@ -43,6 +43,7 @@
         android:layout_marginTop="5dp"
         android:layout_marginStart="25dp"
         android:textColor="@color/black"
+        android:textStyle="bold"
         android:textSize="34sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
