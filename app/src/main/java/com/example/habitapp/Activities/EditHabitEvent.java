@@ -19,7 +19,8 @@
  *   1.5       Moe       Nov-04-2021   Firestore edit for HabitEvent
  *   1.6       Mathew    Nov-16-2021   Implemented camera functionality, and made some aesthetic changes
  *   1.7       Leah      Nov-23-2021   Implemented basic storage of images to Firebase Storage
- *   1.8       Mathew    Nov-28-2021   Implemented location functionality
+ *   1.8       Jesse     Nov-27-2021   Implemented image onclick listener
+ *   1.9       Mathew    Nov-28-2021   Implemented location functionality
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -27,6 +28,7 @@ package com.example.habitapp.Activities;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -35,15 +37,24 @@ import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.content.DialogInterface;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,6 +77,7 @@ import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -81,10 +93,10 @@ public class EditHabitEvent extends AppCompatActivity {
     private EditText comments;
     private ArrayList<Event> events;
     private Map userData;
-    private TextView habitName;
     private Double selectedLatitude;
     private Double selectedLongitude;
-
+    private EditText habitName;
+    private Bitmap photoBitmap;
 
     // camera related variables
     private static final int CAMERA_REQUEST = 1888;
@@ -101,6 +113,7 @@ public class EditHabitEvent extends AppCompatActivity {
         //get details from bundle
         Intent sentIntent = getIntent();
         event = (Event) sentIntent.getParcelableExtra("event");
+        event.setFirestoreId(sentIntent.getStringExtra("firestoreId"));
         habit = (Habit) sentIntent.getSerializableExtra("habit");
         selectedLatitude = sentIntent.getDoubleExtra("selectedLatitude", 0.0);
         selectedLongitude = sentIntent.getDoubleExtra("selectedLongitude", 0.0);
@@ -109,17 +122,42 @@ public class EditHabitEvent extends AppCompatActivity {
         previousActivity = getCallingActivity();
 
         habitName = findViewById(R.id.edithabitevent_habitname);
-        habitName.setText("Log Habit: " + event.getName());
+        habitName.setEnabled(false);
+        habitName.setText(event.getName());
 
         comments = findViewById(R.id.edithabitevent_comment);
         comments.setText(event.getComment());
 
         cameraImage = this.findViewById(R.id.edithabitevent_camera_image);
+      
+        populateLocationInformation();
+      
         if (event.getPhotograph() == null) {
             cameraImage.setVisibility(View.GONE);
         }
+        // run a thread to set the photograph
+        if(event.getPhotograph() != null) {
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        URL url = new URL(event.getPhotograph());
+                        Bitmap imageBitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                cameraImage.setImageBitmap(imageBitmap);
+                            }
+                        });
+                        Log.d(TAG, "Successfully set image");
+                    } catch (Exception e) {
+                        Log.d(TAG, e.toString());
+                    }
+                }
+            });
 
-        populateLocationInformation();
+            thread.start();
+        }
         setButtonListenters();
     }
 
@@ -178,7 +216,9 @@ public class EditHabitEvent extends AppCompatActivity {
     // if the camera image was selected, treat it as if the add button was pressed
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void editHabitEventCameraImagePressed(View view){
-        editHabitEventCameraButtonPressed(view);
+        Intent intent = new Intent(EditHabitEvent.this, ImageDialog.class);
+        intent.putExtra("event", event);
+        startActivity(intent);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -205,6 +245,9 @@ public class EditHabitEvent extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void editHabitEventCompleteButtonPressed(View view) {
+        Button completeButton = findViewById(R.id.edithabitevent_complete);
+        completeButton.setEnabled(false);
+
         String commentStr = (String) comments.getText().toString();
         event.setComment(commentStr);
         EditText locationEditText = findViewById(R.id.edithabitevent_location_name);
@@ -213,16 +256,60 @@ public class EditHabitEvent extends AppCompatActivity {
         event.setLatitude(selectedLatitude);
         event.setLongitude(selectedLongitude);
 
-        event.editEventInFirestore(userData, habit);
-        Intent intent;
-        if (Objects.equals("HabitEventDetails", prevActivity)) {
-            intent = new Intent(this, HabitEventDetails.class);
-            intent.putExtra("habit", habit);
-            intent.putExtra("event", event);
-            intent.putExtra("userData", (Serializable) userData);
-            startActivity(intent);
-        }
-        finish();
+        // prepare references
+        FirebaseFirestore db;
+        db = FirebaseFirestore.getInstance();
+        FirebaseStorage storage = FirebaseStorage.getInstance("gs://alpha-apps-41471.appspot.com");
+        StorageReference storageRef = storage.getReference();
+
+        // set image
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        photoBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] imageData = baos.toByteArray();
+
+        EditHabitEvent thisActivity = this;
+
+        // format bytes to be stored in storage
+        StorageReference docuRef = storageRef.child("images/"+imageData.hashCode());
+        UploadTask uploadTask = docuRef.putBytes(imageData);
+        uploadTask.addOnFailureListener(exception -> Log.d(TAG,"Failed upload"))
+                .addOnSuccessListener(taskSnapshot -> Log.d(TAG,"Successful upload"));
+        uploadTask.continueWithTask(task -> {
+            if (!task.isSuccessful()) {
+                throw task.getException();
+            }
+
+            // Continue with the task to get the download URL
+            return docuRef.getDownloadUrl();
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+                    Uri downloadUri = task.getResult();
+                    Log.d(TAG,downloadUri.toString());
+                    // set the event photo URL
+                    event.setPhotograph(downloadUri.toString());
+                    event.editEventInFirestore(userData, habit);
+                    // close this Activity
+                    setResult(RESULT_OK);
+                    completeButton.setEnabled(true);
+                    finish();
+                    Intent intent;
+
+                    intent = new Intent(thisActivity, HabitEventDetails.class);
+                    intent.putExtra("habit", habit);
+                    intent.putExtra("event", event);
+                    intent.putExtra("userData", (Serializable) userData);
+                    intent.putExtra("firestoreId", event.getFirestoreId());
+                    startActivity(intent);
+
+
+
+                } else {
+                    Log.d(TAG,"Failed to get download URL");
+                }
+            }
+        });
 
     }
 
@@ -253,51 +340,12 @@ public class EditHabitEvent extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
-            event.setPhotograph(photo);
+            // set the image view
             cameraImage.setVisibility(View.VISIBLE);
             cameraImage.setImageBitmap(photo);
-            // prepare references
-            FirebaseFirestore db;
-            db = FirebaseFirestore.getInstance();
-            FirebaseStorage storage = FirebaseStorage.getInstance("gs://alpha-apps-41471.appspot.com");
-            StorageReference storageRef = storage.getReference();
+            photoBitmap = photo;
 
 
-            // set profile image
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            photo.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            byte[] imageData = baos.toByteArray();
-
-            // format bytes to be stored in storage
-            StorageReference docuRef = storageRef.child("images/"+imageData.hashCode());
-            UploadTask uploadTask = docuRef.putBytes(imageData);
-            uploadTask.addOnFailureListener(exception -> Log.d(TAG,"Failed upload"))
-                    .addOnSuccessListener(taskSnapshot -> Log.d(TAG,"Successful upload"));
-            uploadTask.continueWithTask(task -> {
-                if (!task.isSuccessful()) {
-                    throw task.getException();
-                }
-
-                // Continue with the task to get the download URL
-                return docuRef.getDownloadUrl();
-            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                @Override
-                public void onComplete(@NonNull Task<Uri> task) {
-                    if (task.isSuccessful()) {
-                        Uri downloadUri = task.getResult();
-                        Log.d(TAG,downloadUri.toString());
-                        // upload to the user document in Firestore
-                        Map userData = new HashMap<>();
-                        userData.put("profilePicture",downloadUri.toString());
-                        db.collection("Doers").document((String) userData.get("username"))
-                                .update(userData);
-
-
-                    } else {
-                        Log.d(TAG,"Failed to get download URL");
-                    }
-                }
-            });
 
         }
     }

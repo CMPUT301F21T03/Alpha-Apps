@@ -5,8 +5,8 @@
             <solid android:color="#6378E9"/>
             <corners android:radius="10dp"/>
             <size
-                android:height="50dp"
-                android:width="290dp" />
+                android:height="35dp"
+                android:width="300dp" />
         </shape>
     </item>
     <item android:state_pressed="true">

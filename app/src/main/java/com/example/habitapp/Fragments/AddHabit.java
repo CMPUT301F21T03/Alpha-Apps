@@ -17,6 +17,7 @@
  *   1.4       Eric      Nov-03-2021   Changed date picker dialog to display current date by default
  *   1.5       Eric      Nov-03-2021   Firestore add, edit, delete now part of Habit class. Changes reflected here.
  *   1.6       Eric      Nov-03-2021   Fixed empty list glitch
+ *   1.7       Eric      Nov-24-2021   Inits a new habit with indexes of -1 for the RecyclerViews
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -137,11 +138,9 @@ public class AddHabit extends Fragment {
             DaysOfWeek frequency = new DaysOfWeek(sundayVal,mondayVal, tuesdayVal, wednesdayVal,thursdayVal, fridayVal, saturdayVal);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss");
             LocalDateTime newDate = LocalDateTime.parse(habitDate, formatter);
-            Habit newHabit = new Habit(habitName, habitReason, newDate, frequency, privacyBool);
+            Habit newHabit = new Habit(habitName, habitReason, newDate, frequency, privacyBool, -1, -1);
 
             newHabit.addHabitToFirestore(userData);
-
-
 
             NavController navController = NavHostFragment.findNavController(this);
             navController.navigate(R.id.action_addHabitFragment_to_allHabitsFragment);

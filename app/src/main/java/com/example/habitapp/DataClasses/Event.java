@@ -19,7 +19,8 @@
  *   1.4       Moe       Nov-04-2021   Firestore add, delete, edit for Event
  *   1.5       Mathew    Nov-16-2021   Altered Event to implement Parcelable so it is able to package
  *                                     up an image to allow it to be passed between activities
- *   1.6       Mathew    Nov-28-2021   Added the necessary location attributes to the class
+ *   1.6       Leah      Nov-27-2021   Removed add to Firestore function to allow smoother adds and deletes of Events
+ *   1.7       Mathew    Nov-28-2021   Added the necessary location attributes to the class
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -39,7 +40,9 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.IgnoreExtraProperties;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -58,8 +61,8 @@ public class Event implements Parcelable {
     // a subjective comment about the habit event entered by the user (optional)
     private String comment;
 
-    // a bitmap to represent the actual an image of the event (optional)
-    private Bitmap photograph;
+    // a URL string to represent the associated photograph
+    private String photograph;
 
     // a latitude and longitude value to represent the location of a habit event
     private Double latitude;
@@ -70,17 +73,21 @@ public class Event implements Parcelable {
 
     private String firestoreId;
 
+    private String username;
+
     /**
      * creates an event with the specified values. If the value is null it means it was not given by the user
      * @param name the name of the habit event
      * @param dateCompleted the day that the event was completed
      * @param comment an optional comment about the event
-     * @param photograph a bitmap that is used to store an image relating to the event
+     * @param photograph a URL of an image associated with the event
      */
-    public Event(String name, LocalDateTime dateCompleted, String comment, Bitmap photograph){
+
+    public Event(String name, LocalDateTime dateCompleted, String comment, String photograph, String username){
 
         setName(name);
         setDateCompleted(dateCompleted);
+        setUsername(username);
 
         try{
             setComment(comment);
@@ -150,12 +157,13 @@ public class Event implements Parcelable {
     public void editEventInFirestore(Map userData, Habit habit) {
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
+        Log.d(TAG,(String)userData.get("username"));
+        Log.d(TAG,getFirestoreId());
         final CollectionReference eventsref = db.collection("Doers")
                 .document((String)userData.get("username"))
                 .collection("habits")
                 .document(habit.getFirestoreId())
                 .collection("events");
-
         eventsref.document(getFirestoreId())
                 .set(this)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -200,7 +208,9 @@ public class Event implements Parcelable {
         parcel.writeSerializable(date);
         parcel.writeSerializable(time);
         parcel.writeString(getComment());
-        parcel.writeValue(getPhotograph());
+        parcel.writeString(getPhotograph());
+        parcel.writeString(getUsername());
+
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(Parcel parcel){
@@ -209,7 +219,9 @@ public class Event implements Parcelable {
         LocalTime time = (LocalTime) parcel.readSerializable();
         this.dateCompleted = date.atTime(time);
         this.comment = parcel.readString();
-        this.photograph = parcel.readParcelable(Bitmap.class.getClassLoader());
+        this.photograph = parcel.readString();     
+        this.username = parcel.readString();
+
     }
 
     // =========================== GETTERS AND SETTERS ===========================
@@ -275,12 +287,18 @@ public class Event implements Parcelable {
         this.firestoreId = firestoreId;
     }
 
-    public Bitmap getPhotograph() {
-        return photograph;
+
+    public String getPhotograph() { return photograph; }
+
+
+    public void setPhotograph(String photograph) { this.photograph = photograph; }
+
+    public String getUsername() {
+        return username;
     }
 
-    public void setPhotograph(Bitmap photograph) {
-        this.photograph = photograph;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
 }
