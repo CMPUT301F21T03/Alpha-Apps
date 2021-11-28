@@ -187,6 +187,9 @@ public class EditHabitEvent extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void editHabitEventCompleteButtonPressed(View view) {
+        Button completeButton = findViewById(R.id.edithabitevent_complete);
+        completeButton.setEnabled(false);
+
         String commentStr = (String) comments.getText().toString();
         event.setComment(commentStr);
 
@@ -226,6 +229,7 @@ public class EditHabitEvent extends AppCompatActivity {
                     event.editEventInFirestore(userData, habit);
                     // close this Activity
                     setResult(RESULT_OK);
+                    completeButton.setEnabled(true);
                     finish();
                     Intent intent;
 
