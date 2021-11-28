@@ -19,6 +19,8 @@
  *   1.5       Jesse     Nov-02-2021   Implemented delete event
  *   1.6       Moe       Nov-04-2021   Added extra value for intent
  *   1.7       Moe       Nov-04-2021   Firestore delete for HabitEvent
+ *   1.8       Leah      Nov-27-2021   Fixed bugs for Habit Event creation/deletion/edits
+ *   1.9       Jesse     Nov-27-2021   Implemented image onclick listener
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -26,11 +28,16 @@ package com.example.habitapp.Activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -45,13 +52,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import java.io.Serializable;
+import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Map;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class HabitEventDetails extends AppCompatActivity {
-
+    private String TAG = "habitEventDetailsTAG";
     private Habit habit;
     private Event event;
     private String habitName;
@@ -72,21 +80,50 @@ public class HabitEventDetails extends AppCompatActivity {
         //get details from bundle
         Intent sentIntent = getIntent();
         event = (Event) sentIntent.getParcelableExtra("event");
+        event.setFirestoreId(sentIntent.getStringExtra("firestoreId"));
         habit = (Habit) sentIntent.getSerializableExtra("habit");
         userData = (Map) sentIntent.getSerializableExtra("userData");
 
         //update fields with Event info
         habitName = event.getName();
         comment = event.getComment();
+        if (comment.trim().isEmpty()) {
+            comment = "No comment added";
+        }
         //date = event.getDateCompleted().format(formatter);
 
-        TextView nameText = findViewById(R.id.habiteventdetails_title);
+        EditText nameText = findViewById(R.id.habiteventdetails_title);
         TextView commentText = findViewById(R.id.habiteventdetails_comment);
+        ImageView photographView = findViewById(R.id.habiteventdetails_camera_image);
         //TextView locationText = findViewById(R.id.habiteventdetails_location);
 
-        nameText.setText("Habit Event: " + habitName);
+        nameText.setText(habitName);
+        nameText.setEnabled(false);
         commentText.setText(comment);
 
+        // run a thread to set the photograph
+        if(event.getPhotograph() != null){
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        URL url = new URL(event.getPhotograph());
+                        Bitmap imageBitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                        new Handler(Looper.getMainLooper()).post(new Runnable(){
+                            @Override
+                            public void run() {
+                                photographView.setImageBitmap(imageBitmap);
+                            }
+                        });
+                        Log.d(TAG, "Successfully set image");
+                    } catch (Exception e) {
+                        Log.d(TAG, e.toString());
+                    }
+                }
+            });
+
+            thread.start();
+        }
 
         // set a listener for the edit button
         Button editButton = findViewById(R.id.habiteventdetails_edit);
@@ -95,12 +132,23 @@ public class HabitEventDetails extends AppCompatActivity {
         //ImageView deleteButton = findViewById(R.id.habiteventdetails_delete);
         Button deleteButton = findViewById(R.id.habiteventdetails_delete);
         deleteButton.setOnClickListener(this::habitEventDetailsDeleteButtonPressed);
+
+        photographView.setOnClickListener(this::editHabitEventCameraImagePressed);
+    }
+
+    private void editHabitEventCameraImagePressed(View view) {
+        Intent intent = new Intent(HabitEventDetails.this, ImageDialog.class);
+        intent.putExtra("event", event);
+        startActivity(intent);
     }
 
     private void habitEventDetailsEditButtonPressed(View view) {
         // navigate to the edit an event activity
+        setResult(RESULT_OK);
+        finish();
         Intent intent = new Intent(this, EditHabitEvent.class);
         intent.putExtra("event", event);
+        intent.putExtra("firestoreId",event.getFirestoreId());
         intent.putExtra("habit", habit);
         intent.putExtra("userData", (Serializable) userData);
         intent.putExtra("activity", "HabitEventDetails");
@@ -108,7 +156,12 @@ public class HabitEventDetails extends AppCompatActivity {
     }
 
     private void habitEventDetailsDeleteButtonPressed(View view) {
+
         event.removeEventFromFirestore(userData, habit);
+        // close this Activity
+        setResult(RESULT_OK);
+        finish();
+        // start new Activity
         Intent intent;
         intent = new Intent(this, HabitDetails.class);
         intent.putExtra("habit", habit);

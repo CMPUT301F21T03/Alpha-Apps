@@ -21,8 +21,8 @@
 <!--            android:text="S" />-->
         <CheckBox
             android:id="@+id/sunday_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginRight="5dp"
             android:layout_weight="1"
             android:background="@drawable/checkbox_selector"
@@ -32,13 +32,12 @@
             android:gravity="center"
             android:text="S"
             android:textColor="@color/black"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textSize="18sp" />
 
         <CheckBox
             android:id="@+id/monday_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginRight="5dp"
             android:layout_weight="1"
             android:background="@drawable/checkbox_selector"
@@ -48,13 +47,12 @@
             android:gravity="center"
             android:text="M"
             android:textColor="@color/black"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textSize="18sp" />
 
         <CheckBox
             android:id="@+id/tuesday_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginRight="5dp"
             android:layout_weight="1"
             android:background="@drawable/checkbox_selector"
@@ -64,13 +62,12 @@
             android:gravity="center"
             android:text="T"
             android:textColor="@color/black"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textSize="18sp" />
 
         <CheckBox
             android:id="@+id/wednesday_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginRight="5dp"
             android:layout_weight="1"
             android:background="@drawable/checkbox_selector"
@@ -80,13 +77,12 @@
             android:gravity="center"
             android:text="W"
             android:textColor="@color/black"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textSize="18sp" />
 
         <CheckBox
             android:id="@+id/thursday_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginRight="5dp"
             android:layout_weight="1"
             android:background="@drawable/checkbox_selector"
@@ -96,13 +92,12 @@
             android:gravity="center"
             android:text="T"
             android:textColor="@color/black"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textSize="18sp" />
 
         <CheckBox
             android:id="@+id/friday_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginRight="5dp"
             android:layout_weight="1"
             android:background="@drawable/checkbox_selector"
@@ -112,13 +107,12 @@
             android:gravity="center"
             android:text="F"
             android:textColor="@color/black"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textSize="18sp" />
 
         <CheckBox
             android:id="@+id/saturday_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_weight="1"
             android:background="@drawable/checkbox_selector"
             android:button="@null"
@@ -127,8 +121,7 @@
             android:gravity="center"
             android:text="S"
             android:textColor="@color/black"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textSize="18sp" />
 
 
         <!--<Button

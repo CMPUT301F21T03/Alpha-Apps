@@ -23,36 +23,66 @@
     </FrameLayout>
 
     <TextView
-        android:id="@+id/habiteventdetails_title"
+        android:id="@+id/habiteventdetails_habitevent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:text="Habit Event: + Sample Text"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="10dp"
+        android:text="Habit Event"
         android:textColor="#000000"
-        android:textSize="40sp"
+        android:textStyle="bold"
+        android:textSize="30sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/frameLayout2" />
+
+
+    <EditText
+        android:id="@+id/habiteventdetails_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="26dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="28dp"
+        android:ems="10"
+        android:fontFamily="@font/montserrat"
+        android:inputType="textMultiLine"
+        android:maxLength="20"
+        android:text="Title"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/habiteventdetails_habitevent" />
 
     <TextView
         android:id="@+id/textView21"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="5dp"
         android:text="Comment"
-        android:textSize="25sp"
+        android:textColor="@color/black"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/habiteventdetails_title" />
 
     <TextView
         android:id="@+id/habiteventdetails_comment"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="28dp"
         android:layout_marginTop="5dp"
+        android:layout_marginEnd="28dp"
+        android:background="@drawable/reason_background"
         android:text="Comment"
-        android:textSize="20sp"
+        android:paddingStart="15dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView21" />
 
@@ -60,10 +90,11 @@
         android:id="@+id/textView25"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="10dp"
         android:text="Location"
-        android:textSize="25sp"
+        android:textColor="@color/black"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/habiteventdetails_comment" />
 
@@ -81,10 +112,11 @@
         android:id="@+id/textView26"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="10dp"
         android:text="Photo"
-        android:textSize="25sp"
+        android:textColor="@color/black"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/habiteventdetails_location" />
 
@@ -92,8 +124,9 @@
         android:id="@+id/habiteventdetails_camera_image"
         android:layout_width="270dp"
         android:layout_height="182dp"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="28dp"
         android:layout_marginTop="5dp"
+        android:foregroundGravity="left"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView26"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
@@ -111,28 +144,37 @@
 <!--        app:layout_constraintStart_toStartOf="parent"-->
 <!--        app:srcCompat="@android:drawable/ic_menu_delete" />-->
 
-    <Button
-        android:id="@+id/habiteventdetails_delete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:text="delete"
-        android:textSize="30dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/habiteventdetails_edit"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"/>
 
-    <Button
+    <android.widget.Button
         android:id="@+id/habiteventdetails_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:text="edit"
-        android:textSize="30dp"
+        android:layout_marginBottom="10dp"
+        android:text="Edit"
+        android:textAllCaps="false"
+        android:background="@drawable/transparent_button"
+        android:textColor="@drawable/transparent_button_text"
+        android:fontFamily="@font/open_sans_semibold"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/habiteventdetails_delete"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <android.widget.Button
+        android:id="@+id/habiteventdetails_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:text="Delete"
+        android:textAllCaps="false"
+        android:background="@drawable/delete_button"
+        android:textColor="@drawable/delete_button_text"
+        android:fontFamily="@font/open_sans_semibold"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/habiteventdetails_delete" />
+        app:layout_constraintStart_toStartOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

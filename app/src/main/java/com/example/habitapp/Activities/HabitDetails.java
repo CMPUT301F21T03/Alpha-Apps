@@ -51,6 +51,8 @@ import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -61,6 +63,10 @@ import com.example.habitapp.DataClasses.EventList;
 import com.example.habitapp.DataClasses.Habit;
 import com.example.habitapp.DataClasses.Event;
 import com.example.habitapp.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -85,6 +91,7 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
     private TextView done_habit;
     private Button done_editing;
     private Spinner privacy_spinner;
+    private Button moreButton;
 
 
     private CheckBox sunday_button;
@@ -195,7 +202,7 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
 
         // most likely out of date code
         // set a listener for if the more button is pressed by the user
-        Button moreButton = findViewById(R.id.habitdetails_more);
+        moreButton = findViewById(R.id.habitdetails_more);
         moreButton.setOnClickListener(this::habitDetailsMoreButtonPressed);
     }
 
@@ -299,7 +306,9 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
 
     private void prepareForEdit() {
         editing = true; // set editing flag to true (for popup menu)
+        moreButton.setEnabled(false); // unable more button
         habit_events_title.setVisibility(View.GONE); // hide Habit Events
+        recyclerView.setVisibility(View.GONE); // hide habit event list
         done_editing.setVisibility(View.VISIBLE); // show done editing button
         title.setEnabled(true); // enable title and reason EditTexts
         reason.setEnabled(true);
@@ -311,7 +320,9 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
 
     private void prepareForFinishEditing() {
         editing = false; // set editing flag to false (for popup menu)
+        moreButton.setEnabled(true); // enable more button
         habit_events_title.setVisibility(View.VISIBLE); // show Habit Events
+        recyclerView.setVisibility(View.VISIBLE); // show habit event list
         done_editing.setVisibility(View.GONE); // hide done editing button
         title.setEnabled(false); // disable title and reason EditTexts
         title.setTextColor(Color.BLACK);
@@ -332,30 +343,54 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
                 .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        newHabitEvent = new Event(habit.getTitle(), LocalDateTime.now(), "", null, false);
+                        newHabitEvent = new Event(habit.getTitle(), LocalDateTime.now(), "", null, false, (String) userData.get("username"));
 
 
                         increaseEventCompletionCount();
-                        newHabitEvent.addEventToFirestore(userData, habit);
 
-                        done_habit.setVisibility(View.VISIBLE);
+                        // add to Firestore
+                        FirebaseFirestore db;
+                        db = FirebaseFirestore.getInstance();
+                        final CollectionReference eventsRef = db.collection("Doers")
+                                .document((String)userData.get("username"))
+                                .collection("habits")
+                                .document(habit.getFirestoreId())
+                                .collection("events");
 
-                        AlertDialog.Builder loghabitBuilder = new AlertDialog.Builder(HabitDetails.this);
-                        loghabitBuilder.setMessage("Do you want to log this habit?")
-                                .setPositiveButton("Log habit", new DialogInterface.OnClickListener() {
+                        eventsRef.add(newHabitEvent)
+                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                     @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        Intent intent = new Intent(HabitDetails.this, EditHabitEvent.class);
-                                        intent.putExtra("event", newHabitEvent);
-                                        intent.putExtra("habit", habit);
-                                        intent.putExtra("userData", (Serializable) userData);
-                                        intent.putExtra("activity", "HabitDetails");
-                                        startActivity(intent);
+                                    public void onSuccess(DocumentReference documentReference) {
+                                        Log.d(TAG,"Successful add");
+                                        newHabitEvent.setFirestoreId(documentReference.getId());
+                                        done_habit.setVisibility(View.VISIBLE);
+                                        // ask if user wants to log the Habit with details
+                                        AlertDialog.Builder loghabitBuilder = new AlertDialog.Builder(HabitDetails.this);
+                                        loghabitBuilder.setMessage("Do you want to log this habit?")
+                                                .setPositiveButton("Log habit", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        Intent intent = new Intent(HabitDetails.this, EditHabitEvent.class);
+                                                        intent.putExtra("event", newHabitEvent);
+                                                        intent.putExtra("habit", habit);
+                                                        intent.putExtra("firestoreId",newHabitEvent.getFirestoreId());
+                                                        intent.putExtra("userData", (Serializable) userData);
+                                                        intent.putExtra("activity", "HabitDetails");
+                                                        startActivity(intent);
+                                                    }
+                                                })
+                                                .setNegativeButton("Cancel", null);
+                                        AlertDialog alert2 = loghabitBuilder.create();
+                                        alert2.show();
+
                                     }
-                                })
-                                .setNegativeButton("Cancel", null);
-                        AlertDialog alert2 = loghabitBuilder.create();
-                        alert2.show();
+                                }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d(TAG,"failed: "+ e);
+                            }
+                        });
+                        //
                     }
                 })
                 .setNegativeButton("Cancel", null);

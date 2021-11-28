@@ -22,9 +22,13 @@
 package com.example.habitapp.DataClasses;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.media.MediaDrm;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,6 +49,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -53,12 +58,12 @@ import java.util.Map;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //ArrayAdapter<Event> {
-
+    private String TAG = "eventListTAG";
     private ArrayList<Event> events;
     private Habit habit;
     private Map userData;
     private OnEventListener onEventListener;
-    //private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public EventList(ArrayList<Event> events, OnEventListener onEventListener) {
         //super(context, 0, events);
@@ -120,12 +125,37 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
         final Event event = events.get(position);
         holder.getName().setText(event.getName());
         holder.getComment().setText(event.getComment());
+        holder.getDate().setText(event.getDateCompleted().format(formatter));
 
         // if there is no photograph saved to the event object, make the imageView invisible
         if (event.getPhotograph() == null){
+            Log.d(TAG,"Null");
             holder.getImage().setVisibility(View.GONE);
         }else{
-            holder.getImage().setImageBitmap(event.getPhotograph());
+            // holder.getImage().setImageBitmap(event.getPhotograph());
+            Log.d(TAG,"URL: " + event.getPhotograph());
+            // make a thread to decode the image URL and convert to bitmap to display
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        URL url = new URL(event.getPhotograph());
+                        Bitmap imageBitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                        new Handler(Looper.getMainLooper()).post(new Runnable(){
+                            @Override
+                            public void run() {
+                                holder.getImage().setImageBitmap(imageBitmap); //Bitmap.createScaledBitmap(imageBitmap, 300, 200, false));
+                            }
+                        });
+                        Log.d(TAG, "Successfully set image");
+                    } catch (Exception e) {
+                        Log.d(TAG, e.toString());
+                    }
+                }
+            });
+
+            thread.start();
+
         }
 
 
@@ -185,8 +215,18 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
                                     getDate.get("dayOfMonth").toString() + " 00:00:00";;
                             LocalDateTime newDate = LocalDateTime.parse(newDateStr, formatter);
                             String comment = doc.getString("comment");
+
+                            String photograph = doc.getString("photograph");
+                            String username = doc.getString("username");
                             // TODO store location and photograph after halfway
-                            Event eventToAdd = new Event(doc.getString("name"),newDate, comment, null, false);
+                            Event eventToAdd;
+                            if (username == null) {
+                                eventToAdd = new Event(doc.getString("name"),newDate, comment, photograph, false, "");
+                            } else {
+                                eventToAdd = new Event(doc.getString("name"),newDate, comment, photograph, false, username);
+
+                            }
+
                             eventToAdd.setFirestoreId(doc.getId());
                             if (!events.contains(eventToAdd)) {
                                 events.add(eventToAdd);
@@ -202,5 +242,9 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
 
     public void clearEventList() {
         events.clear();
+    }
+
+    public void addEvent(Event event) {
+        events.add(event);
     }
 }
