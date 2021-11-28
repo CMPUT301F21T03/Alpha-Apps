@@ -189,8 +189,15 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
                                     getDate.get("dayOfMonth").toString() + " 00:00:00";;
                             LocalDateTime newDate = LocalDateTime.parse(newDateStr, formatter);
                             String comment = doc.getString("comment");
+                            String username = doc.getString("username");
                             // TODO store location and photograph after halfway
-                            Event eventToAdd = new Event(doc.getString("name"),newDate, comment, null, false);
+                            Event eventToAdd;
+                            if (username == null) {
+                                eventToAdd = new Event(doc.getString("name"),newDate, comment, null, false, "");
+                            } else {
+                                eventToAdd = new Event(doc.getString("name"),newDate, comment, null, false, username);
+                            }
+
                             eventToAdd.setFirestoreId(doc.getId());
                             if (!events.contains(eventToAdd)) {
                                 addEvent(eventToAdd);
