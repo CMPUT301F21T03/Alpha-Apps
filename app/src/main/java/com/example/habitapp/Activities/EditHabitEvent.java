@@ -74,6 +74,7 @@ public class EditHabitEvent extends AppCompatActivity {
     private ArrayList<Event> events;
     private Map userData;
     private TextView habitName;
+    private Bitmap photoBitmap;
 
     // camera related variables
     private static final int CAMERA_REQUEST = 1888;
@@ -154,19 +155,60 @@ public class EditHabitEvent extends AppCompatActivity {
     public void editHabitEventCompleteButtonPressed(View view) {
         String commentStr = (String) comments.getText().toString();
         event.setComment(commentStr);
-        event.editEventInFirestore(userData, habit);
-        setResult(RESULT_OK);
-        finish();
-        Intent intent;
-        if (Objects.equals("HabitEventDetails", prevActivity)) {
-            intent = new Intent(this, HabitEventDetails.class);
-            intent.putExtra("habit", habit);
-            intent.putExtra("event", event);
-            intent.putExtra("userData", (Serializable) userData);
-            intent.putExtra("firestoreId",event.getFirestoreId());
-            startActivity(intent);
-        }
 
+        // prepare references
+        FirebaseFirestore db;
+        db = FirebaseFirestore.getInstance();
+        FirebaseStorage storage = FirebaseStorage.getInstance("gs://alpha-apps-41471.appspot.com");
+        StorageReference storageRef = storage.getReference();
+
+        // set image
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        photoBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] imageData = baos.toByteArray();
+
+        EditHabitEvent thisActivity = this;
+
+        // format bytes to be stored in storage
+        StorageReference docuRef = storageRef.child("images/"+imageData.hashCode());
+        UploadTask uploadTask = docuRef.putBytes(imageData);
+        uploadTask.addOnFailureListener(exception -> Log.d(TAG,"Failed upload"))
+                .addOnSuccessListener(taskSnapshot -> Log.d(TAG,"Successful upload"));
+        uploadTask.continueWithTask(task -> {
+            if (!task.isSuccessful()) {
+                throw task.getException();
+            }
+
+            // Continue with the task to get the download URL
+            return docuRef.getDownloadUrl();
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+                    Uri downloadUri = task.getResult();
+                    Log.d(TAG,downloadUri.toString());
+                    // set the event photo URL
+                    event.setPhotograph(downloadUri.toString());
+                    event.editEventInFirestore(userData, habit);
+                    // close this Activity
+                    setResult(RESULT_OK);
+                    finish();
+                    Intent intent;
+
+                    intent = new Intent(thisActivity, HabitEventDetails.class);
+                    intent.putExtra("habit", habit);
+                    intent.putExtra("event", event);
+                    intent.putExtra("userData", (Serializable) userData);
+                    intent.putExtra("firestoreId", event.getFirestoreId());
+                    startActivity(intent);
+
+
+
+                } else {
+                    Log.d(TAG,"Failed to get download URL");
+                }
+            }
+        });
 
     }
 
@@ -200,45 +242,9 @@ public class EditHabitEvent extends AppCompatActivity {
             // set the image view
             cameraImage.setVisibility(View.VISIBLE);
             cameraImage.setImageBitmap(photo);
-
-            // prepare references
-            FirebaseFirestore db;
-            db = FirebaseFirestore.getInstance();
-            FirebaseStorage storage = FirebaseStorage.getInstance("gs://alpha-apps-41471.appspot.com");
-            StorageReference storageRef = storage.getReference();
-
-            // set image
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            photo.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            byte[] imageData = baos.toByteArray();
-
-            // format bytes to be stored in storage
-            StorageReference docuRef = storageRef.child("images/"+imageData.hashCode());
-            UploadTask uploadTask = docuRef.putBytes(imageData);
-            uploadTask.addOnFailureListener(exception -> Log.d(TAG,"Failed upload"))
-                    .addOnSuccessListener(taskSnapshot -> Log.d(TAG,"Successful upload"));
-            uploadTask.continueWithTask(task -> {
-                if (!task.isSuccessful()) {
-                    throw task.getException();
-                }
-
-                // Continue with the task to get the download URL
-                return docuRef.getDownloadUrl();
-            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                @Override
-                public void onComplete(@NonNull Task<Uri> task) {
-                    if (task.isSuccessful()) {
-                        Uri downloadUri = task.getResult();
-                        Log.d(TAG,downloadUri.toString());
-                        // set the event photo URL
-                        event.setPhotograph(downloadUri.toString());
+            photoBitmap = photo;
 
 
-                    } else {
-                        Log.d(TAG,"Failed to get download URL");
-                    }
-                }
-            });
 
         }
     }
