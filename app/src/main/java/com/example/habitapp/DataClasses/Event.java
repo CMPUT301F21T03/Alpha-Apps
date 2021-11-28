@@ -38,7 +38,9 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.IgnoreExtraProperties;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -57,8 +59,8 @@ public class Event implements Parcelable {
     // a subjective comment about the habit event entered by the user (optional)
     private String comment;
 
-    // a bitmap to represent the actual an image of the event (optional)
-    private Bitmap photograph;
+    // a URL string to represent the associated photograph
+    private String photograph;
 
     // TODO change the below attribute (and all other instances) to properly represent a location
     private Boolean hasLocation;
@@ -70,10 +72,10 @@ public class Event implements Parcelable {
      * @param name the name of the habit event
      * @param dateCompleted the day that the event was completed
      * @param comment an optional comment about the event
-     * @param photograph a bitmap that is used to store an image relating to the event
+     * @param photograph a URL of an image associated with the event
      * @param hasLocation a placeholder for the location object that will be implemented later
      */
-    public Event(String name, LocalDateTime dateCompleted, String comment, Bitmap photograph, Boolean hasLocation){
+    public Event(String name, LocalDateTime dateCompleted, String comment, String photograph, Boolean hasLocation){
 
         setName(name);
         setDateCompleted(dateCompleted);
@@ -120,6 +122,8 @@ public class Event implements Parcelable {
     public void editEventInFirestore(Map userData, Habit habit) {
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
+        Log.d(TAG,(String)userData.get("username"));
+        Log.d(TAG,getFirestoreId());
         final CollectionReference eventsref = db.collection("Doers")
                 .document((String)userData.get("username"))
                 .collection("habits")
@@ -169,7 +173,7 @@ public class Event implements Parcelable {
         parcel.writeSerializable(date);
         parcel.writeSerializable(time);
         parcel.writeString(getComment());
-        parcel.writeValue(getPhotograph());
+        parcel.writeString(getPhotograph());
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(Parcel parcel){
@@ -178,7 +182,7 @@ public class Event implements Parcelable {
         LocalTime time = (LocalTime) parcel.readSerializable();
         this.dateCompleted = date.atTime(time);
         this.comment = parcel.readString();
-        this.photograph = parcel.readParcelable(Bitmap.class.getClassLoader());
+        this.photograph = parcel.readString();
     }
 
     // =========================== GETTERS AND SETTERS ===========================
@@ -220,12 +224,8 @@ public class Event implements Parcelable {
         this.firestoreId = firestoreId;
     }
 
-    public Bitmap getPhotograph() {
-        return photograph;
-    }
 
-    public void setPhotograph(Bitmap photograph) {
-        this.photograph = photograph;
-    }
+    public String getPhotograph() { return photograph; }
 
+    public void setPhotograph(String photograph) { this.photograph = photograph; }
 }

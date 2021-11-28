@@ -27,8 +27,12 @@ package com.example.habitapp.Activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.Button;
@@ -46,13 +50,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import java.io.Serializable;
+import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Map;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class HabitEventDetails extends AppCompatActivity {
-
+    private String TAG = "habitEventDetailsTAG";
     private Habit habit;
     private Event event;
     private String habitName;
@@ -84,11 +89,35 @@ public class HabitEventDetails extends AppCompatActivity {
 
         TextView nameText = findViewById(R.id.habiteventdetails_title);
         TextView commentText = findViewById(R.id.habiteventdetails_comment);
+        ImageView photographView = findViewById(R.id.habiteventdetails_camera_image);
         //TextView locationText = findViewById(R.id.habiteventdetails_location);
 
         nameText.setText("Habit Event: " + habitName);
         commentText.setText(comment);
 
+        // run a thread to set the photograph
+        if(event.getPhotograph() != null){
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        URL url = new URL(event.getPhotograph());
+                        Bitmap imageBitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                        new Handler(Looper.getMainLooper()).post(new Runnable(){
+                            @Override
+                            public void run() {
+                                photographView.setImageBitmap(imageBitmap);
+                            }
+                        });
+                        Log.d(TAG, "Successfully set image");
+                    } catch (Exception e) {
+                        Log.d(TAG, e.toString());
+                    }
+                }
+            });
+
+            thread.start();
+        }
 
         // set a listener for the edit button
         Button editButton = findViewById(R.id.habiteventdetails_edit);
@@ -101,6 +130,8 @@ public class HabitEventDetails extends AppCompatActivity {
 
     private void habitEventDetailsEditButtonPressed(View view) {
         // navigate to the edit an event activity
+        setResult(RESULT_OK);
+        finish();
         Intent intent = new Intent(this, EditHabitEvent.class);
         intent.putExtra("event", event);
         intent.putExtra("firestoreId",event.getFirestoreId());
