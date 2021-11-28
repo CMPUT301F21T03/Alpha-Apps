@@ -23,6 +23,7 @@
             android:noHistory="true"/>
         <activity android:name=".Activities.EditHabitEvent"/>
         <activity android:name=".Activities.HabitEventDetails"/>
+        <activity android:name=".Activities.ImageDialog"/>
         <activity android:name=".Activities.FollowUserView"/>
         <activity android:name=".Activities.FollowingFollowers"/>
         <activity android:name=".Activities.SignUp"/>

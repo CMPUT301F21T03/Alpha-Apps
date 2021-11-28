@@ -91,6 +91,7 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
     private TextView done_habit;
     private Button done_editing;
     private Spinner privacy_spinner;
+    private Button moreButton;
 
 
     private CheckBox sunday_button;
@@ -201,7 +202,7 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
 
         // most likely out of date code
         // set a listener for if the more button is pressed by the user
-        Button moreButton = findViewById(R.id.habitdetails_more);
+        moreButton = findViewById(R.id.habitdetails_more);
         moreButton.setOnClickListener(this::habitDetailsMoreButtonPressed);
     }
 
@@ -305,7 +306,9 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
 
     private void prepareForEdit() {
         editing = true; // set editing flag to true (for popup menu)
+        moreButton.setEnabled(false); // unable more button
         habit_events_title.setVisibility(View.GONE); // hide Habit Events
+        recyclerView.setVisibility(View.GONE); // hide habit event list
         done_editing.setVisibility(View.VISIBLE); // show done editing button
         title.setEnabled(true); // enable title and reason EditTexts
         reason.setEnabled(true);
@@ -317,7 +320,9 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
 
     private void prepareForFinishEditing() {
         editing = false; // set editing flag to false (for popup menu)
+        moreButton.setEnabled(true); // enable more button
         habit_events_title.setVisibility(View.VISIBLE); // show Habit Events
+        recyclerView.setVisibility(View.VISIBLE); // show habit event list
         done_editing.setVisibility(View.GONE); // hide done editing button
         title.setEnabled(false); // disable title and reason EditTexts
         title.setTextColor(Color.BLACK);

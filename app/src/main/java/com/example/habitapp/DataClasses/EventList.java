@@ -63,7 +63,7 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
     private Habit habit;
     private Map userData;
     private OnEventListener onEventListener;
-    //private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public EventList(ArrayList<Event> events, OnEventListener onEventListener) {
         //super(context, 0, events);
@@ -125,6 +125,7 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
         final Event event = events.get(position);
         holder.getName().setText(event.getName());
         holder.getComment().setText(event.getComment());
+        holder.getDate().setText(event.getDateCompleted().format(formatter));
 
         // if there is no photograph saved to the event object, make the imageView invisible
         if (event.getPhotograph() == null){
@@ -143,7 +144,7 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
                         new Handler(Looper.getMainLooper()).post(new Runnable(){
                             @Override
                             public void run() {
-                                holder.getImage().setImageBitmap(imageBitmap);
+                                holder.getImage().setImageBitmap(imageBitmap); //Bitmap.createScaledBitmap(imageBitmap, 300, 200, false));
                             }
                         });
                         Log.d(TAG, "Successfully set image");

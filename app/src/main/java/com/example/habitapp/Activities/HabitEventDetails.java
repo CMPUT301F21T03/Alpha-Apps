@@ -20,6 +20,7 @@
  *   1.6       Moe       Nov-04-2021   Added extra value for intent
  *   1.7       Moe       Nov-04-2021   Firestore delete for HabitEvent
  *   1.8       Leah      Nov-27-2021   Fixed bugs for Habit Event creation/deletion/edits
+ *   1.9       Jesse     Nov-27-2021   Implemented image onclick listener
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -36,6 +37,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -85,14 +87,18 @@ public class HabitEventDetails extends AppCompatActivity {
         //update fields with Event info
         habitName = event.getName();
         comment = event.getComment();
+        if (comment.trim().isEmpty()) {
+            comment = "No comment added";
+        }
         //date = event.getDateCompleted().format(formatter);
 
-        TextView nameText = findViewById(R.id.habiteventdetails_title);
+        EditText nameText = findViewById(R.id.habiteventdetails_title);
         TextView commentText = findViewById(R.id.habiteventdetails_comment);
         ImageView photographView = findViewById(R.id.habiteventdetails_camera_image);
         //TextView locationText = findViewById(R.id.habiteventdetails_location);
 
-        nameText.setText("Habit Event: " + habitName);
+        nameText.setText(habitName);
+        nameText.setEnabled(false);
         commentText.setText(comment);
 
         // run a thread to set the photograph
@@ -126,6 +132,14 @@ public class HabitEventDetails extends AppCompatActivity {
         //ImageView deleteButton = findViewById(R.id.habiteventdetails_delete);
         Button deleteButton = findViewById(R.id.habiteventdetails_delete);
         deleteButton.setOnClickListener(this::habitEventDetailsDeleteButtonPressed);
+
+        photographView.setOnClickListener(this::editHabitEventCameraImagePressed);
+    }
+
+    private void editHabitEventCameraImagePressed(View view) {
+        Intent intent = new Intent(HabitEventDetails.this, ImageDialog.class);
+        intent.putExtra("event", event);
+        startActivity(intent);
     }
 
     private void habitEventDetailsEditButtonPressed(View view) {

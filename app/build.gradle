@@ -8,8 +8,8 @@ android {
 
     defaultConfig {
         applicationId "com.example.habitapp"
-        minSdk 21
-        targetSdk 31
+        minSdk 23
+        targetSdk 23
         versionCode 1
         versionName "1.0"
 
