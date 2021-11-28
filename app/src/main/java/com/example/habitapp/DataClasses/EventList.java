@@ -12,10 +12,11 @@
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Jesse     Oct-31-2021    Created
  *   1.1       Mathew    Oct-31-2021    Fix imports
- *   1.2     Jesse/Moe     Nov-03-2021    Add layout inflater
+ *   1.2       Jesse/Moe Nov-03-2021    Add layout inflater
  *   1.3       Moe       Nov-04         Added addSnapshotQuery to display HabitEvent from Firestore
  *   1.4       Mathew    Nov-16-2021    Added an imageView to show the user selected image for an event
  *   1.5       Jesse     Nov-22-2021    Changed from ListView to RecyclerView
+ *   1.6       Eric      Nov-27-2021    Allows for different layout files to be used
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -48,6 +49,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -58,12 +60,14 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
     private Habit habit;
     private Map userData;
     private OnEventListener onEventListener;
+    private int layoutToUse;
     //private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    public EventList(ArrayList<Event> events, OnEventListener onEventListener) {
+    public EventList(ArrayList<Event> events, OnEventListener onEventListener, int layoutToUse) {
         //super(context, 0, events);
         this.events = events;
         this.onEventListener = onEventListener;
+        this.layoutToUse = layoutToUse;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -111,7 +115,7 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View listItem = layoutInflater.inflate(R.layout.events_listview_content, parent, false);
+        View listItem = layoutInflater.inflate(layoutToUse, parent, false);
         return new ViewHolder(listItem, onEventListener);
     }
 
@@ -189,7 +193,8 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
                             Event eventToAdd = new Event(doc.getString("name"),newDate, comment, null, false);
                             eventToAdd.setFirestoreId(doc.getId());
                             if (!events.contains(eventToAdd)) {
-                                events.add(eventToAdd);
+                                addEvent(eventToAdd);
+                                //events.add(eventToAdd);
                             }
 
                         }
@@ -202,5 +207,14 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
 
     public void clearEventList() {
         events.clear();
+    }
+
+    public void addEvent(Event event) {
+        events.add(event);
+        notifyDataSetChanged();
+    }
+
+    public void sortByDate() {
+        Collections.sort(events, (o1, o2) -> o1.getDateCompleted().compareTo(o2.getDateCompleted()));
     }
 }
