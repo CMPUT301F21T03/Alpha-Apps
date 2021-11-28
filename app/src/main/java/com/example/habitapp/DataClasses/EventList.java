@@ -214,7 +214,6 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
                                     getDate.get("dayOfMonth").toString() + " 00:00:00";;
                             LocalDateTime newDate = LocalDateTime.parse(newDateStr, formatter);
                             String comment = doc.getString("comment");
-                            Log.d(TAG,doc.getString("photograph"));
                             String photograph = doc.getString("photograph");
                             // TODO store location and photograph after halfway
                             Event eventToAdd = new Event(doc.getString("name"),newDate, comment, photograph, false);

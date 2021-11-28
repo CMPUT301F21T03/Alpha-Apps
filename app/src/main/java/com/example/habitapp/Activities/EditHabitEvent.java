@@ -158,14 +158,13 @@ public class EditHabitEvent extends AppCompatActivity {
         setResult(RESULT_OK);
         finish();
         Intent intent;
-        if (Objects.equals("HabitEventDetails", prevActivity)) {
-            intent = new Intent(this, HabitEventDetails.class);
-            intent.putExtra("habit", habit);
-            intent.putExtra("event", event);
-            intent.putExtra("userData", (Serializable) userData);
-            intent.putExtra("firestoreId",event.getFirestoreId());
-            startActivity(intent);
-        }
+        intent = new Intent(this, HabitEventDetails.class);
+        intent.putExtra("habit", habit);
+        intent.putExtra("event", event);
+        intent.putExtra("userData", (Serializable) userData);
+        intent.putExtra("firestoreId",event.getFirestoreId());
+        startActivity(intent);
+
 
 
     }
