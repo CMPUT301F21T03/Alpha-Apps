@@ -20,6 +20,7 @@
  *   1.6       Moe       Nov-04-2021   Added extra value for intent
  *   1.7       Moe       Nov-04-2021   Firestore delete for HabitEvent
  *   1.8       Leah      Nov-27-2021   Fixed bugs for Habit Event creation/deletion/edits
+ *   1.9       Jesse     Nov-27-2021   Implemented image onclick listener
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -126,6 +127,14 @@ public class HabitEventDetails extends AppCompatActivity {
         //ImageView deleteButton = findViewById(R.id.habiteventdetails_delete);
         Button deleteButton = findViewById(R.id.habiteventdetails_delete);
         deleteButton.setOnClickListener(this::habitEventDetailsDeleteButtonPressed);
+
+        photographView.setOnClickListener(this::editHabitEventCameraImagePressed);
+    }
+
+    private void editHabitEventCameraImagePressed(View view) {
+        Intent intent = new Intent(HabitEventDetails.this, ImageDialog.class);
+        intent.putExtra("event", event);
+        startActivity(intent);
     }
 
     private void habitEventDetailsEditButtonPressed(View view) {

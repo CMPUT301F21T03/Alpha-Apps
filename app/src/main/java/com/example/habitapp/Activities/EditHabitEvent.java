@@ -19,6 +19,7 @@
  *   1.5       Moe       Nov-04-2021   Firestore edit for HabitEvent
  *   1.6       Mathew    Nov-16-2021   Implemented camera functionality, and made some aesthetic changes
  *   1.7       Leah      Nov-23-2021   Implemented basic storage of images to Firebase Storage
+ *   1.8       Jesse     Nov-27-2021   Implemented image onclick listener
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -26,19 +27,29 @@ package com.example.habitapp.Activities;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,6 +70,7 @@ import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -103,10 +115,29 @@ public class EditHabitEvent extends AppCompatActivity {
         comments.setText(event.getComment());
 
         cameraImage = this.findViewById(R.id.edithabitevent_camera_image);
-        if (event.getPhotograph() == null){
-            cameraImage.setVisibility(View.GONE);
-        }
+        // run a thread to set the photograph
+        if(event.getPhotograph() != null) {
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        URL url = new URL(event.getPhotograph());
+                        Bitmap imageBitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                cameraImage.setImageBitmap(imageBitmap);
+                            }
+                        });
+                        Log.d(TAG, "Successfully set image");
+                    } catch (Exception e) {
+                        Log.d(TAG, e.toString());
+                    }
+                }
+            });
 
+            thread.start();
+        }
         setButtonListenters();
     }
 
@@ -126,7 +157,9 @@ public class EditHabitEvent extends AppCompatActivity {
     // if the camera image was selected, treat it as if the add button was pressed
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void editHabitEventCameraImagePressed(View view){
-        editHabitEventCameraButtonPressed(view);
+        Intent intent = new Intent(EditHabitEvent.this, ImageDialog.class);
+        intent.putExtra("event", event);
+        startActivity(intent);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
