@@ -144,6 +144,10 @@ public class HabitEventDetails extends AppCompatActivity {
     private void habitEventDetailsDeleteButtonPressed(View view) {
 
         event.removeEventFromFirestore(userData, habit);
+        // close this Activity
+        setResult(RESULT_OK);
+        finish();
+        // start new Activity
         Intent intent;
         intent = new Intent(this, HabitDetails.class);
         intent.putExtra("habit", habit);
