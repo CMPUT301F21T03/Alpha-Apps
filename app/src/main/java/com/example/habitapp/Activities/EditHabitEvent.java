@@ -92,6 +92,7 @@ public class EditHabitEvent extends AppCompatActivity {
         //get details from bundle
         Intent sentIntent = getIntent();
         event = (Event) sentIntent.getParcelableExtra("event");
+        event.setFirestoreId(sentIntent.getStringExtra("firestoreId"));
         habit = (Habit) sentIntent.getSerializableExtra("habit");
         userData = (Map) sentIntent.getSerializableExtra("userData");
         prevActivity = (String) sentIntent.getSerializableExtra("activity");
@@ -151,19 +152,25 @@ public class EditHabitEvent extends AppCompatActivity {
         cameraImage.setVisibility(View.GONE);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void editHabitEventCompleteButtonPressed(View view) {
         String commentStr = (String) comments.getText().toString();
         event.setComment(commentStr);
-        //event.editEventInFirestore(userData, habit);
+
+        event.editEventInFirestore(userData, habit);
+        setResult(RESULT_OK);
+        finish();
+
         Intent intent;
         if (Objects.equals("HabitEventDetails", prevActivity)) {
             intent = new Intent(this, HabitEventDetails.class);
             intent.putExtra("habit", habit);
             intent.putExtra("event", event);
             intent.putExtra("userData", (Serializable) userData);
+            intent.putExtra("firestoreId",event.getFirestoreId());
             startActivity(intent);
         }
-        finish();
+
 
     }
 
@@ -200,10 +207,16 @@ public class EditHabitEvent extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
+
+            // set the image view
+            cameraImage.setVisibility(View.VISIBLE);
+            cameraImage.setImageBitmap(photo);
+
+
             event.setPhotograph(photo);
             deleteCameraButton.setVisibility(View.VISIBLE);
-            cameraImage.setVisibility(View.VISIBLE);
-            cameraImage.setImageBitmap(Bitmap.createScaledBitmap(photo, 300, 150, false));
+            
+
             // prepare references
             FirebaseFirestore db;
             db = FirebaseFirestore.getInstance();
@@ -211,42 +224,39 @@ public class EditHabitEvent extends AppCompatActivity {
             StorageReference storageRef = storage.getReference();
 
 
-            //TODO *Leah* set the profile image into firestore properly. Jesse said the application was crashing at this step
-//            // set profile image
-//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//            photo.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-//            byte[] imageData = baos.toByteArray();
-//
-//            // format bytes to be stored in storage
-//            StorageReference docuRef = storageRef.child("images/"+imageData.hashCode());
-//            UploadTask uploadTask = docuRef.putBytes(imageData);
-//            uploadTask.addOnFailureListener(exception -> Log.d(TAG,"Failed upload"))
-//                    .addOnSuccessListener(taskSnapshot -> Log.d(TAG,"Successful upload"));
-//            uploadTask.continueWithTask(task -> {
-//                if (!task.isSuccessful()) {
-//                    throw task.getException();
-//                }
-//
-//                // Continue with the task to get the download URL
-//                return docuRef.getDownloadUrl();
-//            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-//                @Override
-//                public void onComplete(@NonNull Task<Uri> task) {
-//                    if (task.isSuccessful()) {
-//                        Uri downloadUri = task.getResult();
-//                        Log.d(TAG,downloadUri.toString());
-//                        // upload to the user document in Firestore
-//                        Map userData = new HashMap<>();
-//                        userData.put("photograph", photo);
-//                        db.collection("Doers").document((String) userData.get("username"))
-//                                .update(userData);
-//
-//
-//                    } else {
-//                        Log.d(TAG,"Failed to get download URL");
-//                    }
-//                }
-//            });
+            // set image
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            photo.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] imageData = baos.toByteArray();
+
+            // format bytes to be stored in storage
+            StorageReference docuRef = storageRef.child("images/"+imageData.hashCode());
+            UploadTask uploadTask = docuRef.putBytes(imageData);
+            uploadTask.addOnFailureListener(exception -> Log.d(TAG,"Failed upload"))
+                    .addOnSuccessListener(taskSnapshot -> Log.d(TAG,"Successful upload"));
+            uploadTask.continueWithTask(task -> {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+
+                // Continue with the task to get the download URL
+                return docuRef.getDownloadUrl();
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        Uri downloadUri = task.getResult();
+                        Log.d(TAG,downloadUri.toString());
+                        // set the event photo URL
+                        event.setPhotograph(downloadUri.toString());
+
+
+                    } else {
+                        Log.d(TAG,"Failed to get download URL");
+                    }
+                }
+            });
+
 
         }
     }
