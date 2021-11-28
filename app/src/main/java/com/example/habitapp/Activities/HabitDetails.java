@@ -332,7 +332,7 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
                 .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        newHabitEvent = new Event(habit.getTitle(), LocalDateTime.now(), "", null, false);
+                        newHabitEvent = new Event(habit.getTitle(), LocalDateTime.now(), "", null, false, (String) userData.get("username"));
 
 
                         increaseEventCompletionCount();
@@ -420,7 +420,7 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
     private void setHabitEventAdapter() {
 
         recyclerView = findViewById(R.id.habitdetails_habit_event_list);
-        eventsAdapter = new EventList(events, this);
+        eventsAdapter = new EventList(events, this, R.layout.events_listview_content);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         recyclerView.setAdapter(eventsAdapter);
         getHabitEventList(eventsAdapter);

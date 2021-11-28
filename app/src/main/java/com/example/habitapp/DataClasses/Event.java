@@ -64,6 +64,8 @@ public class Event implements Parcelable {
 
     private String firestoreId;
 
+    private String username;
+
     /**
      * creates an event with the specified values. If the value is null it means it was not given by the user
      * @param name the name of the habit event
@@ -72,10 +74,11 @@ public class Event implements Parcelable {
      * @param photograph a bitmap that is used to store an image relating to the event
      * @param hasLocation a placeholder for the location object that will be implemented later
      */
-    public Event(String name, LocalDateTime dateCompleted, String comment, Bitmap photograph, Boolean hasLocation){
+    public Event(String name, LocalDateTime dateCompleted, String comment, Bitmap photograph, Boolean hasLocation, String username){
 
         setName(name);
         setDateCompleted(dateCompleted);
+        setUsername(username);
 
         try{
             setComment(comment);
@@ -208,6 +211,7 @@ public class Event implements Parcelable {
         parcel.writeSerializable(time);
         parcel.writeString(getComment());
         parcel.writeValue(getPhotograph());
+        parcel.writeString(getUsername());
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(Parcel parcel){
@@ -217,6 +221,7 @@ public class Event implements Parcelable {
         this.dateCompleted = date.atTime(time);
         this.comment = parcel.readString();
         this.photograph = parcel.readParcelable(Bitmap.class.getClassLoader());
+        this.username = parcel.readString();
     }
 
     // =========================== GETTERS AND SETTERS ===========================
@@ -266,4 +271,11 @@ public class Event implements Parcelable {
         this.photograph = photograph;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 }
