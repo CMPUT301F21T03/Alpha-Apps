@@ -74,17 +74,17 @@
 
     <TextView
         android:id="@+id/allhabits_hidden_textview_1"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="40dp"
-        android:text="You've got no habits to track!"
-        android:textColor="#00000000"
-        android:textSize="24sp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginEnd="20dp"
+        android:gravity="center|center_horizontal"
+        android:text="You've got no habits to track!\nTap 'Add Habit' button below to start."
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView10" />
+        app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
 
 
