@@ -1,85 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="300dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="330dp"
     android:layout_height="200dp"
+    android:layout_marginEnd="10dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="5dp"
+    app:cardCornerRadius="20dp"
     android:background="@drawable/layout_bg">
+
     <ImageView
         android:id="@+id/eventslistviewcontent_image"
-        android:layout_width="300dp"
+        android:layout_width="330dp"
         android:layout_height="200dp"
         android:scaleType="centerCrop"
         android:visibility="visible"
         android:alpha="0.5"/>
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:fontFamily="@font/montserrat"
-        android:textColor="@color/black"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:padding="5dp">
-        <TextView
-            android:id="@+id/eventslistviewcontent_name_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="24sp"
-            android:text="Name" />
+        android:padding="20dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/eventslistviewcontent_name_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Name"
+                android:textColor="@color/black"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/edithabitevent_complete_icon"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/done_icon"
+                android:focusable="false"
+                android:scaleType="fitXY"
+                app:layout_constraintBottom_toBottomOf="@+id/eventslistviewcontent_name_text"
+                app:layout_constraintStart_toEndOf="@+id/eventslistviewcontent_name_text"
+                app:layout_constraintTop_toTopOf="@+id/eventslistviewcontent_name_text" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <TextView
             android:id="@+id/eventslistviewcontent_comment_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
+            android:textColor="@color/black"
             android:text="Comment" />
-        <LinearLayout
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_marginTop="10dp">
+
             <ImageView
                 android:id="@+id/edithabitevent_location_icon"
-                android:layout_width="60dp"
-                android:layout_height="35dp"
-                android:layout_marginEnd="5dp"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/location_icon"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:background="@drawable/locationpin_icon"
                 android:focusable="false"
-                android:scaleType="fitXY" />
+                android:scaleType="fitXY"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <TextView
                 android:id="@+id/eventslistviewcontent_location_text"
                 android:layout_width="wrap_content"
-                android:layout_height="35dp"
-                android:textSize="20sp"
-                android:layout_marginTop="5dp"/>
-        </LinearLayout>
-        <LinearLayout
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/edithabitevent_location_icon"
+                app:layout_constraintStart_toEndOf="@+id/edithabitevent_location_icon"
+                app:layout_constraintTop_toTopOf="@+id/edithabitevent_location_icon" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="5dp">
+            android:layout_marginTop="10dp">
+
             <ImageView
                 android:id="@+id/edithabitevent_date_icon"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginEnd="15dp"
-                android:padding="2dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
                 android:background="@drawable/calendar_icon"
                 android:focusable="false"
-                android:scaleType="fitXY" />
+                android:scaleType="fitXY"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <TextView
-                android:id="@+id/eventslistviewcontent_date_text"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:textSize="20sp"
-                android:layout_marginTop="5dp"/>
-        </LinearLayout>
+                    android:id="@+id/eventslistviewcontent_date_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/edithabitevent_date_icon"
+                    app:layout_constraintStart_toEndOf="@+id/edithabitevent_date_icon"
+                    app:layout_constraintTop_toTopOf="@+id/edithabitevent_date_icon" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
 
-
-
-</FrameLayout>
+</androidx.cardview.widget.CardView>

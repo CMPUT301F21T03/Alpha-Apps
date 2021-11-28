@@ -46,10 +46,11 @@
         android:ems="10"
         android:fontFamily="@font/montserrat"
         android:hint="Habit Name"
-        android:inputType="textPersonName"
+        android:inputType="textMultiLine"
         android:maxLength="20"
         android:textColor="@color/black"
         android:textStyle="bold"
+        android:textSize="22sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView12" />
@@ -63,7 +64,7 @@
         android:text="Frequency"
         android:fontFamily="@font/montserrat"
         android:textColor="@color/black"
-        android:textSize="22sp"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addhabit_habit_title" />
 
@@ -95,7 +96,7 @@
         android:text="Reason"
         android:textColor="@color/black"
         android:fontFamily="@font/montserrat"
-        android:textSize="22sp"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 
@@ -110,7 +111,7 @@
         android:ems="10"
         android:fontFamily="@font/montserrat"
         android:hint="Why do you want to start this habit?"
-        android:inputType="textPersonName"
+        android:inputType="textMultiLine"
         android:maxLength="30"
         android:paddingStart="15dp"
         android:paddingTop="10dp"
@@ -148,7 +149,7 @@
                 android:fontFamily="@font/montserrat"
                 android:text="Date Started"
                 android:textColor="@color/black"
-                android:textSize="22sp" />
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/addhabit_select_date"
@@ -176,7 +177,7 @@
                 android:fontFamily="@font/montserrat"
                 android:text="Habit Privacy"
                 android:textColor="@color/black"
-                android:textSize="22sp" />
+                android:textSize="20sp" />
 
             <Spinner
                 android:id="@+id/habitprivacy_spinner"
