@@ -211,6 +211,7 @@ public class EditHabitEvent extends AppCompatActivity {
             StorageReference storageRef = storage.getReference();
 
 
+            //TODO *Leah* set the profile image into firestore properly. Jesse said the application was crashing at this step
 //            // set profile image
 //            ByteArrayOutputStream baos = new ByteArrayOutputStream();
 //            photo.compress(Bitmap.CompressFormat.JPEG, 100, baos);
