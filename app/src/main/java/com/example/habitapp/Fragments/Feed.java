@@ -91,7 +91,7 @@ public class Feed extends Fragment implements EventList.OnEventListener {
         searchButton.setOnClickListener(this::searchButtonPressed);
 
         feedRecyclerView = view.findViewById(R.id.feed_recycler_view);
-        eventsAdapter = new EventList(events, this, R.layout.events_listview_content);
+        eventsAdapter = new EventList(events, this);
         feedRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         feedRecyclerView.setAdapter(eventsAdapter);
         getHabitEventList(eventsAdapter);
@@ -228,4 +228,6 @@ public class Feed extends Fragment implements EventList.OnEventListener {
     public void onEventClick(int position) {
         // do somn
     }
+
+
 }

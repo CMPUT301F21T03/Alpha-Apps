@@ -78,7 +78,7 @@ public class Event implements Parcelable {
      * @param hasLocation a placeholder for the location object that will be implemented later
      */
 
-    public Event(String name, LocalDateTime dateCompleted, String comment, Bitmap photograph, Boolean hasLocation, String username){
+    public Event(String name, LocalDateTime dateCompleted, String comment, String photograph, Boolean hasLocation, String username){
 
 
         setName(name);

@@ -12,11 +12,10 @@
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Jesse     Oct-31-2021    Created
  *   1.1       Mathew    Oct-31-2021    Fix imports
- *   1.2       Jesse/Moe Nov-03-2021    Add layout inflater
+ *   1.2     Jesse/Moe     Nov-03-2021    Add layout inflater
  *   1.3       Moe       Nov-04         Added addSnapshotQuery to display HabitEvent from Firestore
  *   1.4       Mathew    Nov-16-2021    Added an imageView to show the user selected image for an event
  *   1.5       Jesse     Nov-22-2021    Changed from ListView to RecyclerView
- *   1.6       Eric      Nov-27-2021    Allows for different layout files to be used
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -54,7 +53,6 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -65,15 +63,12 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
     private Habit habit;
     private Map userData;
     private OnEventListener onEventListener;
-    private int layoutToUse;
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    //private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-
-    public EventList(ArrayList<Event> events, OnEventListener onEventListener, int layoutToUse) {
+    public EventList(ArrayList<Event> events, OnEventListener onEventListener) {
         //super(context, 0, events);
         this.events = events;
         this.onEventListener = onEventListener;
-        this.layoutToUse = layoutToUse;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -121,7 +116,7 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View listItem = layoutInflater.inflate(layoutToUse, parent, false);
+        View listItem = layoutInflater.inflate(R.layout.events_listview_content, parent, false);
         return new ViewHolder(listItem, onEventListener);
     }
 
@@ -130,14 +125,12 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
         final Event event = events.get(position);
         holder.getName().setText(event.getName());
         holder.getComment().setText(event.getComment());
-        holder.getDate().setText(event.getDateCompleted().format(formatter));
 
         // if there is no photograph saved to the event object, make the imageView invisible
         if (event.getPhotograph() == null){
             Log.d(TAG,"Null");
             holder.getImage().setVisibility(View.GONE);
         }else{
-
             // holder.getImage().setImageBitmap(event.getPhotograph());
             Log.d(TAG,"URL: " + event.getPhotograph());
             // make a thread to decode the image URL and convert to bitmap to display
@@ -162,10 +155,6 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
 
             thread.start();
 
-
-            holder.getImage().setVisibility(View.VISIBLE);
-            holder.getImage().setImageBitmap(event.getPhotograph());
-
         }
 
 
@@ -175,6 +164,33 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
     public int getItemCount(){
         return events.size();
     }
+
+//    @NonNull
+//    @Override
+//    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent){
+//        View view = convertView;
+//        if(view == null){
+//            view = LayoutInflater.from(context).inflate(R.layout.events_listview_content, parent,false);
+//        }
+//
+//        Event event = events.get(position);
+//        TextView name = view.findViewById(R.id.eventslistviewcontent_name_text);
+//        TextView comment = view.findViewById(R.id.eventslistviewcontent_comment_text);
+//        TextView date = view.findViewById(R.id.eventslistviewcontent_date_text);
+//        ImageView image = view.findViewById(R.id.eventslistviewcontent_image);
+//
+//        name.setText(event.getName());
+//        comment.setText(event.getComment());
+//        date.setText(event.getDateCompleted().format(formatter));
+//        // if there is no photograph saved to the event object, make the imageView invisible
+//        if (event.getPhotograph() == null){
+//            image.setVisibility(View.GONE);
+//        }else{
+//            image.setImageBitmap(event.getPhotograph());
+//        }
+//
+//        return view;
+//    }
 
     @NonNull
     public void addSnapshotQuery(Query query, String TAG) {
@@ -198,31 +214,21 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
                                     getDate.get("dayOfMonth").toString() + " 00:00:00";;
                             LocalDateTime newDate = LocalDateTime.parse(newDateStr, formatter);
                             String comment = doc.getString("comment");
-
-                            Log.d(TAG,doc.getString("photograph"));
+                            //Log.d(TAG,doc.getString("photograph"));
                             String photograph = doc.getString("photograph");
-
-
-
                             String username = doc.getString("username");
                             // TODO store location and photograph after halfway
-                          
-                            
-                          
-                            // TODO store location
-                          
                             Event eventToAdd;
                             if (username == null) {
                                 eventToAdd = new Event(doc.getString("name"),newDate, comment, photograph, false, "");
                             } else {
                                 eventToAdd = new Event(doc.getString("name"),newDate, comment, photograph, false, username);
-                            }
 
+                            }
 
                             eventToAdd.setFirestoreId(doc.getId());
                             if (!events.contains(eventToAdd)) {
-                                addEvent(eventToAdd);
-                                //events.add(eventToAdd);
+                                events.add(eventToAdd);
                             }
 
                         }
@@ -239,10 +245,5 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
 
     public void addEvent(Event event) {
         events.add(event);
-        notifyDataSetChanged();
-    }
-
-    public void sortByDate() {
-        Collections.sort(events, (o1, o2) -> o1.getDateCompleted().compareTo(o2.getDateCompleted()));
     }
 }
