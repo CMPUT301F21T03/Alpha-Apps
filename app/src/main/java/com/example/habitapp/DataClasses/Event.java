@@ -67,6 +67,8 @@ public class Event implements Parcelable {
 
     private String firestoreId;
 
+    private String username;
+
     /**
      * creates an event with the specified values. If the value is null it means it was not given by the user
      * @param name the name of the habit event
@@ -75,10 +77,13 @@ public class Event implements Parcelable {
      * @param photograph a URL of an image associated with the event
      * @param hasLocation a placeholder for the location object that will be implemented later
      */
-    public Event(String name, LocalDateTime dateCompleted, String comment, String photograph, Boolean hasLocation){
+
+    public Event(String name, LocalDateTime dateCompleted, String comment, String photograph, Boolean hasLocation, String username){
+
 
         setName(name);
         setDateCompleted(dateCompleted);
+        setUsername(username);
 
         try{
             setComment(comment);
@@ -174,6 +179,8 @@ public class Event implements Parcelable {
         parcel.writeSerializable(time);
         parcel.writeString(getComment());
         parcel.writeString(getPhotograph());
+        parcel.writeString(getUsername());
+
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(Parcel parcel){
@@ -182,7 +189,9 @@ public class Event implements Parcelable {
         LocalTime time = (LocalTime) parcel.readSerializable();
         this.dateCompleted = date.atTime(time);
         this.comment = parcel.readString();
-        this.photograph = parcel.readString();
+        this.photograph = parcel.readString();     
+        this.username = parcel.readString();
+
     }
 
     // =========================== GETTERS AND SETTERS ===========================
@@ -227,5 +236,15 @@ public class Event implements Parcelable {
 
     public String getPhotograph() { return photograph; }
 
+
     public void setPhotograph(String photograph) { this.photograph = photograph; }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
 }

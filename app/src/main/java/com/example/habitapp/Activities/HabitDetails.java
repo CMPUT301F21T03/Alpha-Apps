@@ -338,7 +338,7 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
                 .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        newHabitEvent = new Event(habit.getTitle(), LocalDateTime.now(), "", null, false);
+                        newHabitEvent = new Event(habit.getTitle(), LocalDateTime.now(), "", null, false, (String) userData.get("username"));
 
 
                         increaseEventCompletionCount();
