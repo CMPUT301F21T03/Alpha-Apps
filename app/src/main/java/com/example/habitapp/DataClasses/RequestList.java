@@ -18,11 +18,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
-public class NotificationList extends ArrayAdapter<Request> implements Serializable {
+public class RequestList extends ArrayAdapter<Request> implements Serializable {
     private ArrayList<Request> notifications;
     private Context context;
 
-    public NotificationList(Context context, ArrayList<Request> notifications) {
+    public RequestList(Context context, ArrayList<Request> notifications) {
         super(context,0,notifications);
         this.context = context;
         this.notifications = notifications;
