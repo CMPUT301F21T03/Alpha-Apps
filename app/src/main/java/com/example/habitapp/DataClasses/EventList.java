@@ -161,8 +161,9 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
                                     getDate.get("dayOfMonth").toString() + " 00:00:00";;
                             LocalDateTime newDate = LocalDateTime.parse(newDateStr, formatter);
                             String comment = doc.getString("comment");
+                            // TODO (possibly the wrong way to get a photograph from firestore, *Leah* take a look please
                             Bitmap photo = (Bitmap) doc.get("photograph");
-                            // TODO store location and photograph after halfway
+                            // TODO store location
                             Event eventToAdd = new Event(doc.getString("name"),newDate, comment, photo, false);
                             eventToAdd.setFirestoreId(doc.getId());
                             if (!events.contains(eventToAdd)) {
