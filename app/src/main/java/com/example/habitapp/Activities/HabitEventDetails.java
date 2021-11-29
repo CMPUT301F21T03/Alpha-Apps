@@ -21,11 +21,13 @@
  *   1.7       Moe       Nov-04-2021   Firestore delete for HabitEvent
  *   1.8       Leah      Nov-27-2021   Fixed bugs for Habit Event creation/deletion/edits
  *   1.9       Jesse     Nov-27-2021   Implemented image onclick listener
+ *   1.10      Jesse     Nov-28-2021   Added confirmation dialog when delete button is clicked
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
 package com.example.habitapp.Activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -33,6 +35,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Adapter;
@@ -42,6 +45,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.habitapp.DataClasses.Event;
@@ -97,6 +101,9 @@ public class HabitEventDetails extends AppCompatActivity {
         ImageView photographView = findViewById(R.id.habiteventdetails_camera_image);
         //TextView locationText = findViewById(R.id.habiteventdetails_location);
 
+        Button locationButton = findViewById(R.id.habiteventdetails_location);
+
+
         nameText.setText(habitName);
         nameText.setEnabled(false);
         commentText.setText(comment);
@@ -125,6 +132,15 @@ public class HabitEventDetails extends AppCompatActivity {
             thread.start();
         }
 
+        if (event.getLocationName() != null && event.getLatitude() != null && event.getLongitude() != null) {
+            locationButton.setText(event.getLocationName());
+        }
+
+        if (TextUtils.isEmpty(event.getLocationName())) {
+            locationButton.setText("No Location Specified");
+            locationButton.setEnabled(false);
+        }
+
         // set a listener for the edit button
         Button editButton = findViewById(R.id.habiteventdetails_edit);
         editButton.setOnClickListener(this::habitEventDetailsEditButtonPressed);
@@ -150,6 +166,8 @@ public class HabitEventDetails extends AppCompatActivity {
         intent.putExtra("event", event);
         intent.putExtra("firestoreId",event.getFirestoreId());
         intent.putExtra("habit", habit);
+        intent.putExtra("selectedLatitude", event.getLatitude());
+        intent.putExtra("selectedLongitude", event.getLongitude());
         intent.putExtra("userData", (Serializable) userData);
         intent.putExtra("activity", "HabitEventDetails");
         startActivity(intent);
@@ -157,15 +175,34 @@ public class HabitEventDetails extends AppCompatActivity {
 
     private void habitEventDetailsDeleteButtonPressed(View view) {
 
-        event.removeEventFromFirestore(userData, habit);
-        // close this Activity
-        setResult(RESULT_OK);
-        finish();
-        // start new Activity
-        Intent intent;
-        intent = new Intent(this, HabitDetails.class);
-        intent.putExtra("habit", habit);
-        intent.putExtra("userData", (Serializable) userData);
+        AlertDialog.Builder deleteBuilder = new AlertDialog.Builder(this);
+        deleteBuilder.setMessage("Are you sure you want to delete this event?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        event.removeEventFromFirestore(userData, habit);
+                        // close this Activity
+                        setResult(RESULT_OK);
+                        finish();
+                        // start new Activity
+                        Intent intent;
+                        intent = new Intent(HabitEventDetails.this, HabitDetails.class);
+                        intent.putExtra("habit", habit);
+                        intent.putExtra("userData", (Serializable) userData);
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton("Cancel", null);
+        AlertDialog alert = deleteBuilder.create();
+        alert.show();
+
+    }
+
+    public void habitEventDetailsLocationButtonPressed(View view) {
+        Intent intent = new Intent(this, MapSelector.class);
+        intent.putExtra("latitude", event.getLatitude());
+        intent.putExtra("longitude", event.getLongitude());
+        intent.putExtra("selectActive", false);
         startActivity(intent);
     }
 

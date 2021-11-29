@@ -20,12 +20,14 @@
  *   1.5       Mathew    Nov-16-2021   Altered Event to implement Parcelable so it is able to package
  *                                     up an image to allow it to be passed between activities
  *   1.6       Leah      Nov-27-2021   Removed add to Firestore function to allow smoother adds and deletes of Events
+ *   1.7       Mathew    Nov-28-2021   Added the necessary location attributes to the class
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
 package com.example.habitapp.DataClasses;
 
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -62,8 +64,12 @@ public class Event implements Parcelable {
     // a URL string to represent the associated photograph
     private String photograph;
 
-    // TODO change the below attribute (and all other instances) to properly represent a location
-    private Boolean hasLocation;
+    // a latitude and longitude value to represent the location of a habit event
+    private Double latitude;
+    private Double longitude;
+
+    // a subjective description of the location given by the user
+    private String locationName;
 
     private String firestoreId;
 
@@ -75,11 +81,9 @@ public class Event implements Parcelable {
      * @param dateCompleted the day that the event was completed
      * @param comment an optional comment about the event
      * @param photograph a URL of an image associated with the event
-     * @param hasLocation a placeholder for the location object that will be implemented later
      */
 
-    public Event(String name, LocalDateTime dateCompleted, String comment, String photograph, Boolean hasLocation, String username){
-
+    public Event(String name, LocalDateTime dateCompleted, String comment, String photograph, String username, Double latitude, Double longitude, String locationName){
 
         setName(name);
         setDateCompleted(dateCompleted);
@@ -89,12 +93,39 @@ public class Event implements Parcelable {
             setComment(comment);
         }catch (IllegalArgumentException ex){
             System.out.println("comment too long, programs fails");
-            // TODO make a function that terminates the program (or handle the error in another way)
         }
 
+        setLocationName(locationName);
+        setLongitude(longitude);
+        setLatitude(latitude);
         setPhotograph(photograph);
-        // TODO set the location attribute
+    }
 
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void addEventToFirestore(Map userData, Habit habit) {
+        FirebaseFirestore db;
+        db = FirebaseFirestore.getInstance();
+        final CollectionReference eventsref = db.collection("Doers")
+                .document((String)userData.get("username"))
+                .collection("habits")
+                .document(habit.getFirestoreId())
+                .collection("events");
+
+        eventsref.add(this)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG,"success");
+                        setFirestoreId(documentReference.getId());
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG,"failed: "+ e);
+            }
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -128,13 +159,17 @@ public class Event implements Parcelable {
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
         Log.d(TAG,(String)userData.get("username"));
-        Log.d(TAG,getFirestoreId());
+        //Log.d(TAG,getFirestoreId());
         final CollectionReference eventsref = db.collection("Doers")
                 .document((String)userData.get("username"))
                 .collection("habits")
                 .document(habit.getFirestoreId())
                 .collection("events");
-        eventsref.document(getFirestoreId())
+
+        System.out.println("And when editing, ID is:");
+        System.out.println(this.getFirestoreId());
+
+        eventsref.document(this.getFirestoreId())
                 .set(this)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -180,6 +215,9 @@ public class Event implements Parcelable {
         parcel.writeString(getComment());
         parcel.writeString(getPhotograph());
         parcel.writeString(getUsername());
+        parcel.writeString(getLocationName());
+        parcel.writeDouble(getLongitude());
+        parcel.writeDouble(getLatitude());
 
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -191,11 +229,38 @@ public class Event implements Parcelable {
         this.comment = parcel.readString();
         this.photograph = parcel.readString();     
         this.username = parcel.readString();
+        this.locationName = parcel.readString();
+        this.longitude = parcel.readDouble();
+        this.latitude = parcel.readDouble();
 
     }
 
     // =========================== GETTERS AND SETTERS ===========================
-    //TODO create getters and setters for the location as needed
+
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getLocationName() {
+        return locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
+    }
 
     public String getName() {
         return name;

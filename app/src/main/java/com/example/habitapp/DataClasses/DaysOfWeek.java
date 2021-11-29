@@ -18,6 +18,8 @@
 
 package com.example.habitapp.DataClasses;
 
+import android.text.BoringLayout;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
@@ -111,6 +113,23 @@ public class DaysOfWeek implements Serializable {
         weeklyList.add(getSaturday());
 
         return weeklyList;
+    }
+
+    /**
+     * Returns a boolean telling us whether or not all of the days in the week are false
+     * comes in handy for making sure users didn't leave the field blank when adding a new habit/editing
+     * @return a boolean telling us whether or not all of the days in the week are false
+     */
+    public boolean areAllFalse() {
+        ArrayList<Boolean> weeklyList = this.getAll() ;
+        Boolean all_false = true;
+        for (int i = 0; i < weeklyList.size(); i++)  {
+            if (weeklyList.get(i) == true) {
+                all_false = false;
+            }
+        }
+
+        return all_false;
     }
 
     // =========================== GETTERS AND SETTERS ===========================

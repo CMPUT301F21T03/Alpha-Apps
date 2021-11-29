@@ -270,6 +270,10 @@ public class HabitList extends RecyclerView.Adapter<HabitList.ViewHolder> implem
         return habitList.isEmpty();
     }
 
+    /**
+     * Returns the size of the ArrayList containing the Habit objects
+     * @return the size of the ArrayList containing the Habit objects
+     */
     @Override
     public int getItemCount(){
         return habitList.size();

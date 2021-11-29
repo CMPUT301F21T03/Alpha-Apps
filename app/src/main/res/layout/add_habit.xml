@@ -5,36 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <FrameLayout
-        android:id="@+id/frameLayout2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <fragment
-            android:id="@+id/go_back_button"
-            android:name="com.example.habitapp.Fragments.GoBack"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-    </FrameLayout>
-
     <TextView
         android:id="@+id/textView12"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="28dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="15dp"
+        android:fontFamily="@font/montserrat"
         android:text="Add habit"
+        android:textColor="@color/black"
         android:textSize="30sp"
         android:textStyle="bold"
-        android:textColor="@color/black"
-        android:fontFamily="@font/montserrat"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/frameLayout2" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/addhabit_habit_title"

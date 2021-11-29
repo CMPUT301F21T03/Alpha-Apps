@@ -74,6 +74,7 @@ public class Feed extends Fragment implements EventList.OnEventListener {
 
     private ArrayList<String> following_usernames;
     private ArrayList<ArrayList<String>> following_habits;
+    private ArrayList<ArrayList<String>> following_habits_names;
     private ArrayList<ArrayList<String>> following_events;
 
     int i;
@@ -85,18 +86,19 @@ public class Feed extends Fragment implements EventList.OnEventListener {
         Main activity = (Main) getActivity();
         userData = activity.getUserData();
 
-        searchedUserNameEdit = (EditText) view.findViewById(R.id.feed_search_field);
-        // do something
-        ImageButton searchButton = view.findViewById(R.id.feed_search_button);
-        searchButton.setOnClickListener(this::searchButtonPressed);
+//        searchedUserNameEdit = (EditText) view.findViewById(R.id.feed_search_field);
+//        // do something
+//        ImageButton searchButton = view.findViewById(R.id.feed_search_button);
+//        searchButton.setOnClickListener(this::searchButtonPressed);
 
         feedRecyclerView = view.findViewById(R.id.feed_recycler_view);
-        eventsAdapter = new EventList(events, this);
+        eventsAdapter = new EventList(events, this, R.layout.feed_events_listview_content);
         feedRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         feedRecyclerView.setAdapter(eventsAdapter);
         getHabitEventList(eventsAdapter);
 
         following_habits = new ArrayList<ArrayList<String>>();
+        following_habits_names = new ArrayList<ArrayList<String>>();
         following_events = new ArrayList<ArrayList<String>>();
 
         i = 0;
@@ -127,19 +129,29 @@ public class Feed extends Fragment implements EventList.OnEventListener {
                     final DocumentReference currentDoc = db.collection("Doers")
                             .document(following_usernames.get(i));
 
-                    final CollectionReference individual_habits_2 = currentDoc
-                            .collection("habits");
+                    final Query individual_habits_2 = currentDoc
+                            .collection("habits")
+                            .whereEqualTo("privacy", false);
 
                     individual_habits_2.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                         @Override
                         public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                             ArrayList<String> temp_habits = new ArrayList<String>();
+                            ArrayList<String> temp_habits_names = new ArrayList<>();
                             for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
 
                                 temp_habits.add((String) doc.getId());
+                                temp_habits_names.add((String) doc.get("title"));
+
+
 
                             }
+
                             following_habits.add(temp_habits);
+                            following_habits_names.add(temp_habits_names);
+
+
+
 
                             // and then, for each user's habits, grab all their habit events
                             for (j = 0; j < temp_habits.size(); j++) {
@@ -149,7 +161,8 @@ public class Feed extends Fragment implements EventList.OnEventListener {
                                         .collection("events")
                                         .orderBy("dateCompleted")
                                         .limit(10);
-
+                                String habit_name = temp_habits_names.get(j);
+                                System.out.println(habit_name);
                                 individualEvents.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                     @Override
                                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -167,19 +180,19 @@ public class Feed extends Fragment implements EventList.OnEventListener {
                                                 LocalDateTime newDate = LocalDateTime.parse(newDateStr, formatter);
                                                 String comment = doc.getString("comment");
                                                 String username = doc.getString("username");
+                                                String photograph = doc.getString("photograph");
+                                                Double latitude = doc.getDouble("latitude");
+                                                Double longitude = doc.getDouble("longitude");
+                                                String locationName = doc.getString("locationName");
                                                 // TODO store location and photograph after halfway
-                                                Event eventToAdd;
-                                                if (username == null) {
-                                                    eventToAdd = new Event(doc.getString("name"), newDate, comment, null, false,  "");
+                                                Event eventToAdd = new Event(habit_name, newDate, comment, photograph,  username, latitude, longitude, locationName);
 
-                                                } else {
-                                                    eventToAdd = new Event(doc.getString("name"), newDate, comment, null, false,  username);
-
-                                                }
                                                 eventToAdd.setFirestoreId(doc.getId());
                                                 if (!events.contains(eventToAdd)) {
-                                                    eventsAdapter.addEvent(eventToAdd);
+                                                    eventsAdapter.addEvent(eventToAdd, true);
                                                 }
+
+                                                eventsAdapter.sortEvents(true);
 
                                             }
                                         }
@@ -193,36 +206,36 @@ public class Feed extends Fragment implements EventList.OnEventListener {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void searchButtonPressed(View view) {
-
-        FirebaseFirestore db;
-        db = FirebaseFirestore.getInstance();
-        searchedUserName = searchedUserNameEdit.getText().toString();
-
-        AlertDialog.Builder searchAlert = new AlertDialog.Builder(getActivity())
-                .setNegativeButton("OK", null);
-
-        final DocumentReference findUserRef = db.collection("Doers").document(searchedUserName);
-        findUserRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    // checks if the username searched exists in database
-                    if (document.exists()) {
-                        Map UserData = document.getData();
-                        // TODO move to user's page
-                        searchAlert.setMessage("Username: \"" + searchedUserName + "\"" + " exists!");
-                        searchAlert.show();
-                    } else {
-                        searchAlert.setMessage("Username: \"" + searchedUserName + "\"" + " doesn't exist");
-                        searchAlert.show();
-                    }
-                }
-            }
-        });
-    }
+//    @RequiresApi(api = Build.VERSION_CODES.O)
+//    private void searchButtonPressed(View view) {
+//
+//        FirebaseFirestore db;
+//        db = FirebaseFirestore.getInstance();
+//        searchedUserName = searchedUserNameEdit.getText().toString();
+//
+//        AlertDialog.Builder searchAlert = new AlertDialog.Builder(getActivity())
+//                .setNegativeButton("OK", null);
+//
+//        final DocumentReference findUserRef = db.collection("Doers").document(searchedUserName);
+//        findUserRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                if (task.isSuccessful()) {
+//                    DocumentSnapshot document = task.getResult();
+//                    // checks if the username searched exists in database
+//                    if (document.exists()) {
+//                        Map UserData = document.getData();
+//                        // TODO move to user's page
+//                        searchAlert.setMessage("Username: \"" + searchedUserName + "\"" + " exists!");
+//                        searchAlert.show();
+//                    } else {
+//                        searchAlert.setMessage("Username: \"" + searchedUserName + "\"" + " doesn't exist");
+//                        searchAlert.show();
+//                    }
+//                }
+//            }
+//        });
+//    }
 
     @Override
     public void onEventClick(int position) {
