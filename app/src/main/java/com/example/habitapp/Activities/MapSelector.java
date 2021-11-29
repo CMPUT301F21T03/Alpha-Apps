@@ -42,6 +42,7 @@ public class MapSelector extends AppCompatActivity implements OnMapReadyCallback
     private Double selectedLongitude = null;
     private Double givenLatitude = 0.0;
     private Double givenLongitude = 0.0;
+    private Boolean buttonActive = true;
     private Intent recievedIntent;
 
     @Override
@@ -53,6 +54,7 @@ public class MapSelector extends AppCompatActivity implements OnMapReadyCallback
         recievedIntent = getIntent();
         givenLatitude = recievedIntent.getDoubleExtra("latitude", 0.0);
         givenLongitude = recievedIntent.getDoubleExtra("longitude", 0.0);
+        buttonActive = recievedIntent.getBooleanExtra("selectActive", true);
 
 
         // Get the SupportMapFragment and request notification when the map is ready to be used.
@@ -60,6 +62,9 @@ public class MapSelector extends AppCompatActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         Button button = findViewById(R.id.actiivty_maps_close_button);
+        if (buttonActive == false) {
+            button.setVisibility(View.GONE);
+        }
         button.setOnClickListener(this::buttonPressed);
     }
 
