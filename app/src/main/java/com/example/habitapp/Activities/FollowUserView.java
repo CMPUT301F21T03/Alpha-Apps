@@ -13,12 +13,11 @@
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Mathew    Nov-23-2021   Created
  *   1.1       Leah      Nov-28-2021   Finished following/follower functionality
+ *   1.3       Arthur    Nov-29-2021   Added requested functionality
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
 package com.example.habitapp.Activities;
-
-import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -177,18 +176,11 @@ public class FollowUserView extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem menuItem) {
                 if (menuItem.getItemId() == R.id.request_follow) {
                     // Add the user in question to this user's requested list, and change status to Requested
-                    user.update("requested", FieldValue.arrayUnion(thisUserID))
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        // Change status to requested
-                                        setFollowStatusTag("requested");
-                                        popupMenu.getMenuInflater().inflate(R.menu.following_status_menu, popupMenu.getMenu());
-                                        popupMenu.getMenu().removeItem(R.id.request_follow);
-                                    }
-                                }
-                            });
+                    setRequested();
+                    setIncomingRequests();
+                    popupMenu.getMenuInflater().inflate(R.menu.following_status_menu, popupMenu.getMenu());
+                    popupMenu.getMenu().removeItem(R.id.request_follow);
+
 
                 } else if (menuItem.getItemId() == R.id.unfollow) {
                     if (followStatus == FOLLOWING) {
@@ -393,5 +385,42 @@ public class FollowUserView extends AppCompatActivity {
     public static String getTAG() {
         return TAG;
     }
+    public void setRequested() {
+        FirebaseFirestore db;
+        db = FirebaseFirestore.getInstance();
+        ArrayList<String> requested = (ArrayList<String>) userData.get("requested");
+        requested.add(userID);
+        userData.put("requested", requested);
+        final DocumentReference findUserRef = db.collection("Doers").document(thisUserID);
+        findUserRef.update("requested", requested);
+        setFollowStatusTag("requested");
+
+
+    }
+    public void setIncomingRequests(){
+        FirebaseFirestore db;
+        db = FirebaseFirestore.getInstance();
+        final DocumentReference findUserRef1 = db.collection("Doers").document(userID);
+        findUserRef1.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Map userData = document.getData();
+                        ArrayList<String> incomingRequests = (ArrayList<String>) userData.get("incomingrequest");
+                        incomingRequests.add(thisUserID);
+                        findUserRef1.update("incomingrequest", incomingRequests);
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+    }
 }
+
 

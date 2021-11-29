@@ -127,6 +127,7 @@ public class SignUp extends AppCompatActivity {
                             userData.put("following",defaultFollowList);
                             userData.put("followers",defaultFollowList);
                             userData.put("requested",defaultFollowList);
+                            userData.put("incomingrequest", defaultFollowList);
                             userData.put("profilePic",defaultProfilePic);
 
                             // Validating password
