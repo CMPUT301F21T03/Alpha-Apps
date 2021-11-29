@@ -71,7 +71,7 @@ public class NotificationButton extends Fragment {
         userIDs = (ArrayList<String>) userData.get("incomingrequest");
         setRequests(userIDs);
         if (notificationDataList.size() > 0 ){
-            notifButton.setBackgroundResource(R.drawable.notification_bell_after);
+            notifButton.setBackgroundResource(R.drawable.ic_baseline_notifications_active_24);
         }
         notifButton.setOnClickListener(this::notificationsButtonPressed);
     }
