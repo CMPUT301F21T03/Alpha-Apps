@@ -49,6 +49,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -77,7 +78,7 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private int layoutFile;
-        private TextView name, comment, date, username;
+        private TextView name, comment, date, username, location;
         private ImageView image;
         OnEventListener onEventListener;
 
@@ -87,6 +88,7 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
             comment = view.findViewById(R.id.eventslistviewcontent_comment_text);
             date = view.findViewById(R.id.eventslistviewcontent_date_text);
             image = view.findViewById(R.id.eventslistviewcontent_image);
+            location = view.findViewById(R.id.eventslistviewcontent_location_text);
             this.onEventListener = onEventListener;
             this.layoutFile = layoutFile;
 
@@ -117,6 +119,10 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
             return username;
         }
 
+        public TextView getLocation() {
+            return location;
+        }
+
         @Override
         public void onClick(View view) {
             onEventListener.onEventClick(getAdapterPosition());
@@ -141,6 +147,7 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
         holder.getName().setText(event.getName());
         holder.getComment().setText(event.getComment());
         holder.getDate().setText(event.getDateCompleted().format(formatter));
+        holder.getLocation().setText(event.getLocationName());
 
         if (layoutFile == R.layout.feed_events_listview_content) {
             holder.getUsername().setText(event.getUsername());
@@ -176,41 +183,9 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
             thread.start();
 
         }
-
-
+        
     }
 
-    @Override
-    public int getItemCount(){
-        return events.size();
-    }
-
-//    @NonNull
-//    @Override
-//    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent){
-//        View view = convertView;
-//        if(view == null){
-//            view = LayoutInflater.from(context).inflate(R.layout.events_listview_content, parent,false);
-//        }
-//
-//        Event event = events.get(position);
-//        TextView name = view.findViewById(R.id.eventslistviewcontent_name_text);
-//        TextView comment = view.findViewById(R.id.eventslistviewcontent_comment_text);
-//        TextView date = view.findViewById(R.id.eventslistviewcontent_date_text);
-//        ImageView image = view.findViewById(R.id.eventslistviewcontent_image);
-//
-//        name.setText(event.getName());
-//        comment.setText(event.getComment());
-//        date.setText(event.getDateCompleted().format(formatter));
-//        // if there is no photograph saved to the event object, make the imageView invisible
-//        if (event.getPhotograph() == null){
-//            image.setVisibility(View.GONE);
-//        }else{
-//            image.setImageBitmap(event.getPhotograph());
-//        }
-//
-//        return view;
-//    }
 
     @NonNull
     public void addSnapshotQuery(Query query, String TAG) {
@@ -236,14 +211,12 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
                             String comment = doc.getString("comment");
                             String photograph = doc.getString("photograph");
                             String username = doc.getString("username");
+                            String locationName = doc.getString("locationName");
+                            Double longitude = doc.getDouble("longitude");
+                            Double latitude = doc.getDouble("latitude");
                             // TODO store location and photograph after halfway
-                            Event eventToAdd;
-                            if (username == null) {
-                                eventToAdd = new Event(doc.getString("name"),newDate, comment, photograph, "");
-                            } else {
-                                eventToAdd = new Event(doc.getString("name"),newDate, comment, photograph, username);
+                            Event eventToAdd = new Event(doc.getString("name"), newDate, comment, photograph, username, latitude, longitude, locationName);
 
-                            }
 
                             eventToAdd.setFirestoreId(doc.getId());
                             if (!events.contains(eventToAdd)) {
@@ -258,20 +231,12 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
         });
     }
 
-    public void clearEventList() {
-        events.clear();
-    }
-
-    public void addEvent(Event event) {
-        events.add(event);
-        notifyDataSetChanged();
-    }
-
-    public void sortEvents() {
-        Collections.sort(events, new EventCompare());
-        notifyDataSetChanged();
-    }
-
+    // custom comparator class
+    // first sorts events by date completed
+    // and in case two are the same, then sorts alphabetically
+    // sorts newer dates first, so you can scroll down on the feed
+    // and get to older entries
+    
     public class EventCompare implements Comparator<Event> {
         @Override
         public int compare(Event event_1, Event event_2) {
@@ -286,4 +251,70 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
 
         }
     }
+    
+    // public methods
+
+    /**
+     * Clears the ArrayList containing all the Event objects
+     */
+    public void clearEventList() {
+        events.clear();
+    }
+
+    /**
+     * Returns the size of the ArrayList containing the Event objects
+     * @return the size of the ArrayList containing the Event objects
+     */
+    @Override
+    public int getItemCount(){
+        return events.size();
+    }
+
+
+    /**
+     * Adds a Event type object to our internal ArrayList
+     * Also executes a check to see if Event already exists in list,
+     * and will throw an exception in that case.
+     * @param event The Habit object to add to the ArrayList
+     * @param notify whether or not to call notifyDataSetChanged()
+     */
+    public void addEvent(Event event, Boolean notify) {
+        if (events.contains(event)) {
+            throw new IllegalArgumentException();
+        }
+        events.add(event);
+        if (notify) {
+            notifyDataSetChanged();
+        }
+    }
+
+    /**
+     * Sorts the events in the ArrayList as per EventCompare;
+     * helpful for feed population
+     */
+    public void sortEvents(Boolean notify) {
+        Collections.sort(events, new EventCompare());
+        if (notify) {
+            notifyDataSetChanged();
+        }
+    }
+
+    /**
+     * Gets the ArrayList of Event objects
+     * @return the ArrayList of Event objects
+     */
+    public ArrayList<Event> getEvents() {
+        return events;
+    }
+
+    /**
+     * Returns a boolean that's true if the ArrayList storing the Event objects is empty,
+     * false otherwise
+     * @return boolean if Event ArrayList is empty or not
+     */
+    public Boolean getEventListEmpty() {
+        return events.isEmpty();
+    }
+
+    
 }

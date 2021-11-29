@@ -83,7 +83,7 @@ public class Event implements Parcelable {
      * @param photograph a URL of an image associated with the event
      */
 
-    public Event(String name, LocalDateTime dateCompleted, String comment, String photograph, String username){
+    public Event(String name, LocalDateTime dateCompleted, String comment, String photograph, String username, Double latitude, Double longitude, String locationName){
 
         setName(name);
         setDateCompleted(dateCompleted);
@@ -95,11 +95,12 @@ public class Event implements Parcelable {
             System.out.println("comment too long, programs fails");
         }
 
-        setLocationName(null);
-        setLongitude(null);
-        setLatitude(null);
+        setLocationName(locationName);
+        setLongitude(longitude);
+        setLatitude(latitude);
         setPhotograph(photograph);
     }
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void addEventToFirestore(Map userData, Habit habit) {
@@ -158,13 +159,17 @@ public class Event implements Parcelable {
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
         Log.d(TAG,(String)userData.get("username"));
-        Log.d(TAG,getFirestoreId());
+        //Log.d(TAG,getFirestoreId());
         final CollectionReference eventsref = db.collection("Doers")
                 .document((String)userData.get("username"))
                 .collection("habits")
                 .document(habit.getFirestoreId())
                 .collection("events");
-        eventsref.document(getFirestoreId())
+
+        System.out.println("And when editing, ID is:");
+        System.out.println(this.getFirestoreId());
+
+        eventsref.document(this.getFirestoreId())
                 .set(this)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -210,6 +215,9 @@ public class Event implements Parcelable {
         parcel.writeString(getComment());
         parcel.writeString(getPhotograph());
         parcel.writeString(getUsername());
+        parcel.writeString(getLocationName());
+        parcel.writeDouble(getLongitude());
+        parcel.writeDouble(getLatitude());
 
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -221,6 +229,9 @@ public class Event implements Parcelable {
         this.comment = parcel.readString();
         this.photograph = parcel.readString();     
         this.username = parcel.readString();
+        this.locationName = parcel.readString();
+        this.longitude = parcel.readDouble();
+        this.latitude = parcel.readDouble();
 
     }
 

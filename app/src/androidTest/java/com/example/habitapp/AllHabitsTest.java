@@ -80,7 +80,7 @@ public class AllHabitsTest {
         solo.enterText((EditText) solo.getView(R.id.addhabit_habit_title),  new_habit_name);
         solo.clickOnView(solo.getView(R.id.sunday_checkbox));
         solo.enterText((EditText) solo.getView(R.id.addhabit_reason),  "To stay healthy!");
-        solo.clickOnText("Select a date");
+        solo.clickOnText("yyyy-mm-dd");
         solo.clickOnText("OK");
         solo.clickOnView(solo.getView(R.id.addhabit_complete));
 
@@ -107,13 +107,13 @@ public class AllHabitsTest {
         solo.enterText((EditText) solo.getView(R.id.addhabit_habit_title),  new_habit_name);
         solo.clickOnView(solo.getView(R.id.sunday_checkbox));
         solo.enterText((EditText) solo.getView(R.id.addhabit_reason),  "To stay healthy!");
-        solo.clickOnText("Select a date");
+        solo.clickOnText("yyyy-mm-dd");
         solo.clickOnText("OK");
         solo.clickOnView(solo.getView(R.id.addhabit_complete));
 
         solo.waitForText(new_habit_name, 1, 5000);
         solo.clickOnText(new_habit_name);
-        solo.clickOnView(solo.getView(R.id.habitdetails_more));
+        solo.clickOnView(solo.getView(R.id.moreButton));
         solo.clickOnText("Delete habit");
         assertFalse(solo.searchText(new_habit_name));
     }

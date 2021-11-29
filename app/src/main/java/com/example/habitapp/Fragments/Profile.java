@@ -87,11 +87,13 @@ public class Profile extends Fragment {
     private static final int GALLERY_PICK = 1234;
 
     private boolean allowedToEdit = false;
+    private boolean profilePicChanged = false;
     private User profile;
     private View usernameView;
     private EditText usernameEditText;
     private ImageView profilePicView;
     private Map userData;
+    private Uri imageUri;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -120,7 +122,7 @@ public class Profile extends Fragment {
         TextView idView = view.findViewById(R.id.profilelistentry_id);
         profilePicView.setImageBitmap(profile.getProfilePic());
         usernameEditText.setText(profile.getName());
-        idView.setText(profile.getUniqueID());
+        idView.setText("@"+profile.getUniqueID());
     }
 
     public void getUserData(){
@@ -128,7 +130,6 @@ public class Profile extends Fragment {
         Main activity = (Main) getActivity();
         userData = activity.getUserData();
         // convert to a User
-        // TODO: initialize profilePic, follower, and following at default
         profile = new User(userData.get("username").toString(),
                            userData.get("name").toString(),
                            userData.get("username").toString(),
@@ -137,6 +138,12 @@ public class Profile extends Fragment {
         // check for following/followers
         if(userData.containsKey("following")){
             profile.setFollowingList((ArrayList<String>) userData.get("following"));
+        }
+        if(userData.containsKey("followers")){
+            profile.setFollowingList((ArrayList<String>) userData.get("followers"));
+        }
+        if(userData.containsKey("pending")){
+            profile.setFollowingList((ArrayList<String>) userData.get("pending"));
         }
         // check for profile picture
         if(userData.containsKey("profilePic")){
@@ -197,12 +204,6 @@ public class Profile extends Fragment {
         profilePicView.setOnClickListener(this::profilePhotoPressed);
     }
 
-    private void profilePendingButtonPressed(View view){
-        Intent intent = new Intent(getContext(), FollowingFollowers.class);
-        intent.putExtra("FOLLOWING?", "requested");
-        startActivity(intent);
-    }
-
     private void profilePhotoPressed(View view) {
         if (allowedToEdit) {
             Intent galleryIntent = new Intent();
@@ -227,48 +228,12 @@ public class Profile extends Fragment {
 
         // after cropping the image, set the result to the profile picture bitmap
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-            // prepare references
-            FirebaseFirestore db;
-            db = FirebaseFirestore.getInstance();
-            FirebaseStorage storage = FirebaseStorage.getInstance("gs://alpha-apps-41471.appspot.com");
-            StorageReference storageRef = storage.getReference();
-
             CropImage.ActivityResult imageData = CropImage.getActivityResult(data);
 
             // set profile image
-            Uri imageUri = imageData.getUri();
+            imageUri = imageData.getUri();
             profilePicView.setImageURI(imageUri);
-
-            // format bytes to be stored in storage
-            StorageReference docuRef = storageRef.child("images/"+imageUri.getLastPathSegment());
-            UploadTask uploadTask = docuRef.putFile(imageUri);
-            uploadTask.addOnFailureListener(exception -> Log.d(TAG,"Failed upload"))
-                    .addOnSuccessListener(taskSnapshot -> Log.d(TAG,"Successful upload"));
-            uploadTask.continueWithTask(task -> {
-                if (!task.isSuccessful()) {
-                    throw task.getException();
-                }
-
-                // Continue with the task to get the download URL
-                return docuRef.getDownloadUrl();
-            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                @Override
-                public void onComplete(@NonNull Task<Uri> task) {
-                    if (task.isSuccessful()) {
-                        Uri downloadUri = task.getResult();
-                        Log.d(TAG,downloadUri.toString());
-                        // upload to the user document in Firestore
-                        Map userData = new HashMap<>();
-                        userData.put("profilePic",downloadUri.toString());
-                        db.collection("Doers").document(profile.getUniqueID())
-                                .update(userData);
-
-
-                    } else {
-                        Log.d(TAG,"Failed to get download URL");
-                    }
-                }
-            });
+            profilePicChanged = true;
         }
 
     }
@@ -281,7 +246,7 @@ public class Profile extends Fragment {
     }
 
     private void profileFollowersButtonPressed(View view) {
-        this.navigateFollowingFollowers("follower");
+        this.navigateFollowingFollowers("followers");
     }
 
     private void profileFollowingButtonPressed(View view) {
@@ -289,10 +254,15 @@ public class Profile extends Fragment {
 
     }
 
+    private void profilePendingButtonPressed(View view){
+        this.navigateFollowingFollowers("requested");
+    }
+
     private void navigateFollowingFollowers(String follow){
         Intent intent = new Intent(getContext(), FollowingFollowers.class);
         intent.putExtra("FOLLOWING?", follow);
         intent.putExtra("userProfile", (Serializable) userData);
+        intent.putExtra("thisUserID",profile.getUniqueID());
         startActivity(intent);
     }
 
@@ -314,15 +284,61 @@ public class Profile extends Fragment {
         String newUsername = usernameEditText.getText().toString();
         Bitmap imageBitMap = profilePicView.getDrawingCache();
 
-        profile.setName(newUsername);
-        profile.setProfilePic(imageBitMap);
-
-        //TODO put all of the updated info above into firebase in place of the old data
-        // Puts new username into Firestore
+        // Set the data to persist in the app
+        Main activity = (Main) getActivity();
+        // prepare references
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
+        // set changed username
+        profile.setName(newUsername);
+        userData.remove("name");
+        userData.put("name",newUsername);
+
+        // set changed profile picture if changed
+        if(profilePicChanged){
+            profile.setProfilePic(imageBitMap);
+            FirebaseStorage storage = FirebaseStorage.getInstance("gs://alpha-apps-41471.appspot.com");
+            StorageReference storageRef = storage.getReference();
+
+            // format bytes to be stored in storage
+            StorageReference docuRef = storageRef.child("images/"+imageUri.getLastPathSegment());
+            UploadTask uploadTask = docuRef.putFile(imageUri);
+            uploadTask.addOnFailureListener(exception -> Log.d(TAG,"Failed upload"))
+                    .addOnSuccessListener(taskSnapshot -> Log.d(TAG,"Successful upload"));
+            uploadTask.continueWithTask(task -> {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+
+                // Continue with the task to get the download URL
+                return docuRef.getDownloadUrl();
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        Uri downloadUri = task.getResult();
+                        Log.d(TAG,downloadUri.toString());
+                        // upload to the user document in Firestore
+                        Map newUserData = new HashMap<>();
+                        newUserData.put("profilePic",downloadUri.toString());
+                        db.collection("Doers").document(profile.getUniqueID())
+                                .update(newUserData);
+                        userData.remove("profilePic");
+                        userData.put("profilePic",downloadUri.toString());
+                        activity.setUserData(userData);
+
+                    } else {
+                        Log.d(TAG,"Failed to get download URL");
+                    }
+                }
+            });
+        }
+        activity.setUserData(userData);
+
+        // Puts new data into Firestore
         Map<String, Object> data = new HashMap<>();
         data.put("name", newUsername);
+        Log.d(TAG,newUsername);
         db.collection("Doers").document(userData.get("username").toString())
                 .set(data, SetOptions.merge());
     }

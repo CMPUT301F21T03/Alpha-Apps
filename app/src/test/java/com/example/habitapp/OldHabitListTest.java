@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import com.example.habitapp.DataClasses.DaysOfWeek;
 import com.example.habitapp.DataClasses.Habit;
 import com.example.habitapp.DataClasses.HabitList;
+import com.example.habitapp.DataClasses.OldHabitList;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -25,13 +26,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-public class HabitListTest implements HabitList.OnHabitListener{
-    public HabitList mockHabitList(){
+public class OldHabitListTest {
+    public OldHabitList mockHabitList(){
 
         ArrayList<Habit> mockDataList = new ArrayList<>();
         //Context context = ApplicationProvider.getApplicationContext();
         mockDataList.add(mockHabit());
-        HabitList habitListAdapter = new HabitList(mockDataList, this);
+        OldHabitList habitListAdapter = new OldHabitList(null, mockDataList);
         return habitListAdapter;
     }
     @NonNull
@@ -50,7 +51,7 @@ public class HabitListTest implements HabitList.OnHabitListener{
      */
     @Test
     public void testAddHabit(){
-        HabitList newHabitList = mockHabitList();
+        OldHabitList newHabitList = mockHabitList();
         assertEquals(1, newHabitList.getHabits().size());
         DaysOfWeek frequency = new DaysOfWeek(false,false, true, false,true, false, true);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss");
@@ -68,7 +69,7 @@ public class HabitListTest implements HabitList.OnHabitListener{
      */
     @Test
     public void testAddHabitException(){
-        HabitList newHabitList = mockHabitList();
+        OldHabitList newHabitList = mockHabitList();
         Habit newHabit = mockHabit();
         newHabitList.addHabit(newHabit);
         assertThrows(IllegalArgumentException.class, () -> {
@@ -81,7 +82,7 @@ public class HabitListTest implements HabitList.OnHabitListener{
      */
     @Test
     public void testClearHabits(){
-        HabitList newHabitList = mockHabitList();
+        OldHabitList newHabitList = mockHabitList();
         assertEquals(1, newHabitList.getHabits().size());
         DaysOfWeek frequency = new DaysOfWeek(false,false, true, false,true, false, true);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss");
@@ -98,15 +99,12 @@ public class HabitListTest implements HabitList.OnHabitListener{
      */
     @Test
     public void testGetHabitListEmpty(){
-        HabitList newHabitList = mockHabitList();
+        OldHabitList newHabitList = mockHabitList();
         assertEquals(false, newHabitList.getHabitListEmpty());
         newHabitList.clearHabitList();
         assertEquals(true, newHabitList.getHabitListEmpty());
     }
 
 
-    @Override
-    public void onHabitClick(int position) {
-        // do nothing
-    }
+
 }

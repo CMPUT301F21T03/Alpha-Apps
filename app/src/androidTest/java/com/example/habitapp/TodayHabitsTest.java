@@ -90,7 +90,7 @@ public class TodayHabitsTest {
         solo.clickOnView(solo.getView(R.id.sunday_checkbox));
 
         solo.enterText((EditText) solo.getView(R.id.addhabit_reason),  "To stay healthy!");
-        solo.clickOnText("Select a date");
+        solo.clickOnText("yyyy-mm-dd");
         TextView date_text_field = (TextView) solo.getView(R.id.addhabit_select_date);
         date_text = date_text_field.getText().toString();
         solo.clickOnText("OK");

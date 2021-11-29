@@ -55,6 +55,8 @@ public class User implements Serializable {
     // a profile picture of the user
     private Bitmap profilePic;
     // a list containing all the IDs of the profiles that this user follows
+    private String profilePicURL;
+    // a URL to the profile pic of the user
     private ArrayList<String> followingList;
     // a list containing all the IDs of the profiles that this follow this user
     private ArrayList<String> followersList;
@@ -71,13 +73,14 @@ public class User implements Serializable {
      * @param name the name that the user gives themselves
      * @param email the email that the user links with their account
      * @param password the password that the user sets for their account
-     * @param profilePic the URL to the profile picture of the user
+     * @param profilePicURL the URL to the profile picture of the user
      */
-    public User(String uniqueID, String name, String email, String password, String profilePic){
+    public User(String uniqueID, String name, String email, String password, String profilePicURL){
         setUniqueID(uniqueID);
         setName(name);
         setEmail(email);
         setPassword(password);
+        setProfilePicURL(profilePicURL);
         // default the account to be public, NOT private
         setPrivateAccount(false);
 
@@ -165,6 +168,7 @@ public class User implements Serializable {
     public void setRequestedList(ArrayList<String> requestedList) {
         this.requestedList = requestedList;
     }
+
     public void addToRequested(String userID){
         requestedList.add(userID);
     }
@@ -181,32 +185,13 @@ public class User implements Serializable {
         incomingRequests.add(userID);
     }
 
-    public void updateUserInFirestore() {
-        // add new Habit to Firestore
-        try {
-            FirebaseFirestore db;
-            db = FirebaseFirestore.getInstance();
-            final CollectionReference usersref = db.collection("Doers");
-            //Toast.makeText(getContext(), "I came here", Toast.LENGTH_SHORT).show();
-            Log.d(getUniqueID().toString(),">>>>>>>>>>");
-            usersref.document((String) getUniqueID())
-                    .set(this)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void unused) {
-                            Log.d(TAG, "successfully updated");
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.d(TAG, "failed update");
-                        }
-                    });
-        }
-        catch (Exception e){
-            Log.d(e.getCause().toString(), ": CAUGHT EXCEPTION");
-        }
+    public String getProfilePicURL() {
+        return profilePicURL;
+    }
+
+    public void setProfilePicURL(String profilePicURL) {
+        this.profilePicURL = profilePicURL;
+
     }
 }
 
