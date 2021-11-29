@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 
@@ -41,9 +42,14 @@ import androidx.fragment.app.Fragment;
 import com.example.habitapp.Activities.Main;
 import com.example.habitapp.DataClasses.RequestList;
 import com.example.habitapp.DataClasses.Request;
+import com.example.habitapp.DataClasses.User;
 import com.example.habitapp.R;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
 
 public class Notification extends Fragment {
     ImageView notifButton;
@@ -52,6 +58,8 @@ public class Notification extends Fragment {
     private ListView notificationsListView;
     private RequestList notificationAdapter;
     private ArrayList<Request> notificationDataList = new ArrayList<>();
+    private Map userData;
+    private ArrayList<String> userIDs;
 
 
 
@@ -63,17 +71,34 @@ public class Notification extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-
-//        Request test1 = new Request("Arthur");
-//        notificationDataList.add(test1);
-
-        // sets a listener for when the button is clicked
-        //Main activity = (Main) getActivity();
         notifButton = view.findViewById(R.id.notification_image);
-//        notificationAdapter = new NotificationList(view.getContext(), notificationDataList);
+        Main activity = (Main) getActivity();
+        userData = activity.getUserData();
+        String username = (String) userData.get("username");
+        User user = new User(userData.get("username").toString(),
+                userData.get("name").toString(),
+                userData.get("username").toString(),
+                userData.get("password").toString(),
+                userData.get("profilePic").toString());
+        ArrayList<String> testdata = new ArrayList<>(Arrays.asList("xyz", "abc"));
+        userIDs = testdata;
+//        userIDs= user.getIncomingRequests();
+        setRequests(userIDs);
+        if (notificationDataList.size() > 0 ){
 
+            notifButton.setBackgroundResource(R.drawable.notification_bell_after);
+        }
         notifButton.setOnClickListener(this::notificationsButtonPressed);
 
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void setRequests(ArrayList<String> userIDs){
+        for(int i = 0; i < userIDs.size(); i++){
+            String idToAdd = userIDs.get(i);
+            Request newRequest = new Request(idToAdd);
+            notificationDataList.add(newRequest);
+        }
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void notificationsButtonPressed(View view) {
@@ -83,11 +108,7 @@ public class Notification extends Fragment {
         notificationAdapter = new RequestList(activity, notificationDataList);
 
         notiDialog = new Dialog(activity);
-
-
         //TODO show all pertinent information in a dialog
-        System.out.println("notification button pressed");
-        Log.i("notification", "button pressed");
         int[] location = new int[2];
         notifButton.getLocationOnScreen(location);
         int x = location[0];
@@ -106,37 +127,14 @@ public class Notification extends Fragment {
         notiDialog.setContentView(R.layout.noti_popup);
 
 
-        //setNotificationListAdapter(view);
-        Request test1 = new Request("Arthur");
-        notificationDataList.add(test1);
+//        Request test1 = new Request("Arthur");
+//        notificationDataList.add(test1);
 //
         notificationsListView = (ListView) notiDialog.findViewById(R.id.noti_list);
         notificationsListView.setAdapter(notificationAdapter);
-//        notificationsListView.setEmptyView(view.findViewById(R.id.allhabits_hidden_textview_1));
-        // set the new location [you will need to play with this]
-
-//        wlp.x = bx;
-//        wlp.y = (by - notifButton.getHeight());
-//
-//        // add to your window
-//        window.setAttributes(wlp);
-
-//        window.getAttributes().x = 1;
-//        window.getAttributes().y = 1;
-
-        Log.d("X>>>>", ": this is X " +x);
-        Log.d("Y>>>>", ": this is y " +y);
-
         notiDialog.show();
 
     }
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void setNotificationListAdapter(View view) {
-        notificationsListView = (ListView) view.findViewById(R.id.noti_list);
-        notificationAdapter = new RequestList(view.getContext(), notificationDataList);
-        notificationsListView.setAdapter(notificationAdapter);
-//        getHabitDataList(habitAdapter);
-        notificationsListView.setEmptyView(view.findViewById(R.id.allhabits_hidden_textview_1));
-    }
+
 
 }

@@ -38,6 +38,7 @@ import com.example.habitapp.DataClasses.Event;
 import com.example.habitapp.DataClasses.Habit;
 import com.example.habitapp.DataClasses.HabitList;
 import com.example.habitapp.DataClasses.OldHabitList;
+import com.example.habitapp.DataClasses.User;
 import com.example.habitapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -64,6 +65,8 @@ public class FollowUserView extends AppCompatActivity {
     private String followUserName;
     private String followUserID;
     private Bitmap followUserPFP;
+    private Map userData;
+
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -77,7 +80,6 @@ public class FollowUserView extends AppCompatActivity {
         Intent intent = getIntent();
         String userID = intent.getStringExtra("userID");
         String intentFollowStatus = intent.getStringExtra("followStatus");
-
         setFollowStatusFrame(intentFollowStatus);
 
         if (followStatus == FOLLOWING){
@@ -111,6 +113,7 @@ public class FollowUserView extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem menuItem) {
                 if (menuItem.getItemId() == R.id.request_follow) {
                     // TODO add the user in question to this user's requested list
+
                 } else if (menuItem.getItemId() == R.id.unfollow) {
                     if (followStatus == FOLLOWING){
                         // TODO remove the user from the following list

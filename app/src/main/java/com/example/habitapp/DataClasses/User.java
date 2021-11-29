@@ -49,6 +49,8 @@ public class User implements Serializable {
     private ArrayList<String> followersList;
     // a list containing all the IDs of the profiles that this user requests to follow
     private ArrayList<String> requestedList;
+    // a list containing all the IDs of the profiles that request to follow this user
+    private  ArrayList<String>  incomingRequests;
 
 
     /**
@@ -150,5 +152,17 @@ public class User implements Serializable {
 
     public void setRequestedList(ArrayList<String> requestedList) {
         this.requestedList = requestedList;
+    }
+
+    public ArrayList<String> getIncomingRequests() {
+        return incomingRequests;
+    }
+
+    public void setIncomingRequests(ArrayList<String> incomingRequests) {
+        this.incomingRequests = incomingRequests;
+    }
+
+    public void addIncomingRequest(String userID){
+        incomingRequests.add(userID);
     }
 }

@@ -19,13 +19,13 @@ import java.util.ArrayList;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class RequestList extends ArrayAdapter<Request> implements Serializable {
-    private ArrayList<Request> notifications;
+    private ArrayList<Request> requests;
     private Context context;
 
     public RequestList(Context context, ArrayList<Request> notifications) {
         super(context,0,notifications);
         this.context = context;
-        this.notifications = notifications;
+        this.requests = notifications;
     }
 
     @NonNull
@@ -37,10 +37,10 @@ public class RequestList extends ArrayAdapter<Request> implements Serializable {
             view = LayoutInflater.from(context).inflate(R.layout.noti_item, parent, false);
         }
 
-        Request notification = notifications.get(position);
+        Request request = requests.get(position);
 
-        String username = notification.getUsername();
-        String suffix = notification.getSUFFIX();
+        String username = request.getUsername();
+        String suffix = request.getSUFFIX();
 
         TextView notiText = view.findViewById(R.id.noti_text);
         notiText.setText(username + suffix);
