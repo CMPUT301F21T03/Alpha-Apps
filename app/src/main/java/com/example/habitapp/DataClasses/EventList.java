@@ -221,9 +221,9 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
                             // TODO store location and photograph after halfway
                             Event eventToAdd;
                             if (username == null) {
-                                eventToAdd = new Event(doc.getString("name"),newDate, comment, photograph, false, "");
+                                eventToAdd = new Event(doc.getString("name"),newDate, comment, photograph, "");
                             } else {
-                                eventToAdd = new Event(doc.getString("name"),newDate, comment, photograph, false, username);
+                                eventToAdd = new Event(doc.getString("name"),newDate, comment, photograph, username);
 
                             }
 
