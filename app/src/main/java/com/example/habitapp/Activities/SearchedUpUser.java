@@ -64,10 +64,8 @@ public class SearchedUpUser extends AppCompatActivity implements EventList.OnEve
     private static final int REQUESTED = 2;
     private static final int NEITHER = 3;
 
-    private ArrayList<Habit> habits = new ArrayList<Habit>();
+    private ArrayList<Habit> habits = new ArrayList<>();
     private NonReorderableHabitList habitAdapter;
-    private EventList eventsAdapter;
-    private ArrayList<Event> events;
     private String followUserName;
     private String followUserID;
     private String followUserPFP;
@@ -377,6 +375,11 @@ public class SearchedUpUser extends AppCompatActivity implements EventList.OnEve
 
     @Override
     public void onEventClick(int position) {
-        
+
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
     }
 }
