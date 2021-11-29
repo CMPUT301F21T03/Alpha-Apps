@@ -45,6 +45,7 @@ import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import com.example.habitapp.Activities.BootScreen;
+import com.example.habitapp.Activities.FollowUserView;
 import com.example.habitapp.Activities.FollowingFollowers;
 import com.example.habitapp.Activities.MainActivity;
 import com.example.habitapp.DataClasses.User;
@@ -78,6 +79,8 @@ public class ProfilePage extends Fragment {
     private View usernameView;
     private EditText usernameEditText;
     private ImageView profilePicView;
+    private EditText profileSearchEditText;
+    private ImageButton profileSearchButton;
     private Map userData;
     private Uri imageUri;
 
@@ -98,8 +101,13 @@ public class ProfilePage extends Fragment {
         // set the current user's data
         setUserData(view);
 
+        profileSearchEditText = view.findViewById(R.id.profile_search_field);
+        profileSearchButton = view.findViewById(R.id.profile_search_button);
+
         //init button listeners
         setButtonListeners(view);
+
+
 
     }
 
@@ -185,6 +193,9 @@ public class ProfilePage extends Fragment {
         Button logOutButton = view.findViewById(R.id.profile_log_out);
         logOutButton.setOnClickListener(this::profileLogOutButtonPressed);
 
+        // set a listener for if the search button is pressed
+        profileSearchButton.setOnClickListener(this::profileSearchButtonPressed);
+
         // set a listener for if the photo of the persons profile is pressed
         profilePicView.setSoundEffectsEnabled(false);
         profilePicView.setOnClickListener(this::profilePhotoPressed);
@@ -241,6 +252,19 @@ public class ProfilePage extends Fragment {
 
     private void profilePendingButtonPressed(View view){
         this.navigateFollowingFollowers("requested");
+    }
+
+    private void profileSearchButtonPressed(View view){
+        // do something
+        openUserFrame(profileSearchEditText.getText().toString());
+    }
+
+    private void openUserFrame(String userID) {
+        Intent intent = new Intent(getContext(), FollowUserView.class);
+        intent.putExtra("userID", userID);
+        intent.putExtra("thisUserID",(String) userData.get("username"));
+        intent.putExtra("followStatus","must_be_checked");
+        startActivity(intent);
     }
 
     private void navigateFollowingFollowers(String follow){
@@ -353,6 +377,8 @@ public class ProfilePage extends Fragment {
     private static String getTAG(){
         return TAG;
     }
+
+
 
 
 }

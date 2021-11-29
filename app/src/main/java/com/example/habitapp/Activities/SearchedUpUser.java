@@ -39,22 +39,29 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.example.habitapp.DataClasses.Event;
+import com.example.habitapp.DataClasses.EventList;
 import com.example.habitapp.DataClasses.Habit;
 import com.example.habitapp.DataClasses.NonReorderableHabitList;
 import com.example.habitapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Map;
-
-public class SearchedUpUser extends AppCompatActivity {
+public class SearchedUpUser extends AppCompatActivity implements EventList.OnEventListener  {
 
     private static final String TAG = "FollowUserViewTAG";
     private int followStatus;
@@ -65,6 +72,7 @@ public class SearchedUpUser extends AppCompatActivity {
 
     private ArrayList<Habit> habits = new ArrayList<Habit>();
     private NonReorderableHabitList habitAdapter;
+    private EventList eventsAdapter;
     private ArrayList<Event> events;
     private String followUserName;
     private String followUserID;
@@ -72,6 +80,9 @@ public class SearchedUpUser extends AppCompatActivity {
     private Map userData;
     private String userID;
     private String thisUserID;
+
+    private int i;
+    private int j;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -83,14 +94,21 @@ public class SearchedUpUser extends AppCompatActivity {
         Intent intent = getIntent();
         // user ID of user being viewed
         userID = intent.getStringExtra("userID");
+        System.out.print(userID);
         // user ID of user currently logged in
         thisUserID = intent.getStringExtra("thisUserID");
-        if(userID.equals(thisUserID)){
+        if (userID.equals(thisUserID)) {
             // disable following if user views own profile
             TextView followTag = this.findViewById(R.id.followuserview_follow_status);
             followTag.setEnabled(false);
             followTag.setVisibility(View.GONE);
         }
+
+        RecyclerView userRecyclerView = findViewById(R.id.followeruserview_habit_event_recycler);
+        eventsAdapter = new EventList(events, this, R.layout.events_listview_content);
+        userRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        userRecyclerView.setAdapter(eventsAdapter);
+        getUserData(userID);
 
         Context context = this;
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -103,7 +121,7 @@ public class SearchedUpUser extends AppCompatActivity {
         });
         // check if user exists, if not, direct user back
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        try{
+        try {
             DocumentReference user = db.collection("Doers").document(userID);
             user.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
@@ -129,14 +147,15 @@ public class SearchedUpUser extends AppCompatActivity {
                     }
                 }
             });
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             hidePage();
             builder.show();
         }
 
         TextView followStatus = findViewById(R.id.followuserview_follow_status);
         followStatus.setOnClickListener(this::followStatusClicked);
+
+
     }
 
     private void followStatusClicked(View view) {
@@ -147,13 +166,13 @@ public class SearchedUpUser extends AppCompatActivity {
         popupMenu.getMenuInflater().inflate(R.menu.following_status_menu, popupMenu.getMenu());
 
         // remove buttons based on what status this user has
-        if (followStatus == FOLLOWING){
+        if (followStatus == FOLLOWING) {
             popupMenu.getMenu().removeItem(R.id.request_follow);
         }
-        if (followStatus == REQUESTED){
+        if (followStatus == REQUESTED) {
             popupMenu.getMenu().removeItem(R.id.request_follow);
         }
-        if (followStatus == NEITHER){
+        if (followStatus == NEITHER) {
             popupMenu.getMenu().removeItem(R.id.unfollow);
         }
 
@@ -164,26 +183,26 @@ public class SearchedUpUser extends AppCompatActivity {
                 if (menuItem.getItemId() == R.id.request_follow) {
                     // Add the user in question to this user's requested list, and change status to Requested
                     user.update("requested", FieldValue.arrayUnion(thisUserID))
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if(task.isSuccessful()){
-                                    // Change status to requested
-                                    setFollowStatusTag("requested");
-                                    popupMenu.getMenuInflater().inflate(R.menu.following_status_menu, popupMenu.getMenu());
-                                    popupMenu.getMenu().removeItem(R.id.request_follow);
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        // Change status to requested
+                                        setFollowStatusTag("requested");
+                                        popupMenu.getMenuInflater().inflate(R.menu.following_status_menu, popupMenu.getMenu());
+                                        popupMenu.getMenu().removeItem(R.id.request_follow);
+                                    }
                                 }
-                            }
-                        });
+                            });
 
                 } else if (menuItem.getItemId() == R.id.unfollow) {
-                    if (followStatus == FOLLOWING){
+                    if (followStatus == FOLLOWING) {
                         // Remove the user from the following list, remove from user's own following list accordingly, and change status to neither
                         user.update("followers", FieldValue.arrayRemove(thisUserID))
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
-                                        if(task.isSuccessful()){
+                                        if (task.isSuccessful()) {
                                             // update own following list
                                             thisUser.update("following", FieldValue.arrayRemove(userID))
                                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -198,13 +217,13 @@ public class SearchedUpUser extends AppCompatActivity {
                                         }
                                     }
                                 });
-                    }else if (followStatus == REQUESTED){
+                    } else if (followStatus == REQUESTED) {
                         //Remove the user from the requested list, and change status to neither
                         user.update("requested", FieldValue.arrayRemove(thisUserID))
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
-                                        if(task.isSuccessful()){
+                                        if (task.isSuccessful()) {
                                             // Change status to none
                                             setFollowStatusTag("nothing");
                                             popupMenu.getMenuInflater().inflate(R.menu.following_status_menu, popupMenu.getMenu());
@@ -239,8 +258,8 @@ public class SearchedUpUser extends AppCompatActivity {
         final Query userHabits = db.collection("Doers")
                 .document(userID)
                 .collection("habits")
-                .whereEqualTo("privacy",false);
-        habitAdapter.addSnapshotQuery(userHabits,TAG);
+                .whereEqualTo("privacy", false);
+        habitAdapter.addSnapshotQuery(userHabits, TAG);
 
         // populate the profile information
         TextView usernameEditText = this.findViewById(R.id.profilelistentry_username);
@@ -253,7 +272,7 @@ public class SearchedUpUser extends AppCompatActivity {
                 try {
                     URL url = new URL(followUserPFP);
                     Bitmap imageBitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                    new Handler(Looper.getMainLooper()).post(new Runnable(){
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
                             profilePicView.setImageBitmap(imageBitmap);
@@ -268,7 +287,7 @@ public class SearchedUpUser extends AppCompatActivity {
 
         thread.start();
         usernameEditText.setText(followUserName);
-        idView.setText("@"+followUserID);
+        idView.setText("@" + followUserID);
 
     }
 
@@ -276,23 +295,20 @@ public class SearchedUpUser extends AppCompatActivity {
         String type = "neither";
         ArrayList<String> userFollowers = (ArrayList<String>) userData.get("followers");
         ArrayList<String> userRequested = (ArrayList<String>) userData.get("requested");
-        if(userFollowers != null){
-            if(userFollowers.contains(thisUserID)){
+        if (userFollowers != null) {
+            if (userFollowers.contains(thisUserID)) {
                 type = "following";
-            }
-            else if(userRequested != null){
-                if(userRequested.contains(thisUserID)){
+            } else if (userRequested != null) {
+                if (userRequested.contains(thisUserID)) {
                     type = "requested";
                 }
-            }
-            else{
+            } else {
                 type = "neither";
             }
-        }
-        else{
+        } else {
             type = "neither";
         }
-        if(userID.equals(thisUserID)){
+        if (userID.equals(thisUserID)) {
             type = "following";
         }
 
@@ -309,19 +325,19 @@ public class SearchedUpUser extends AppCompatActivity {
                 break;
         }
 
-        if (followStatus == FOLLOWING){ // show the user data
+        if (followStatus == FOLLOWING) { // show the user data
             setFollowStatusTag("following");
             this.findViewById(R.id.followuserview_no_data_textview).setVisibility(View.GONE);
-        }else{ // dont show the user data
+        } else { // dont show the user data
             this.findViewById(R.id.layout).setVisibility(View.GONE);
             this.findViewById(R.id.followuserview_habit_event_list).setVisibility(View.GONE);
             this.findViewById(R.id.textView24).setVisibility(View.GONE);
             this.findViewById(R.id.textView27).setVisibility(View.GONE);
         }
-        if (followStatus == REQUESTED){
+        if (followStatus == REQUESTED) {
             setFollowStatusTag("requested");
         }
-        if (followStatus == NEITHER){
+        if (followStatus == NEITHER) {
             setFollowStatusTag("nothing");
         }
     }
@@ -333,11 +349,11 @@ public class SearchedUpUser extends AppCompatActivity {
             followTag.setText("Following");
             followTag.setTextColor(R.color.green);
         }
-        if (type.equals("requested")){
+        if (type.equals("requested")) {
             followTag.setText("Requested");
             followTag.setTextColor(R.color.gray);
         }
-        if (type.equals("nothing")){
+        if (type.equals("nothing")) {
             followTag.setText("Follow");
             followTag.setTextColor(R.color.blue);
         }
@@ -354,27 +370,117 @@ public class SearchedUpUser extends AppCompatActivity {
 
     private void getUserData(String userID) {
         //TODO get this users habit events (the first one from each habit)
-        getHabitData(userID);
+        //getHabitData(userID);
+
+        FirebaseFirestore db;
+        db = FirebaseFirestore.getInstance();
+
+        // first, grab the current user's username
+        final DocumentReference following = db.collection("Doers")
+                .document(userID);
+
+        // ADD NULL CHECKS!!!
+        following.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                // for the followed user, grab all of their habits
+                final DocumentReference currentDoc = db.collection("Doers")
+                        .document(userID);
+
+                final Query individual_habits_2 = currentDoc
+                        .collection("habits")
+                        .whereEqualTo("privacy", false);
+
+                individual_habits_2.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        ArrayList<String> temp_habits = new ArrayList<String>();
+                        ArrayList<String> temp_habits_names = new ArrayList<>();
+                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+
+                            temp_habits.add((String) doc.getId());
+                            temp_habits_names.add((String) doc.get("title"));
+
+                        }
+
+                        // and then, for each user's habits, grab all their habit events
+                        for (j = 0; j < temp_habits.size(); j++) {
+                            final Query individualEvents = currentDoc
+                                    .collection("habits")
+                                    .document(temp_habits.get(j))
+                                    .collection("events")
+                                    .orderBy("dateCompleted")
+                                    .limit(10);
+                            String habit_name = temp_habits_names.get(j);
+                            System.out.println(habit_name);
+                            individualEvents.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                @RequiresApi(api = Build.VERSION_CODES.O)
+                                @Override
+                                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                    ArrayList<String> temp_events = new ArrayList<String>();
+                                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+
+                                        // and add each habit to the RecyclerView
+                                        if (doc.get("name") != null) {
+                                            Map getDate = (Map) doc.get("dateCompleted");
+                                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss");
+                                            String newDateStr = getDate.get("year").toString() + "-" +
+                                                    getDate.get("monthValue").toString() + "-" +
+                                                    getDate.get("dayOfMonth").toString() + " 00:00:00";
+                                            ;
+                                            LocalDateTime newDate = LocalDateTime.parse(newDateStr, formatter);
+                                            String comment = doc.getString("comment");
+                                            String username = doc.getString("username");
+                                            String photograph = doc.getString("photograph");
+                                            Double latitude = doc.getDouble("latitude");
+                                            Double longitude = doc.getDouble("longitude");
+                                            String locationName = doc.getString("locationName");
+                                            // TODO store location and photograph after halfway
+                                            Event eventToAdd = new Event(habit_name, newDate, comment, photograph, username, latitude, longitude, locationName);
+
+                                            eventToAdd.setFirestoreId(doc.getId());
+                                            if (!events.contains(eventToAdd)) {
+                                                eventsAdapter.addEvent(eventToAdd, true);
+                                            }
+
+                                            //eventsAdapter.sortEvents(true);
+
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+
+
+            }
+        });
 
     }
 
-    private void getHabitData(String userID){
+    private void getHabitData(String userID) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         final Query user = db.collection("Doers")
                 .document(userID)
                 .collection("habits")
                 .orderBy("title");
-        habitAdapter.addSnapshotQuery(user,TAG);
+        habitAdapter.addSnapshotQuery(user, TAG);
     }
 
-    private void processUserData(){
+    private void processUserData() {
         followUserName = (String) userData.get("name");
         followUserID = (String) userData.get("username");
-        followUserPFP = (String) userData.get("profilePic") ;
+        followUserPFP = (String) userData.get("profilePic");
     }
 
-    public static String getTAG(){
+    public static String getTAG() {
         return TAG;
     }
 
+    @Override
+    public void onEventClick(int position) {
+        // do nothing
+    }
 }
