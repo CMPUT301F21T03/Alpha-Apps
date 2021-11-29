@@ -35,23 +35,32 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.habitapp.DataClasses.Event;
 import com.example.habitapp.DataClasses.User;
 import com.example.habitapp.DataClasses.UserList;
 import com.example.habitapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.EventListener;
 import java.util.Map;
 
 public class FollowingFollowers extends AppCompatActivity {
@@ -89,6 +98,7 @@ public class FollowingFollowers extends AppCompatActivity {
 
 
         // set an on click listener for if a follower is pressed
+
         followListView.setOnItemClickListener(this::followItemClicked);
 
         // set a listener for if the search button is pressed
@@ -129,6 +139,7 @@ public class FollowingFollowers extends AppCompatActivity {
     }
 
     private void setFrameType() {
+        // TODO: rename to something more appropriate, used to set all related info to following/followers
         TextView titleText = findViewById(R.id.followingfollowers_title_type);
 
         if (sentFollowString.equalsIgnoreCase("following")){
@@ -148,6 +159,7 @@ public class FollowingFollowers extends AppCompatActivity {
 
     private void followItemClicked(AdapterView<?> adapterView, View view, int pos, long l) {
         if (followType == REQUESTED) {
+            // do something
             User userToAcceptOrDeny = followDataList.get(pos);
 
             android.app.AlertDialog.Builder markdoneBuilder = new android.app.AlertDialog.Builder(this);

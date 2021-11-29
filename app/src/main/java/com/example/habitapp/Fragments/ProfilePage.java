@@ -45,9 +45,10 @@ import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import com.example.habitapp.Activities.BootScreen;
-import com.example.habitapp.Activities.FollowUserView;
+import com.example.habitapp.Activities.SearchedUpUser;
 import com.example.habitapp.Activities.FollowingFollowers;
 import com.example.habitapp.Activities.MainActivity;
+import com.example.habitapp.Activities.SearchedUpUser;
 import com.example.habitapp.DataClasses.User;
 import com.example.habitapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -260,7 +261,7 @@ public class ProfilePage extends Fragment {
     }
 
     private void openUserFrame(String userID) {
-        Intent intent = new Intent(getContext(), FollowUserView.class);
+        Intent intent = new Intent(getContext(), SearchedUpUser.class);
         intent.putExtra("userID", userID);
         intent.putExtra("thisUserID",(String) userData.get("username"));
         intent.putExtra("followStatus","must_be_checked");
