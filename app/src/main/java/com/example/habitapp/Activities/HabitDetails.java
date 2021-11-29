@@ -131,7 +131,7 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
         reason = findViewById(R.id.habitdetails_reason_text);
         date_started = findViewById(R.id.habitdetails_date_started);
         habit_events_title = findViewById(R.id.habitdetails_habit_events_text);
-        done_habit = findViewById(R.id.habitdetails_done_habit);
+        //done_habit = findViewById(R.id.habitdetails_done_habit);
         done_editing = findViewById(R.id.habitdetails_button_done_editing);
         privacy_spinner = findViewById(R.id.habitdetails_privacy_spinner);
 
@@ -343,8 +343,8 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
                 .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        newHabitEvent = new Event(habit.getTitle(), LocalDateTime.now(), "", null, false, (String) userData.get("username"));
-
+                      
+                        newHabitEvent = new Event(habit.getTitle(), LocalDateTime.now(), "", null, (String) userData.get("username"));
 
                         increaseEventCompletionCount();
 
@@ -363,11 +363,11 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
                                     public void onSuccess(DocumentReference documentReference) {
                                         Log.d(TAG,"Successful add");
                                         newHabitEvent.setFirestoreId(documentReference.getId());
-                                        done_habit.setVisibility(View.VISIBLE);
+                                        //done_habit.setVisibility(View.VISIBLE);
                                         // ask if user wants to log the Habit with details
                                         AlertDialog.Builder loghabitBuilder = new AlertDialog.Builder(HabitDetails.this);
                                         loghabitBuilder.setMessage("Do you want to log this habit?")
-                                                .setPositiveButton("Log habit", new DialogInterface.OnClickListener() {
+                                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
                                                         Intent intent = new Intent(HabitDetails.this, EditHabitEvent.class);
@@ -379,7 +379,7 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
                                                         startActivity(intent);
                                                     }
                                                 })
-                                                .setNegativeButton("Cancel", null);
+                                                .setNegativeButton("No", null);
                                         AlertDialog alert2 = loghabitBuilder.create();
                                         alert2.show();
 
@@ -455,7 +455,7 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
     private void setHabitEventAdapter() {
 
         recyclerView = findViewById(R.id.habitdetails_habit_event_list);
-        eventsAdapter = new EventList(events, this);
+        eventsAdapter = new EventList(events, this, R.layout.events_listview_content);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         recyclerView.setAdapter(eventsAdapter);
         getHabitEventList(eventsAdapter);
