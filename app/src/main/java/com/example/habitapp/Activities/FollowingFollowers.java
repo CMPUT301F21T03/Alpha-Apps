@@ -257,6 +257,7 @@ public class FollowingFollowers extends AppCompatActivity {
                                                 userData.get("profilePic").toString()));
                                         followAdapter.notifyDataSetChanged();
                                     } else {
+                                        followAdapter.notifyDataSetChanged();
                                         Log.d(TAG, "User does not exist");
                                     }
                                 } else {
@@ -266,6 +267,7 @@ public class FollowingFollowers extends AppCompatActivity {
                         });
 
                     }
+                    followAdapter.notifyDataSetChanged();
                 }
 
             }

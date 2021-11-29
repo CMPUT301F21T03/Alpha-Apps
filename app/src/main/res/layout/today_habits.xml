@@ -9,13 +9,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="30dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/textView11"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/textView11">
 
         <fragment
-            android:name="com.example.habitapp.Fragments.NotificationButton"
             android:id="@+id/today_notification_button"
+            android:name="com.example.habitapp.Fragments.NotificationButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
