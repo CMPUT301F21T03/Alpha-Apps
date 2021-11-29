@@ -10,10 +10,10 @@
         android:id="@+id/notification_image"
         android:layout_width="33dp"
         android:layout_height="33dp"
-        android:scaleType="fitXY"
+        android:background="@drawable/ic_baseline_notifications_24"
         android:focusable="false"
+        android:scaleType="fitXY"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@drawable/notification_bell_init" />
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
