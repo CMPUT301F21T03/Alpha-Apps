@@ -85,7 +85,7 @@ public class HabitDetailsTest {
         solo.enterText((EditText) solo.getView(R.id.addhabit_habit_title),  new_habit_name);
         solo.clickOnView(solo.getView(R.id.friday_checkbox));
         solo.enterText((EditText) solo.getView(R.id.addhabit_reason),  "To stay healthy!");
-        solo.clickOnText("Select a date");
+        solo.clickOnText("yyyy-mm-dd");
         TextView date_text_field = (TextView) solo.getView(R.id.addhabit_select_date);
         date_text = date_text_field.getText().toString();
         solo.clickOnText("OK");
@@ -123,7 +123,7 @@ public class HabitDetailsTest {
         solo.enterText((EditText) solo.getView(R.id.addhabit_habit_title),  new_habit_name);
         solo.clickOnView(solo.getView(R.id.friday_checkbox));
         solo.enterText((EditText) solo.getView(R.id.addhabit_reason),  "To stay healthy!");
-        solo.clickOnText("Select a date");
+        solo.clickOnText("yyyy-mm-dd");
         TextView date_text_field = (TextView) solo.getView(R.id.addhabit_select_date);
         date_text = date_text_field.getText().toString();
         solo.clickOnText("OK");
@@ -135,7 +135,7 @@ public class HabitDetailsTest {
         solo.sleep(5);
 
         // tap on it and edit all the fields
-        solo.clickOnView(solo.getView(R.id.habitdetails_more));
+        solo.clickOnView(solo.getView(R.id.moreButton));
         solo.clickOnText("Edit habit");
         solo.clearEditText((EditText) solo.getView(R.id.habitdetails_title));
         random_userid = rand.nextInt(upper_bound);
@@ -183,13 +183,13 @@ public class HabitDetailsTest {
         solo.enterText((EditText) solo.getView(R.id.addhabit_habit_title),  new_habit_name);
         solo.clickOnView(solo.getView(R.id.sunday_checkbox));
         solo.enterText((EditText) solo.getView(R.id.addhabit_reason),  "To stay healthy!");
-        solo.clickOnText("Select a date");
+        solo.clickOnText("yyyy-mm-dd");
         solo.clickOnText("OK");
         solo.clickOnView(solo.getView(R.id.addhabit_complete));
 
         solo.waitForText(new_habit_name, 1, 5000);
         solo.clickOnText(new_habit_name);
-        solo.clickOnView(solo.getView(R.id.habitdetails_more));
+        solo.clickOnView(solo.getView(R.id.moreButton));
         solo.clickOnText("Delete habit");
         assertFalse(solo.searchText(new_habit_name));
     }

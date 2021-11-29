@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -85,7 +86,7 @@ public class HabitEventDetailsTest {
         solo.enterText((EditText) solo.getView(R.id.addhabit_habit_title),  new_habit_name);
         solo.clickOnView(solo.getView(R.id.friday_checkbox));
         solo.enterText((EditText) solo.getView(R.id.addhabit_reason),  "To stay healthy!");
-        solo.clickOnText("Select a date");
+        solo.clickOnText("yyyy-mm-dd");
         TextView date_text_field = (TextView) solo.getView(R.id.addhabit_select_date);
         String date_text = date_text_field.getText().toString();
         solo.clickOnText("OK");
@@ -95,18 +96,18 @@ public class HabitEventDetailsTest {
         solo.waitForActivity("HabitDetails");
 
         //create new habit event
-        solo.clickOnView(solo.getView(R.id.habitdetails_more));
-        solo.waitForText("Mark as done", 2, 1000);
+        solo.clickOnView(solo.getView(R.id.moreButton));
+        solo.waitForText("Mark as done", 1, 1000);
         solo.clickOnMenuItem("Mark as done");
-        solo.waitForText("Confirm", 2, 1000);
+        solo.waitForText("Confirm", 1, 1000);
         solo.clickOnButton("Confirm");
-        solo.waitForText("Cancel", 2, 1000);
-        solo.clickOnButton("Cancel");
+        solo.waitForText("No", 1, 1000);
+        solo.clickOnButton("No");
         solo.sleep(1);
 
         HabitDetails activity = (HabitDetails) solo.getCurrentActivity();
-        final ListView events = activity.eventsListview;
-        Event event = (Event)events.getItemAtPosition(0);
+        final ArrayList<Event> events = activity.events;
+        Event event = (Event)events.get(0);
         assertEquals(new_habit_name, event.getName());
     }
 
@@ -127,7 +128,7 @@ public class HabitEventDetailsTest {
         solo.enterText((EditText) solo.getView(R.id.addhabit_habit_title),  new_habit_name);
         solo.clickOnView(solo.getView(R.id.friday_checkbox));
         solo.enterText((EditText) solo.getView(R.id.addhabit_reason),  "To stay healthy!");
-        solo.clickOnText("Select a date");
+        solo.clickOnText("yyyy-mm-dd");
         TextView date_text_field = (TextView) solo.getView(R.id.addhabit_select_date);
         String date_text = date_text_field.getText().toString();
         solo.clickOnText("OK");
@@ -137,21 +138,64 @@ public class HabitEventDetailsTest {
         solo.waitForActivity("HabitDetails");
 
         //create new habit event
-        solo.clickOnView(solo.getView(R.id.habitdetails_more));
-        solo.waitForText("Mark as done", 2, 1000);
+        solo.clickOnView(solo.getView(R.id.moreButton));
+        solo.waitForText("Mark as done", 1, 1000);
         solo.clickOnMenuItem("Mark as done");
-        solo.waitForText("Confirm", 2, 1000);
+        solo.waitForText("Confirm", 1, 1000);
         solo.clickOnButton("Confirm");
-        solo.waitForText("Log habit", 2, 1000);
-        solo.clickOnButton("Log habit");
+        solo.waitForText("Yes", 1, 1000);
+        solo.clickOnButton("Yes");
         solo.enterText((EditText) solo.getView(R.id.edithabitevent_comment),  "this is a comment");
-        solo.clickOnButton("complete");
+        solo.clickOnView(solo.getView(R.id.edithabitevent_complete));
+        solo.clickOnText(new_habit_name);
+
+        solo.waitForText("this is a comment", 1, 1000);
+
+    }
+
+    /**
+     * Asserts habit event is logged with location name and found in RecyclerView
+     */
+    @Test
+    public void addHabitEventAndPopulatesLocation() {
+        solo.clickOnView(solo.getView(R.id.addHabitFragment));
+        solo.waitForText("Add", 2, 1000);
+
+        // generate random username
+        // 1/1000 chance of failing if firestore db is not reset after testing
+        Random rand = new Random();
+        int upper_bound = 1000;
+        int random_userid = rand.nextInt(upper_bound);
+        String new_habit_name = "Running" + String.valueOf(random_userid);
+        solo.enterText((EditText) solo.getView(R.id.addhabit_habit_title),  new_habit_name);
+        solo.clickOnView(solo.getView(R.id.friday_checkbox));
+        solo.enterText((EditText) solo.getView(R.id.addhabit_reason),  "To stay healthy!");
+        solo.clickOnText("yyyy-mm-dd");
+        TextView date_text_field = (TextView) solo.getView(R.id.addhabit_select_date);
+        String date_text = date_text_field.getText().toString();
+        solo.clickOnText("OK");
+        solo.clickOnView(solo.getView(R.id.addhabit_complete));
+        solo.waitForText(new_habit_name, 1, 5000);
+        solo.clickOnText(new_habit_name);
         solo.waitForActivity("HabitDetails");
 
-        HabitDetails activity = (HabitDetails) solo.getCurrentActivity();
-        final ListView events = activity.eventsListview;
-        Event event = (Event)events.getItemAtPosition(0);
-        assertEquals("this is a comment", event.getComment());
+        //create new habit event
+        solo.clickOnView(solo.getView(R.id.moreButton));
+        solo.waitForText("Mark as done", 1, 1000);
+        solo.clickOnMenuItem("Mark as done");
+        solo.waitForText("Confirm", 1, 1000);
+        solo.clickOnButton("Confirm");
+        solo.waitForText("Yes", 1, 1000);
+        solo.clickOnButton("Yes");
+
+        solo.clickOnView(solo.getView(R.id.edithabitevent_location_button));
+        solo.clickOnView(solo.getView(R.id.actiivty_maps_close_button));
+        solo.enterText((EditText) solo.getView(R.id.edithabitevent_location_name), "Home");
+        solo.clickOnView(solo.getView(R.id.edithabitevent_complete));
+        solo.clickOnText(new_habit_name);
+
+        assertTrue(solo.searchText("Home"));
+
 
     }
 
@@ -172,7 +216,7 @@ public class HabitEventDetailsTest {
         solo.enterText((EditText) solo.getView(R.id.addhabit_habit_title),  new_habit_name);
         solo.clickOnView(solo.getView(R.id.friday_checkbox));
         solo.enterText((EditText) solo.getView(R.id.addhabit_reason),  "To stay healthy!");
-        solo.clickOnText("Select a date");
+        solo.clickOnText("yyyy-mm-dd");
         TextView date_text_field = (TextView) solo.getView(R.id.addhabit_select_date);
         String date_text = date_text_field.getText().toString();
         solo.clickOnText("OK");
@@ -182,24 +226,26 @@ public class HabitEventDetailsTest {
         solo.waitForActivity("HabitDetails");
 
         //create new habit event
-        solo.clickOnView(solo.getView(R.id.habitdetails_more));
-        solo.waitForText("Mark as done", 2, 1000);
+        solo.clickOnView(solo.getView(R.id.moreButton));
+        solo.waitForText("Mark as done", 1, 1000);
         solo.clickOnMenuItem("Mark as done");
-        solo.waitForText("Confirm", 2, 1000);
+        solo.waitForText("Confirm", 1, 1000);
         solo.clickOnButton("Confirm");
-        solo.waitForText("Log habit", 2, 1000);
-        solo.clickOnButton("Log habit");
+        solo.waitForText("Yes", 1, 1000);
+        solo.clickOnButton("Yes");
         solo.enterText((EditText) solo.getView(R.id.edithabitevent_comment),  "this is a comment");
-        solo.clickOnButton("complete");
-        solo.waitForActivity("HabitDetails");
+        solo.clickOnView(solo.getView(R.id.edithabitevent_complete));
+
 
         //go to habiteventdetails page
-        solo.clickInList(1);
-        solo.waitForActivity("HabitEventDetails");
-        solo.assertCurrentActivity("Wrong Activity", HabitEventDetails.class);
-        solo.waitForText(new_habit_name);
-        solo.waitForText("this is a comment");
-        solo.waitForText(date_text);
+        solo.clickOnText(new_habit_name);
+        solo.clickOnText("this is a comment");
+        //solo.waitForActivity("HabitEventDetails");
+        //solo.assertCurrentActivity("Wrong Activity", HabitEventDetails.class);
+        //solo.waitForText(new_habit_name);
+        assertTrue(solo.searchText("this is a comment"));
+
+
 
     }
 
@@ -220,7 +266,7 @@ public class HabitEventDetailsTest {
         solo.enterText((EditText) solo.getView(R.id.addhabit_habit_title),  new_habit_name);
         solo.clickOnView(solo.getView(R.id.friday_checkbox));
         solo.enterText((EditText) solo.getView(R.id.addhabit_reason),  "To stay healthy!");
-        solo.clickOnText("Select a date");
+        solo.clickOnText("yyyy-mm-dd");
         TextView date_text_field = (TextView) solo.getView(R.id.addhabit_select_date);
         String date_text = date_text_field.getText().toString();
         solo.clickOnText("OK");
@@ -230,27 +276,31 @@ public class HabitEventDetailsTest {
         solo.waitForActivity("HabitDetails");
 
         //create new habit event
-        solo.clickOnView(solo.getView(R.id.habitdetails_more));
-        solo.waitForText("Mark as done", 2, 1000);
+        solo.clickOnView(solo.getView(R.id.moreButton));
+        solo.waitForText("Mark as done", 1, 1000);
         solo.clickOnMenuItem("Mark as done");
-        solo.waitForText("Confirm", 2, 1000);
+        solo.waitForText("Confirm", 1, 1000);
         solo.clickOnButton("Confirm");
-        solo.waitForText("Log habit", 2, 1000);
-        solo.clickOnButton("Log habit");
+        solo.waitForText("Yes", 1, 1000);
+        solo.clickOnButton("Yes");
         solo.enterText((EditText) solo.getView(R.id.edithabitevent_comment),  "this is a comment");
-        solo.clickOnButton("complete");
-        solo.waitForActivity("HabitDetails");
+        solo.clickOnView(solo.getView(R.id.edithabitevent_complete));
+
 
         //go to habiteventdetails page
-        solo.clickInList(1);
+        solo.clickOnText(new_habit_name);
+        solo.clickOnText("this is a comment");
         solo.waitForActivity("HabitEventDetails");
         solo.clickOnView(solo.getView(R.id.habiteventdetails_delete));
+        solo.waitForText("Yes", 1, 1000);
+        solo.clickOnButton("Yes");
         solo.waitForActivity("HabitDetails");
 
+        assertFalse(solo.searchText("this is a comment"));
         //check habit events list is empty
-        HabitDetails activity = (HabitDetails) solo.getCurrentActivity();
-        final ArrayList<Event> events = activity.events;
-        assertTrue(events.isEmpty());
+        //HabitDetails activity = (HabitDetails) solo.getCurrentActivity();
+        //final ArrayList<Event> events = activity.events;
+        //assertTrue(events.isEmpty());
 
     }
 

@@ -19,34 +19,36 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/profilelistentry_pfp_edit_background"
-                android:layout_width="75dp"
-                android:layout_height="75dp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
                 android:visibility="invisible"
                 app:cardBackgroundColor="@color/purple_200"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
 
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/profilelistentry_pfp_background"
-                android:layout_width="75dp"
-                android:layout_height="75dp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
                 app:cardBackgroundColor="@color/black"
                 app:cardCornerRadius="250dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
 
                 <androidx.cardview.widget.CardView
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
-                    android:layout_gravity="center"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
                     app:cardCornerRadius="250dp">
 
                     <ImageView
                         android:id="@+id/profilelistentry_photo"
-                        android:layout_width="72dp"
-                        android:layout_height="72dp"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_gravity="center_vertical"
                         android:scaleType="centerCrop"
                         android:src="@drawable/default_user_icon" />
 
@@ -58,7 +60,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="fill_parent"
             android:orientation="vertical"
             android:paddingLeft="10dp">
 
@@ -67,15 +69,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:editable="false"
+                android:layout_weight="0.4"
                 android:ems="10"
-                android:inputType="textPersonName"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:inputType="textMultiLine"
+                android:textColor="@color/black"
                 android:text="Username_text" />
 
             <TextView
                 android:id="@+id/profilelistentry_id"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="UserID_text" />
+                android:layout_marginStart="5dp"
+                android:layout_weight="0.6"
+                android:gravity="top"
+                android:text="UserID_text"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
 
         </LinearLayout>
     </LinearLayout>

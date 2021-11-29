@@ -129,13 +129,14 @@ public class AddHabit extends Fragment {
         boolean saturdayVal = saturday.isChecked();
 
         Log.i("date", habitDate);
+        DaysOfWeek frequency = new DaysOfWeek(sundayVal,mondayVal, tuesdayVal, wednesdayVal,thursdayVal, fridayVal, saturdayVal);
 
-        if (TextUtils.isEmpty(habitReason) || TextUtils.isEmpty(habitName) || habitDate.equals("Select a date 00:00:00")){
-            Toast.makeText(getContext(), "Complete habit details!", Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(habitReason) || TextUtils.isEmpty(habitName) || habitDate.equals("Select a date 00:00:00") || frequency.areAllFalse()){
+            Toast.makeText(getContext(), "Complete missing habit details!", Toast.LENGTH_SHORT).show();
         }
         else{
             // format the input data into a new Habit
-            DaysOfWeek frequency = new DaysOfWeek(sundayVal,mondayVal, tuesdayVal, wednesdayVal,thursdayVal, fridayVal, saturdayVal);
+
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss");
             LocalDateTime newDate = LocalDateTime.parse(habitDate, formatter);
             Habit newHabit = new Habit(habitName, habitReason, newDate, frequency, privacyBool, -1, -1);

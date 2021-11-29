@@ -122,7 +122,7 @@ public class Profile extends Fragment {
         TextView idView = view.findViewById(R.id.profilelistentry_id);
         profilePicView.setImageBitmap(profile.getProfilePic());
         usernameEditText.setText(profile.getName());
-        idView.setText(profile.getUniqueID());
+        idView.setText("@"+profile.getUniqueID());
     }
 
     public void getUserData(){
