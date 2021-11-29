@@ -158,13 +158,14 @@ public class Event implements Parcelable {
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
         Log.d(TAG,(String)userData.get("username"));
-        Log.d(TAG,getFirestoreId());
+        //Log.d(TAG,getFirestoreId());
         final CollectionReference eventsref = db.collection("Doers")
                 .document((String)userData.get("username"))
                 .collection("habits")
                 .document(habit.getFirestoreId())
                 .collection("events");
-        eventsref.document(getFirestoreId())
+
+        eventsref.document(habit.getFirestoreId())
                 .set(this)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
