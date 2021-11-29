@@ -40,6 +40,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.habitapp.DataClasses.Event;
+import com.example.habitapp.DataClasses.EventList;
 import com.example.habitapp.DataClasses.Habit;
 import com.example.habitapp.DataClasses.NonReorderableHabitList;
 import com.example.habitapp.R;
@@ -54,7 +55,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class SearchedUpUser extends AppCompatActivity {
+public class SearchedUpUser extends AppCompatActivity implements EventList.OnEventListener  {
 
     private static final String TAG = "FollowUserViewTAG";
     private int followStatus;
@@ -63,9 +64,8 @@ public class SearchedUpUser extends AppCompatActivity {
     private static final int REQUESTED = 2;
     private static final int NEITHER = 3;
 
-    private ArrayList<Habit> habits = new ArrayList<Habit>();
+    private ArrayList<Habit> habits = new ArrayList<>();
     private NonReorderableHabitList habitAdapter;
-    private ArrayList<Event> events;
     private String followUserName;
     private String followUserID;
     private String followUserPFP;
@@ -85,7 +85,7 @@ public class SearchedUpUser extends AppCompatActivity {
         userID = intent.getStringExtra("userID");
         // user ID of user currently logged in
         thisUserID = intent.getStringExtra("thisUserID");
-        if(userID.equals(thisUserID)){
+        if (userID.equals(thisUserID)) {
             // disable following if user views own profile
             TextView followTag = this.findViewById(R.id.followuserview_follow_status);
             followTag.setEnabled(false);
@@ -103,7 +103,7 @@ public class SearchedUpUser extends AppCompatActivity {
         });
         // check if user exists, if not, direct user back
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        try{
+        try {
             DocumentReference user = db.collection("Doers").document(userID);
             user.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
@@ -129,8 +129,7 @@ public class SearchedUpUser extends AppCompatActivity {
                     }
                 }
             });
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             hidePage();
             builder.show();
         }
@@ -147,13 +146,13 @@ public class SearchedUpUser extends AppCompatActivity {
         popupMenu.getMenuInflater().inflate(R.menu.following_status_menu, popupMenu.getMenu());
 
         // remove buttons based on what status this user has
-        if (followStatus == FOLLOWING){
+        if (followStatus == FOLLOWING) {
             popupMenu.getMenu().removeItem(R.id.request_follow);
         }
-        if (followStatus == REQUESTED){
+        if (followStatus == REQUESTED) {
             popupMenu.getMenu().removeItem(R.id.request_follow);
         }
-        if (followStatus == NEITHER){
+        if (followStatus == NEITHER) {
             popupMenu.getMenu().removeItem(R.id.unfollow);
         }
 
@@ -164,26 +163,26 @@ public class SearchedUpUser extends AppCompatActivity {
                 if (menuItem.getItemId() == R.id.request_follow) {
                     // Add the user in question to this user's requested list, and change status to Requested
                     user.update("requested", FieldValue.arrayUnion(thisUserID))
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if(task.isSuccessful()){
-                                    // Change status to requested
-                                    setFollowStatusTag("requested");
-                                    popupMenu.getMenuInflater().inflate(R.menu.following_status_menu, popupMenu.getMenu());
-                                    popupMenu.getMenu().removeItem(R.id.request_follow);
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        // Change status to requested
+                                        setFollowStatusTag("requested");
+                                        popupMenu.getMenuInflater().inflate(R.menu.following_status_menu, popupMenu.getMenu());
+                                        popupMenu.getMenu().removeItem(R.id.request_follow);
+                                    }
                                 }
-                            }
-                        });
+                            });
 
                 } else if (menuItem.getItemId() == R.id.unfollow) {
-                    if (followStatus == FOLLOWING){
+                    if (followStatus == FOLLOWING) {
                         // Remove the user from the following list, remove from user's own following list accordingly, and change status to neither
                         user.update("followers", FieldValue.arrayRemove(thisUserID))
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
-                                        if(task.isSuccessful()){
+                                        if (task.isSuccessful()) {
                                             // update own following list
                                             thisUser.update("following", FieldValue.arrayRemove(userID))
                                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -198,13 +197,13 @@ public class SearchedUpUser extends AppCompatActivity {
                                         }
                                     }
                                 });
-                    }else if (followStatus == REQUESTED){
+                    } else if (followStatus == REQUESTED) {
                         //Remove the user from the requested list, and change status to neither
                         user.update("requested", FieldValue.arrayRemove(thisUserID))
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
-                                        if(task.isSuccessful()){
+                                        if (task.isSuccessful()) {
                                             // Change status to none
                                             setFollowStatusTag("nothing");
                                             popupMenu.getMenuInflater().inflate(R.menu.following_status_menu, popupMenu.getMenu());
@@ -239,8 +238,8 @@ public class SearchedUpUser extends AppCompatActivity {
         final Query userHabits = db.collection("Doers")
                 .document(userID)
                 .collection("habits")
-                .whereEqualTo("privacy",false);
-        habitAdapter.addSnapshotQuery(userHabits,TAG);
+                .whereEqualTo("privacy", false);
+        habitAdapter.addSnapshotQuery(userHabits, TAG);
 
         // populate the profile information
         TextView usernameEditText = this.findViewById(R.id.profilelistentry_username);
@@ -253,7 +252,7 @@ public class SearchedUpUser extends AppCompatActivity {
                 try {
                     URL url = new URL(followUserPFP);
                     Bitmap imageBitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                    new Handler(Looper.getMainLooper()).post(new Runnable(){
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
                             profilePicView.setImageBitmap(imageBitmap);
@@ -268,7 +267,7 @@ public class SearchedUpUser extends AppCompatActivity {
 
         thread.start();
         usernameEditText.setText(followUserName);
-        idView.setText("@"+followUserID);
+        idView.setText("@" + followUserID);
 
     }
 
@@ -276,23 +275,20 @@ public class SearchedUpUser extends AppCompatActivity {
         String type = "neither";
         ArrayList<String> userFollowers = (ArrayList<String>) userData.get("followers");
         ArrayList<String> userRequested = (ArrayList<String>) userData.get("requested");
-        if(userFollowers != null){
-            if(userFollowers.contains(thisUserID)){
+        if (userFollowers != null) {
+            if (userFollowers.contains(thisUserID)) {
                 type = "following";
-            }
-            else if(userRequested != null){
-                if(userRequested.contains(thisUserID)){
+            } else if (userRequested != null) {
+                if (userRequested.contains(thisUserID)) {
                     type = "requested";
                 }
-            }
-            else{
+            } else {
                 type = "neither";
             }
-        }
-        else{
+        } else {
             type = "neither";
         }
-        if(userID.equals(thisUserID)){
+        if (userID.equals(thisUserID)) {
             type = "following";
         }
 
@@ -309,19 +305,19 @@ public class SearchedUpUser extends AppCompatActivity {
                 break;
         }
 
-        if (followStatus == FOLLOWING){ // show the user data
+        if (followStatus == FOLLOWING) { // show the user data
             setFollowStatusTag("following");
             this.findViewById(R.id.followuserview_no_data_textview).setVisibility(View.GONE);
-        }else{ // dont show the user data
+        } else { // dont show the user data
             this.findViewById(R.id.layout).setVisibility(View.GONE);
             this.findViewById(R.id.followuserview_habit_event_list).setVisibility(View.GONE);
             this.findViewById(R.id.textView24).setVisibility(View.GONE);
             this.findViewById(R.id.textView27).setVisibility(View.GONE);
         }
-        if (followStatus == REQUESTED){
+        if (followStatus == REQUESTED) {
             setFollowStatusTag("requested");
         }
-        if (followStatus == NEITHER){
+        if (followStatus == NEITHER) {
             setFollowStatusTag("nothing");
         }
     }
@@ -333,11 +329,11 @@ public class SearchedUpUser extends AppCompatActivity {
             followTag.setText("Following");
             followTag.setTextColor(R.color.green);
         }
-        if (type.equals("requested")){
+        if (type.equals("requested")) {
             followTag.setText("Requested");
             followTag.setTextColor(R.color.gray);
         }
-        if (type.equals("nothing")){
+        if (type.equals("nothing")) {
             followTag.setText("Follow");
             followTag.setTextColor(R.color.blue);
         }
@@ -358,23 +354,32 @@ public class SearchedUpUser extends AppCompatActivity {
 
     }
 
-    private void getHabitData(String userID){
+    private void getHabitData(String userID) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         final Query user = db.collection("Doers")
                 .document(userID)
                 .collection("habits")
                 .orderBy("title");
-        habitAdapter.addSnapshotQuery(user,TAG);
+        habitAdapter.addSnapshotQuery(user, TAG);
     }
 
-    private void processUserData(){
+    private void processUserData() {
         followUserName = (String) userData.get("name");
         followUserID = (String) userData.get("username");
-        followUserPFP = (String) userData.get("profilePic") ;
+        followUserPFP = (String) userData.get("profilePic");
     }
 
-    public static String getTAG(){
+    public static String getTAG() {
         return TAG;
     }
 
+    @Override
+    public void onEventClick(int position) {
+
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
+    }
 }
