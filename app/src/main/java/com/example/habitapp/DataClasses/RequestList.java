@@ -66,7 +66,6 @@ public class RequestList extends ArrayAdapter<Request> {
         try{
             ViewHoldler viewHoldler;
             if (convertView == null){
-                Log.d(">>>>>>>", "i got herererere");
                 convertView = LayoutInflater.from(context).inflate(R.layout.noti_item, parent, false);
                 viewHoldler = new ViewHoldler();
                 viewHoldler.notiText = convertView.findViewById(R.id.noti_text);
@@ -132,26 +131,31 @@ public class RequestList extends ArrayAdapter<Request> {
         userIDs.remove(i);
         userData.put("incomingrequest",userIDs);
         findUserRef1.update("incomingrequest", userIDs);
-        final DocumentReference findUserRef2 = db.collection("Doers").document(otherUserId);
-        findUserRef2.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Map userData = document.getData();
-                        ArrayList<String> sentRequests = (ArrayList<String>) userData.get("requested");
-                        sentRequests.remove(i);
-                        findUserRef2.update("requested", sentRequests);
-                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+        try{
+            final DocumentReference findUserRef2 = db.collection("Doers").document(otherUserId);
+            findUserRef2.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            Map userData = document.getData();
+                            ArrayList<String> sentRequests = (ArrayList<String>) userData.get("requested");
+                            sentRequests.remove(i);
+                            findUserRef2.update("requested", sentRequests);
+                            Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        } else {
+                            Log.d(TAG, "No such document");
+                        }
                     } else {
-                        Log.d(TAG, "No such document");
+                        Log.d(TAG, "get failed with ", task.getException());
                     }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
                 }
-            }
-        });
+            });}
+        catch(Exception e){
+            Log.d(TAG, e.toString());
+        }
+
 
 
 
