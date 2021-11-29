@@ -363,7 +363,6 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
                                                         increaseEventCompletionCount();
                                                         Map updateFields = new HashMap<>();
                                                         updateFields.put("dateLastChecked",habit.getDateLastChecked());
-                                                        Log.d(TAG,habit.getDaysTotal().toString());
                                                         userHabit.update(updateFields);
                                                         userHabit.update("daysTotal", FieldValue.increment(1));
                                                         userHabit.update("daysCompleted",FieldValue.increment(1));
