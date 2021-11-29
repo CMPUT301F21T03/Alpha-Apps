@@ -115,6 +115,11 @@ public class DaysOfWeek implements Serializable {
         return weeklyList;
     }
 
+    /**
+     * Returns a boolean telling us whether or not all of the days in the week are false
+     * comes in handy for making sure users didn't leave the field blank when adding a new habit/editing
+     * @return a boolean telling us whether or not all of the days in the week are false
+     */
     public boolean areAllFalse() {
         ArrayList<Boolean> weeklyList = this.getAll() ;
         Boolean all_false = true;

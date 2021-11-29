@@ -1,5 +1,7 @@
 package com.example.habitapp;
 
+import static org.junit.Assert.assertFalse;
+
 import android.app.Activity;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -8,21 +10,20 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 
 import com.example.habitapp.Activities.BootScreen;
-import com.example.habitapp.Activities.EditHabitEvent;
-import com.example.habitapp.Activities.HabitEventDetails;
+import com.example.habitapp.Activities.LogIn;
+import com.example.habitapp.Activities.Main;
+import com.robotium.solo.Solo;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.example.habitapp.Activities.LogIn;
-import com.example.habitapp.Activities.Main;
-import com.robotium.solo.Solo;
 import java.util.Random;
 
-public class EditHabitEventTest {
+public class FeedTest {
     private Solo solo;
+    private String new_habit_name;
+    private String date_text;
 
     @Rule
     public ActivityTestRule<BootScreen> rule = new ActivityTestRule(LogIn.class, true, true);
@@ -62,12 +63,8 @@ public class EditHabitEventTest {
         solo.assertCurrentActivity("Wrong Activity", Main.class);
     }
 
-    /**
-     * Asserts edit habit event is opened when edit button is pressed
-     */
     @Test
-    public void goToEditHabitEvent() {
-
+    public void addPublicHabitEventAndPopulates(){
         solo.clickOnView(solo.getView(R.id.addHabitFragment));
         solo.waitForText("Add", 2, 1000);
 
@@ -84,6 +81,9 @@ public class EditHabitEventTest {
         TextView date_text_field = (TextView) solo.getView(R.id.addhabit_select_date);
         String date_text = date_text_field.getText().toString();
         solo.clickOnText("OK");
+        solo.clickOnText("Private");
+        solo.clickOnText("Public");
+
         solo.clickOnView(solo.getView(R.id.addhabit_complete));
         solo.waitForText(new_habit_name, 1, 5000);
         solo.clickOnText(new_habit_name);
@@ -97,28 +97,31 @@ public class EditHabitEventTest {
         solo.clickOnButton("Confirm");
         solo.waitForText("Yes", 1, 1000);
         solo.clickOnButton("Yes");
-        solo.enterText((EditText) solo.getView(R.id.edithabitevent_comment),  "this is a comment");
+        String random_comment = "comment" + String.valueOf(random_userid);
+        solo.enterText((EditText) solo.getView(R.id.edithabitevent_comment),  random_comment);
         solo.clickOnView(solo.getView(R.id.edithabitevent_complete));
         solo.clickOnView(solo.getView(R.id.go_back_button));
-        //solo.waitForActivity("HabitDetails");
-        solo.clickOnText(new_habit_name);
 
-        //go to habiteventdetails page
-        solo.clickOnText("this is a comment");
-        solo.waitForActivity("HabitEventDetails");
-        //solo.clickOnButton("Edit");
-        solo.clickOnView(solo.getView(R.id.habiteventdetails_edit));
-        solo.waitForActivity("EditHabitEvent");
-        solo.assertCurrentActivity("Wrong Activity", EditHabitEvent.class);
+        solo.waitForText(random_comment, 1, 1000);
+
+        solo.clickOnMenuItem("Profile");
+        solo.waitForText("Profile", 2, 1000);
+        solo.clickOnView(solo.getView(R.id.profile_log_out));
+
+        solo.clickOnView(solo.getView(R.id.bootscreen_log_in));
+        solo.enterText((EditText) solo.getView(R.id.loginscreen_username), "test_following");
+        solo.enterText((EditText) solo.getView(R.id.loginscreen_password), "password");
+        solo.clickOnView(solo.getView(R.id.signupscreen_sign_up)); // misleading button name
+
+        solo.clickOnMenuItem("Feed");
+        solo.waitForText("Feed", 2, 1000);
+
+        solo.waitForText(random_comment, 1, 1000);
 
     }
 
-    /**
-     * Asserts comment field is changed and updated in listview and event details
-     */
     @Test
-    public void editHabitEventDetails() {
-
+    public void addPrivateHabitEventAndPopulates(){
         solo.clickOnView(solo.getView(R.id.addHabitFragment));
         solo.waitForText("Add", 2, 1000);
 
@@ -135,6 +138,8 @@ public class EditHabitEventTest {
         TextView date_text_field = (TextView) solo.getView(R.id.addhabit_select_date);
         String date_text = date_text_field.getText().toString();
         solo.clickOnText("OK");
+
+
         solo.clickOnView(solo.getView(R.id.addhabit_complete));
         solo.waitForText(new_habit_name, 1, 5000);
         solo.clickOnText(new_habit_name);
@@ -148,32 +153,28 @@ public class EditHabitEventTest {
         solo.clickOnButton("Confirm");
         solo.waitForText("Yes", 1, 1000);
         solo.clickOnButton("Yes");
-        solo.enterText((EditText) solo.getView(R.id.edithabitevent_comment),  "this is a comment");
-        //solo.clickOnButton("complete");
+        String random_comment = "comment" + String.valueOf(random_userid);
+        solo.enterText((EditText) solo.getView(R.id.edithabitevent_comment),  random_comment);
         solo.clickOnView(solo.getView(R.id.edithabitevent_complete));
         solo.clickOnView(solo.getView(R.id.go_back_button));
-        //solo.waitForActivity("HabitDetails");
-        solo.clickOnText(new_habit_name);
 
-        //go to habiteventdetails page
-        solo.clickOnText("this is a comment");
-        solo.waitForActivity("HabitEventDetails");
-        //solo.clickOnButton("edit");
-        solo.clickOnView(solo.getView(R.id.habiteventdetails_edit));
-        solo.waitForActivity("EditHabitEvent");
+        solo.waitForText(random_comment, 1, 1000);
 
-        solo.clearEditText((EditText) solo.getView(R.id.edithabitevent_comment));
-        solo.enterText((EditText) solo.getView(R.id.edithabitevent_comment),  "this is new");
-        solo.clickOnView(solo.getView(R.id.edithabitevent_complete));
-        solo.waitForActivity("HabitEventDetails");
-        solo.waitForText("this is new", 1, 1000);
+        solo.clickOnMenuItem("Profile");
+        solo.waitForText("Profile", 2, 1000);
+        solo.clickOnView(solo.getView(R.id.profile_log_out));
+
+        solo.clickOnView(solo.getView(R.id.bootscreen_log_in));
+        solo.enterText((EditText) solo.getView(R.id.loginscreen_username), "test_following");
+        solo.enterText((EditText) solo.getView(R.id.loginscreen_password), "password");
+        solo.clickOnView(solo.getView(R.id.signupscreen_sign_up)); // misleading button name
+
+        solo.clickOnMenuItem("Feed");
+        solo.waitForText("Feed", 2, 1000);
+
+        assertFalse(solo.searchText(random_comment));
 
 
-    }
-
-    @After
-    public void tearDown() throws Exception{
-        solo.finishOpenedActivities();
     }
 
 }

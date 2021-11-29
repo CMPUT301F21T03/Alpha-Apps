@@ -105,7 +105,7 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
     private CheckBox saturday_button;
 
 //    public ListView eventsListview;
-    private RecyclerView recyclerView;
+    public RecyclerView recyclerView;
     private EventList eventsAdapter;
     public ArrayList<Event> events = new ArrayList<>();
 
