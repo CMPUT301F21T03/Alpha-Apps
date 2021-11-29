@@ -13,12 +13,14 @@
  * 1.0       Eric      Oct-21-2021   Created
  * 1.1       Moe       Nov-24-2021   Search functionality added
  * 1.2       Eric      Nov-27-2021   Social feed functionality added
+ * 1.3       Leah      Nov-29-2021   Now opens user profile when a feed entry is clicked
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
 package com.example.habitapp.Fragments;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -34,10 +36,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.habitapp.Activities.FollowUserView;
 import com.example.habitapp.Activities.Main;
 import com.example.habitapp.DataClasses.Event;
 import com.example.habitapp.DataClasses.EventList;
 import com.example.habitapp.DataClasses.Habit;
+import com.example.habitapp.DataClasses.User;
 import com.example.habitapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -65,8 +69,6 @@ public class Feed extends Fragment implements EventList.OnEventListener {
         super(R.layout.feed);
     }
 
-    private EditText searchedUserNameEdit;
-    private String searchedUserName;
     private RecyclerView feedRecyclerView;
     private EventList eventsAdapter;
     public ArrayList<Event> events = new ArrayList<>();
@@ -85,11 +87,6 @@ public class Feed extends Fragment implements EventList.OnEventListener {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         Main activity = (Main) getActivity();
         userData = activity.getUserData();
-
-//        searchedUserNameEdit = (EditText) view.findViewById(R.id.feed_search_field);
-//        // do something
-//        ImageButton searchButton = view.findViewById(R.id.feed_search_button);
-//        searchButton.setOnClickListener(this::searchButtonPressed);
 
         feedRecyclerView = view.findViewById(R.id.feed_recycler_view);
         eventsAdapter = new EventList(events, this, R.layout.feed_events_listview_content);
@@ -206,40 +203,13 @@ public class Feed extends Fragment implements EventList.OnEventListener {
         });
     }
 
-//    @RequiresApi(api = Build.VERSION_CODES.O)
-//    private void searchButtonPressed(View view) {
-//
-//        FirebaseFirestore db;
-//        db = FirebaseFirestore.getInstance();
-//        searchedUserName = searchedUserNameEdit.getText().toString();
-//
-//        AlertDialog.Builder searchAlert = new AlertDialog.Builder(getActivity())
-//                .setNegativeButton("OK", null);
-//
-//        final DocumentReference findUserRef = db.collection("Doers").document(searchedUserName);
-//        findUserRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                if (task.isSuccessful()) {
-//                    DocumentSnapshot document = task.getResult();
-//                    // checks if the username searched exists in database
-//                    if (document.exists()) {
-//                        Map UserData = document.getData();
-//                        // TODO move to user's page
-//                        searchAlert.setMessage("Username: \"" + searchedUserName + "\"" + " exists!");
-//                        searchAlert.show();
-//                    } else {
-//                        searchAlert.setMessage("Username: \"" + searchedUserName + "\"" + " doesn't exist");
-//                        searchAlert.show();
-//                    }
-//                }
-//            }
-//        });
-//    }
-
     @Override
     public void onEventClick(int position) {
-        // do somn
+        Intent intent = new Intent(getContext(), FollowUserView.class);
+        Event eventPos = events.get(position);
+        intent.putExtra("userID",eventPos.getUsername());
+        intent.putExtra("thisUserID",userData.get("username").toString());
+        startActivity(intent);
     }
 
 

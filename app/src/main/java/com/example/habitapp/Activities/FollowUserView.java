@@ -42,8 +42,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.habitapp.DataClasses.Event;
+import com.example.habitapp.DataClasses.EventList;
 import com.example.habitapp.DataClasses.Habit;
 import com.example.habitapp.DataClasses.HabitList;
 import com.example.habitapp.DataClasses.OldHabitList;
@@ -64,6 +67,10 @@ public class FollowUserView extends AppCompatActivity {
 
     private static final String TAG = "FollowUserViewTAG";
     private int followStatus;
+
+    private RecyclerView feedRecyclerView;
+    private EventList eventsAdapter;
+    public ArrayList<Event> events = new ArrayList<>();
 
     private static final int FOLLOWING = 1;
     private static final int REQUESTED = 2;
@@ -122,14 +129,11 @@ public class FollowUserView extends AppCompatActivity {
                             processUserData();
                             populateFrame();
                             setFollowStatusFrame();
-
-                            Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                         } else {
                             hidePage();
                             builder.show();
                         }
                     } else {
-                        Log.d(TAG, "get failed with ", task.getException());
                         hidePage();
                         builder.show();
                     }
@@ -239,6 +243,9 @@ public class FollowUserView extends AppCompatActivity {
         habitAdapter = new OldHabitList(this, habits);
         allHabitsListView.setAdapter(habitAdapter);
 
+        // populate events
+        getEventData();
+
         // make a query for all the user habits that are public
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
@@ -265,7 +272,6 @@ public class FollowUserView extends AppCompatActivity {
                             profilePicView.setImageBitmap(imageBitmap);
                         }
                     });
-                    Log.d(TAG, "Successfully set image");
                 } catch (Exception e) {
                     Log.d(TAG, e.toString());
                 }
@@ -304,7 +310,6 @@ public class FollowUserView extends AppCompatActivity {
 
         switch (type) {
             case "following":
-                Log.d(TAG, type);
                 followStatus = FOLLOWING;
                 break;
             case "requested":
@@ -358,20 +363,19 @@ public class FollowUserView extends AppCompatActivity {
         }
     }
 
-    private void getUserData(String userID) {
+    private void getEventData() {
         //TODO get this users habit events (the first one from each habit)
-        getHabitData(userID);
+        /*
+        * feedRecyclerView = this.findViewById(R.id.followuserview_habit_event_list);
+        eventsAdapter = new EventList(events, this, R.layout.feed_events_listview_content);
+        feedRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        feedRecyclerView.setAdapter(eventsAdapter);
+        getHabitEventList(eventsAdapter);
+        * */
+
 
     }
 
-    private void getHabitData(String userID){
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        final Query user = db.collection("Doers")
-                .document(userID)
-                .collection("habits")
-                .orderBy("title");
-        habitAdapter.addSnapshotQuery(user,TAG);
-    }
 
     private void processUserData(){
         followUserName = (String) userData.get("name");
