@@ -352,8 +352,8 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
                 .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                      
-                        newHabitEvent = new Event(habit.getTitle(), LocalDateTime.now(), "", null, (String) userData.get("username"));
+
+                        newHabitEvent = new Event(habit.getTitle(), LocalDateTime.now(), "", null, (String) userData.get("username"), 0.0, 0.0, "");
 
                         increaseEventCompletionCount();
 
@@ -372,6 +372,8 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
                                     public void onSuccess(DocumentReference documentReference) {
                                         Log.d(TAG,"Successful add");
                                         newHabitEvent.setFirestoreId(documentReference.getId());
+                                        System.out.println("On creation, ID is:");
+                                        System.out.println(documentReference.getId());
                                         //done_habit.setVisibility(View.VISIBLE);
                                         // ask if user wants to log the Habit with details
                                         AlertDialog.Builder loghabitBuilder = new AlertDialog.Builder(HabitDetails.this);

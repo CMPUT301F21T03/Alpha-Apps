@@ -100,6 +100,9 @@ public class HabitEventDetails extends AppCompatActivity {
         ImageView photographView = findViewById(R.id.habiteventdetails_camera_image);
         //TextView locationText = findViewById(R.id.habiteventdetails_location);
 
+        Button locationButton = findViewById(R.id.habiteventdetails_location);
+
+
         nameText.setText(habitName);
         nameText.setEnabled(false);
         commentText.setText(comment);
@@ -128,6 +131,10 @@ public class HabitEventDetails extends AppCompatActivity {
             thread.start();
         }
 
+        if (event.getLocationName() != null && event.getLatitude() != null && event.getLongitude() != null) {
+            locationButton.setText(event.getLocationName());
+        }
+
         // set a listener for the edit button
         Button editButton = findViewById(R.id.habiteventdetails_edit);
         editButton.setOnClickListener(this::habitEventDetailsEditButtonPressed);
@@ -153,6 +160,8 @@ public class HabitEventDetails extends AppCompatActivity {
         intent.putExtra("event", event);
         intent.putExtra("firestoreId",event.getFirestoreId());
         intent.putExtra("habit", habit);
+        intent.putExtra("selectedLatitude", event.getLatitude());
+        intent.putExtra("selectedLongitude", event.getLongitude());
         intent.putExtra("userData", (Serializable) userData);
         intent.putExtra("activity", "HabitEventDetails");
         startActivity(intent);

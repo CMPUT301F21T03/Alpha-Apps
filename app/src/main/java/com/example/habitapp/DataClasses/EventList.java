@@ -236,14 +236,12 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
                             String comment = doc.getString("comment");
                             String photograph = doc.getString("photograph");
                             String username = doc.getString("username");
+                            String locationName = doc.getString("locationName");
+                            Double longitude = doc.getDouble("longitude");
+                            Double latitude = doc.getDouble("latitude");
                             // TODO store location and photograph after halfway
-                            Event eventToAdd;
-                            if (username == null) {
-                                eventToAdd = new Event(doc.getString("name"),newDate, comment, photograph, "");
-                            } else {
-                                eventToAdd = new Event(doc.getString("name"),newDate, comment, photograph, username);
+                            Event eventToAdd = new Event(doc.getString("name"), newDate, comment, photograph, username, latitude, longitude, locationName);
 
-                            }
 
                             eventToAdd.setFirestoreId(doc.getId());
                             if (!events.contains(eventToAdd)) {
