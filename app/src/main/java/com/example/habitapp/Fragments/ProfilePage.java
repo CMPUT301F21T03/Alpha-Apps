@@ -135,10 +135,13 @@ public class ProfilePage extends Fragment {
             profile.setFollowingList((ArrayList<String>) userData.get("following"));
         }
         if(userData.containsKey("followers")){
-            profile.setFollowingList((ArrayList<String>) userData.get("followers"));
+            profile.setFollowersList((ArrayList<String>) userData.get("followers"));
         }
-        if(userData.containsKey("pending")){
-            profile.setFollowingList((ArrayList<String>) userData.get("pending"));
+        if(userData.containsKey("incomingrequest")){
+            profile.setIncomingRequests((ArrayList<String>) userData.get("incomingrequest"));
+        }
+        if(userData.containsKey("requested")){
+            profile.setRequestedList((ArrayList<String>) userData.get("requested"));
         }
         // check for profile picture
         if(userData.containsKey("profilePic")){
