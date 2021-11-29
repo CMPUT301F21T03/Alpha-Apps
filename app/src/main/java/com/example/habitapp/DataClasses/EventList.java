@@ -53,6 +53,8 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -64,25 +66,33 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
     private Map userData;
     private OnEventListener onEventListener;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private int layoutFile;
 
-    public EventList(ArrayList<Event> events, OnEventListener onEventListener) {
+    public EventList(ArrayList<Event> events, OnEventListener onEventListener, int layoutFile) {
         //super(context, 0, events);
         this.events = events;
         this.onEventListener = onEventListener;
+        this.layoutFile = layoutFile;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private TextView name, comment, date;
+        private int layoutFile;
+        private TextView name, comment, date, username;
         private ImageView image;
         OnEventListener onEventListener;
 
-        public ViewHolder(View view, OnEventListener onEventListener){
+        public ViewHolder(View view, OnEventListener onEventListener, int layoutFile){
             super(view);
             name = view.findViewById(R.id.eventslistviewcontent_name_text);
             comment = view.findViewById(R.id.eventslistviewcontent_comment_text);
             date = view.findViewById(R.id.eventslistviewcontent_date_text);
             image = view.findViewById(R.id.eventslistviewcontent_image);
             this.onEventListener = onEventListener;
+            this.layoutFile = layoutFile;
+
+            if (layoutFile == R.layout.feed_events_listview_content) {
+                username = view.findViewById(R.id.feed_listview_username);
+            }
 
             view.setOnClickListener(this);
         }
@@ -103,6 +113,10 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
             return image;
         }
 
+        public TextView getUsername() {
+            return username;
+        }
+
         @Override
         public void onClick(View view) {
             onEventListener.onEventClick(getAdapterPosition());
@@ -116,8 +130,9 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View listItem = layoutInflater.inflate(R.layout.events_listview_content, parent, false);
-        return new ViewHolder(listItem, onEventListener);
+        //View listItem = layoutInflater.inflate(R.layout.events_listview_content, parent, false);
+        View listItem = layoutInflater.inflate(layoutFile, parent, false);
+        return new ViewHolder(listItem, onEventListener, layoutFile);
     }
 
     @Override
@@ -126,6 +141,10 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
         holder.getName().setText(event.getName());
         holder.getComment().setText(event.getComment());
         holder.getDate().setText(event.getDateCompleted().format(formatter));
+
+        if (layoutFile == R.layout.feed_events_listview_content) {
+            holder.getUsername().setText(event.getUsername());
+        }
 
         // if there is no photograph saved to the event object, make the imageView invisible
         if (event.getPhotograph() == null){
@@ -215,15 +234,14 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
                                     getDate.get("dayOfMonth").toString() + " 00:00:00";;
                             LocalDateTime newDate = LocalDateTime.parse(newDateStr, formatter);
                             String comment = doc.getString("comment");
-
                             String photograph = doc.getString("photograph");
                             String username = doc.getString("username");
                             // TODO store location and photograph after halfway
                             Event eventToAdd;
                             if (username == null) {
-                                eventToAdd = new Event(doc.getString("name"),newDate, comment, photograph, false, "");
+                                eventToAdd = new Event(doc.getString("name"),newDate, comment, photograph, "");
                             } else {
-                                eventToAdd = new Event(doc.getString("name"),newDate, comment, photograph, false, username);
+                                eventToAdd = new Event(doc.getString("name"),newDate, comment, photograph, username);
 
                             }
 
@@ -246,5 +264,26 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
 
     public void addEvent(Event event) {
         events.add(event);
+        notifyDataSetChanged();
+    }
+
+    public void sortEvents() {
+        Collections.sort(events, new EventCompare());
+        notifyDataSetChanged();
+    }
+
+    public class EventCompare implements Comparator<Event> {
+        @Override
+        public int compare(Event event_1, Event event_2) {
+            int date_compare = event_2.getDateCompleted().compareTo(event_1.getDateCompleted());
+            if (date_compare != 0) {
+                return date_compare;
+            }
+
+            int name_compare = event_1.getName().compareTo(event_2.getName());
+            return name_compare;
+
+
+        }
     }
 }

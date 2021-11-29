@@ -20,6 +20,7 @@
  *   1.6       Mathew    Nov-16-2021   Implemented camera functionality, and made some aesthetic changes
  *   1.7       Leah      Nov-23-2021   Implemented basic storage of images to Firebase Storage
  *   1.8       Jesse     Nov-27-2021   Implemented image onclick listener
+ *   1.9       Mathew    Nov-28-2021   Implemented location functionality
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -29,10 +30,14 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ComponentName;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.content.DialogInterface;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -56,9 +61,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.example.habitapp.DataClasses.Event;
 import com.example.habitapp.DataClasses.Habit;
+import com.example.habitapp.DataClasses.LocationHandler;
 import com.example.habitapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -78,6 +85,7 @@ import java.util.Objects;
 
 public class EditHabitEvent extends AppCompatActivity {
     private String TAG = "editHabitEventTAG";
+    private Context context = (Context) this;
     private Event event;
     private Habit habit;
     private String prevActivity;
@@ -85,6 +93,8 @@ public class EditHabitEvent extends AppCompatActivity {
     private EditText comments;
     private ArrayList<Event> events;
     private Map userData;
+    private Double selectedLatitude;
+    private Double selectedLongitude;
     private EditText habitName;
     private Bitmap photoBitmap;
 
@@ -93,6 +103,7 @@ public class EditHabitEvent extends AppCompatActivity {
     private ImageView cameraImage;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,6 +115,8 @@ public class EditHabitEvent extends AppCompatActivity {
         event = (Event) sentIntent.getParcelableExtra("event");
         event.setFirestoreId(sentIntent.getStringExtra("firestoreId"));
         habit = (Habit) sentIntent.getSerializableExtra("habit");
+        selectedLatitude = sentIntent.getDoubleExtra("selectedLatitude", 0.0);
+        selectedLongitude = sentIntent.getDoubleExtra("selectedLongitude", 0.0);
         userData = (Map) sentIntent.getSerializableExtra("userData");
         prevActivity = (String) sentIntent.getSerializableExtra("activity");
         previousActivity = getCallingActivity();
@@ -116,6 +129,12 @@ public class EditHabitEvent extends AppCompatActivity {
         comments.setText(event.getComment());
 
         cameraImage = this.findViewById(R.id.edithabitevent_camera_image);
+      
+        populateLocationInformation();
+      
+        if (event.getPhotograph() == null) {
+            cameraImage.setVisibility(View.GONE);
+        }
         // run a thread to set the photograph
         if(event.getPhotograph() != null) {
             Thread thread = new Thread(new Runnable() {
@@ -142,6 +161,22 @@ public class EditHabitEvent extends AppCompatActivity {
         setButtonListenters();
     }
 
+    private void populateLocationInformation(){
+        TextView latlongView = findViewById(R.id.edithabitevent_lat_long);
+        EditText locName = findViewById(R.id.edithabitevent_location_name);
+        // if the user has not yet selected a location
+        if (selectedLatitude == 0.0 && selectedLongitude == 0.0){
+            // dont show the location textview or edittext
+            latlongView.setVisibility(View.GONE);
+            locName.setVisibility(View.GONE);
+        }else{
+            // populate the fields with their values
+            latlongView.setVisibility(View.VISIBLE);
+            locName.setVisibility(View.VISIBLE);
+            latlongView.setText("Latitude: " + selectedLatitude + "\nLongitude: " + selectedLongitude);
+        }
+    }
+
     private void setButtonListenters(){
         Button completeButton = findViewById(R.id.edithabitevent_complete);
         completeButton.setOnClickListener(this::editHabitEventCompleteButtonPressed);
@@ -153,6 +188,29 @@ public class EditHabitEvent extends AppCompatActivity {
 
         ImageView deleteCameraButton = findViewById(R.id.edithabitevent_delete_image_button);
         deleteCameraButton.setOnClickListener(this::editHabitEventDeleteImageButtonPressed);
+
+        ImageView locationButton = findViewById(R.id.edithabitevent_location_button);
+        locationButton.setOnClickListener(this::editHabitEventLocationButtonPressed);
+    }
+
+    private void editHabitEventLocationButtonPressed(View view) {
+        // start the map activity with the user's current location as a starting point
+        LocationHandler locationHandler = new LocationHandler(this);
+        Double defaultLatitude = locationHandler.getLatitude();
+        Double defaultLongitude = locationHandler.getLongitude();
+        Intent intent = new Intent(this, MapSelector.class);
+        intent.putExtra("latitude", defaultLatitude);
+        intent.putExtra("longitude", defaultLongitude);
+        intent.putExtra("event", event);
+        intent.putExtra("habit", habit);
+        intent.putExtra("firestoreID", event.getFirestoreId());
+        intent.putExtra("userData", (Serializable) userData);
+        intent.putExtra("prevActivity", prevActivity);
+        startActivity(intent);
+
+
+        TextView latLongTextView = findViewById(R.id.edithabitevent_lat_long);
+        latLongTextView.setText("Latitude: " + selectedLatitude + "\nLongitude: " + selectedLongitude);
     }
 
     // if the camera image was selected, treat it as if the add button was pressed
@@ -187,8 +245,16 @@ public class EditHabitEvent extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void editHabitEventCompleteButtonPressed(View view) {
+        Button completeButton = findViewById(R.id.edithabitevent_complete);
+        completeButton.setEnabled(false);
+
         String commentStr = (String) comments.getText().toString();
         event.setComment(commentStr);
+        EditText locationEditText = findViewById(R.id.edithabitevent_location_name);
+        String locationName = locationEditText.getText().toString();
+        event.setLocationName(locationName);
+        event.setLatitude(selectedLatitude);
+        event.setLongitude(selectedLongitude);
 
         // prepare references
         FirebaseFirestore db;
@@ -226,6 +292,7 @@ public class EditHabitEvent extends AppCompatActivity {
                     event.editEventInFirestore(userData, habit);
                     // close this Activity
                     setResult(RESULT_OK);
+                    completeButton.setEnabled(true);
                     finish();
                     Intent intent;
 
