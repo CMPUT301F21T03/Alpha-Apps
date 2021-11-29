@@ -4,7 +4,7 @@
  * means without prior permission of the members of CMPUT301F21T03 or by the professor and any
  * authorized TAs of the CMPUT301 class at the University of Alberta, fall term 2021.
  *
- * Class: AllHabits
+ * Class: AllHabitsPage
  *
  * Description: Handles the user interactions of the all habits fragment
  *
@@ -28,36 +28,30 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.habitapp.Activities.HabitDetails;
-import com.example.habitapp.Activities.Main;
-import com.example.habitapp.DataClasses.EventList;
+import com.example.habitapp.Activities.MainActivity;
 import com.example.habitapp.DataClasses.Habit;
 import com.example.habitapp.DataClasses.HabitList;
 import com.example.habitapp.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
-public class AllHabits extends Fragment implements HabitList.OnHabitListener{
+public class AllHabitsPage extends Fragment implements HabitList.OnHabitListener{
 
     private static final String TAG = "allhabitsTAG";
 
-    public AllHabits() {
+    public AllHabitsPage() {
         super(R.layout.all_habits);
     }
 
@@ -72,7 +66,7 @@ public class AllHabits extends Fragment implements HabitList.OnHabitListener{
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         // get user data
-        Main activity = (Main) getActivity();
+        MainActivity activity = (MainActivity) getActivity();
         userData = activity.getUserData();
         Log.d(TAG,"Successfully logged in: " + (String) userData.get("username"));
 
@@ -118,6 +112,7 @@ public class AllHabits extends Fragment implements HabitList.OnHabitListener{
     // handles reorderability
     ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(
             ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.START | ItemTouchHelper.END, 0) {
+        @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
             int fromPosition = viewHolder.getAdapterPosition();

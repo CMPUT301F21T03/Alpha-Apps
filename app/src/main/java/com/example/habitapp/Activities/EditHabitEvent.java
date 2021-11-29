@@ -28,61 +28,42 @@ package com.example.habitapp.Activities;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.content.DialogInterface;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-
 import com.example.habitapp.DataClasses.Event;
 import com.example.habitapp.DataClasses.Habit;
 import com.example.habitapp.DataClasses.LocationHandler;
 import com.example.habitapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.theartofdev.edmodo.cropper.CropImage;
-
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class EditHabitEvent extends AppCompatActivity {
     private String TAG = "editHabitEventTAG";
@@ -108,6 +89,7 @@ public class EditHabitEvent extends AppCompatActivity {
     private ImageView cameraImage;
     private ImageView deleteImageButton;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
+    private static final double LAT_LONG_ROUNDING_FACTOR = 1000000.0;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -191,7 +173,10 @@ public class EditHabitEvent extends AppCompatActivity {
             latlongView.setVisibility(View.VISIBLE);
             locName.setVisibility(View.VISIBLE);
             locationNameShowing = true;
-            latlongView.setText("Latitude: " + Math.round(selectedLatitude*100.0)/100.0 + "\nLongitude: " + Math.round(selectedLongitude*100)/100.0);
+            latlongView.setText("Latitude: " +
+                    Math.round(selectedLatitude*LAT_LONG_ROUNDING_FACTOR)/LAT_LONG_ROUNDING_FACTOR +
+                    "\nLongitude: " +
+                    Math.round(selectedLongitude*LAT_LONG_ROUNDING_FACTOR)/LAT_LONG_ROUNDING_FACTOR);
             locName.setText(event.getLocationName());
         }
     }
@@ -224,8 +209,6 @@ public class EditHabitEvent extends AppCompatActivity {
         event.setLongitude(selectedLongitude);
 
         // prepare references
-        FirebaseFirestore db;
-        db = FirebaseFirestore.getInstance();
         FirebaseStorage storage = FirebaseStorage.getInstance("gs://alpha-apps-41471.appspot.com");
         StorageReference storageRef = storage.getReference();
 
@@ -279,19 +262,20 @@ public class EditHabitEvent extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void startMap() {
         // don't do photo stuff
-        System.out.println("Trying to access the right ID here:");
-        System.out.println(extraFirestoreID);
         event.setFirestoreId(extraFirestoreID);
         event.editEventInFirestore(userData, habit);
 
         // start the map activity with the user's current location as a starting point
         LocationHandler locationHandler = new LocationHandler(this);
+        Double usersCurrentLatitude = locationHandler.getLatitude();
+        Double usersCurrentLongitude = locationHandler.getLongitude();
+
         if (event.getLatitude() == 0.0) {
-            event.setLatitude(locationHandler.getLatitude());
+            event.setLatitude(usersCurrentLatitude);
         }
 
         if (event.getLongitude() == 0.0) {
-            event.setLongitude(locationHandler.getLongitude());
+            event.setLongitude(usersCurrentLongitude);
         }
 
         Intent intent = new Intent(this, MapSelector.class);
@@ -299,10 +283,8 @@ public class EditHabitEvent extends AppCompatActivity {
         intent.putExtra("event", event);
         intent.putExtra("habit", habit);
         intent.putExtra("firestoreId", extraFirestoreID);
-        intent.putExtra("latitude", event.getLatitude());
-        intent.putExtra("longitude", event.getLongitude());
-        System.out.println("Sending to map ID:");
-        System.out.println(extraFirestoreID);
+        intent.putExtra("latitude", usersCurrentLatitude);
+        intent.putExtra("longitude", usersCurrentLongitude);
         intent.putExtra("userData", (Serializable) userData);
         intent.putExtra("prevActivity", prevActivity);
         startActivity(intent);
@@ -364,8 +346,6 @@ public class EditHabitEvent extends AppCompatActivity {
             event.setLongitude(selectedLongitude);
 
             // prepare references
-            FirebaseFirestore db;
-            db = FirebaseFirestore.getInstance();
             FirebaseStorage storage = FirebaseStorage.getInstance("gs://alpha-apps-41471.appspot.com");
             StorageReference storageRef = storage.getReference();
 
@@ -410,7 +390,7 @@ public class EditHabitEvent extends AppCompatActivity {
                             intent.putExtra("userData", (Serializable) userData);
                             intent.putExtra("firestoreId", event.getFirestoreId());
 
-                            Intent test_intent = new Intent(thisActivity, Main.class);
+                            Intent test_intent = new Intent(thisActivity, MainActivity.class);
                             test_intent.putExtra("userData", (Serializable) userData);
                             startActivity(test_intent);
 
@@ -421,8 +401,6 @@ public class EditHabitEvent extends AppCompatActivity {
                 });
             } else {
                 // don't do photo stuff
-                System.out.println("Trying to access the right ID here:");
-                System.out.println(extraFirestoreID);
                 event.setFirestoreId(extraFirestoreID);
                 event.editEventInFirestore(userData, habit);
                 // close this Activity
@@ -436,7 +414,7 @@ public class EditHabitEvent extends AppCompatActivity {
                 intent.putExtra("event", event);
                 intent.putExtra("userData", (Serializable) userData);
                 intent.putExtra("firestoreId", event.getFirestoreId());
-                Intent test_intent = new Intent(thisActivity, Main.class);
+                Intent test_intent = new Intent(thisActivity, MainActivity.class);
                 test_intent.putExtra("userData", (Serializable) userData);
                 startActivity(test_intent);
             }

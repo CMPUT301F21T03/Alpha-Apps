@@ -4,7 +4,7 @@
  * means without prior permission of the members of CMPUT301F21T03 or by the professor and any
  * authorized TAs of the CMPUT301 class at the University of Alberta, fall term 2021.
  *
- * Class: FollowingFollowers
+ * Class: SearchedUpUser
  *
  * Description: Shows the user information about another profiles data. It shows their profile info,
  * their list of public habits, and the most recent habit event for each public habit.
@@ -28,25 +28,20 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.habitapp.DataClasses.Event;
 import com.example.habitapp.DataClasses.Habit;
-import com.example.habitapp.DataClasses.HabitList;
-import com.example.habitapp.DataClasses.OldHabitList;
+import com.example.habitapp.DataClasses.NonReorderableHabitList;
 import com.example.habitapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -55,12 +50,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class FollowUserView extends AppCompatActivity {
+public class SearchedUpUser extends AppCompatActivity {
 
     private static final String TAG = "FollowUserViewTAG";
     private int followStatus;
@@ -70,7 +64,7 @@ public class FollowUserView extends AppCompatActivity {
     private static final int NEITHER = 3;
 
     private ArrayList<Habit> habits = new ArrayList<Habit>();
-    private OldHabitList habitAdapter;
+    private NonReorderableHabitList habitAdapter;
     private ArrayList<Event> events;
     private String followUserName;
     private String followUserID;
@@ -236,7 +230,7 @@ public class FollowUserView extends AppCompatActivity {
 
         // populate the habit list using the provided data set/adapter
         ListView allHabitsListView = (ListView) this.findViewById(R.id.allhabits_habit_list);
-        habitAdapter = new OldHabitList(this, habits);
+        habitAdapter = new NonReorderableHabitList(this, habits);
         allHabitsListView.setAdapter(habitAdapter);
 
         // make a query for all the user habits that are public

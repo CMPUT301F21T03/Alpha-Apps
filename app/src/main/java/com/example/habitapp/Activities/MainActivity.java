@@ -4,7 +4,7 @@
  * means without prior permission of the members of CMPUT301F21T03 or by the professor and any
  * authorized TAs of the CMPUT301 class at the University of Alberta, fall term 2021.
  *
- * Class: Main
+ * Class: MainActivity
  *
  * Description: The class that directs the program to any of the navigation bar fragments (addhabit,
  * feed, profile, allhabits, today). It navigates to the allhabits page by default.
@@ -23,7 +23,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
-
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -31,15 +30,13 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
-
 import com.example.habitapp.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import java.util.Map;
 
-public class Main extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
-    private final Context context = Main.this;
+    private final Context context = MainActivity.this;
     private static final String TAG = "mainTAG";
     private Map userData;
 

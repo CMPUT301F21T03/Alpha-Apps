@@ -8,17 +8,13 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="1dp">
+        app:layout_constraintTop_toTopOf="parent">
 
-<!--        <Button-->
-<!--            android:id="@+id/dayofweekbar_sunday"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_weight="1"-->
-<!--            android:text="S" />-->
+
         <CheckBox
             android:id="@+id/sunday_checkbox"
             android:layout_width="40dp"
@@ -122,48 +118,5 @@
             android:text="S"
             android:textColor="@color/black"
             android:textSize="18sp" />
-
-
-        <!--<Button
-            android:id="@+id/dayofweekbar_monday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="M" />
-
-        <Button
-            android:id="@+id/dayofweekbar_tuesday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="T" />
-
-        <Button
-            android:id="@+id/dayofweekbar_wednesday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="W" />
-
-        <Button
-            android:id="@+id/dayofweekbar_thursday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="T" />
-
-        <Button
-            android:id="@+id/dayofweekbar_friday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="F" />
-
-        <Button
-            android:id="@+id/dayofweekbar_saturday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="S" />-->
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

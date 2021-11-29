@@ -4,7 +4,7 @@
  * means without prior permission of the members of CMPUT301F21T03 or by the professor and any
  * authorized TAs of the CMPUT301 class at the University of Alberta, fall term 2021.
  *
- * Class: TodayHabits
+ * Class: TodayHabitsPage
  *
  * Description: Handles the user interactions of the today habits fragment
  *
@@ -27,35 +27,29 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.habitapp.Activities.HabitDetails;
-import com.example.habitapp.Activities.Main;
+import com.example.habitapp.Activities.MainActivity;
 import com.example.habitapp.DataClasses.Habit;
 import com.example.habitapp.DataClasses.HabitList;
 import com.example.habitapp.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Locale;
 import java.util.Map;
 
 
-public class TodayHabits extends Fragment implements HabitList.OnHabitListener{
-    public TodayHabits() {
+public class TodayHabitsPage extends Fragment implements HabitList.OnHabitListener{
+    public TodayHabitsPage() {
         super(R.layout.today_habits);
     }
 
@@ -71,7 +65,7 @@ public class TodayHabits extends Fragment implements HabitList.OnHabitListener{
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         // get user data
-        Main activity = (Main) getActivity();
+        MainActivity activity = (MainActivity) getActivity();
         userData = activity.getUserData();
         Log.d(TAG,"Successfully logged in: " + (String) userData.get("username"));
 
@@ -102,7 +96,6 @@ public class TodayHabits extends Fragment implements HabitList.OnHabitListener{
             super.onChanged();
             // modify LocalDate ordinal from mon-sun order to sun-sat order
             Integer dayWeek = (LocalDate.now().getDayOfWeek().ordinal() + 1) % 7;
-            System.out.println("Day of week index:");
             Log.d(TAG,dayWeek.toString());
             for (int i = 0; i < habitDataList.size(); i++) {
                 if (habitDataList.get(i).getWeekOccurence().getAll().get(dayWeek) == Boolean.FALSE) {
@@ -156,10 +149,6 @@ public class TodayHabits extends Fragment implements HabitList.OnHabitListener{
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void getHabitDataList(HabitList habitAdapter) {
-        // get the day of the week
-        String dayWeek = LocalDate.now().getDayOfWeek().name().toLowerCase(Locale.ROOT);
-
-
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
         final Query user = db.collection("Doers")
