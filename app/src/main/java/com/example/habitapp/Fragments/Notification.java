@@ -21,6 +21,8 @@ package com.example.habitapp.Fragments;
 
 
 
+import static android.content.ContentValues.TAG;
+
 import android.app.Dialog;
 import android.os.Build;
 import android.os.Bundle;
@@ -31,6 +33,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -44,8 +47,12 @@ import com.example.habitapp.DataClasses.RequestList;
 import com.example.habitapp.DataClasses.Request;
 import com.example.habitapp.DataClasses.User;
 import com.example.habitapp.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Source;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,6 +61,8 @@ import java.util.Map;
 public class Notification extends Fragment {
     ImageView notifButton;
     Dialog notiDialog;
+    Button acceptButton;
+    Button declineButton;
 
     private ListView notificationsListView;
     private RequestList notificationAdapter;
@@ -74,23 +83,15 @@ public class Notification extends Fragment {
         notifButton = view.findViewById(R.id.notification_image);
         Main activity = (Main) getActivity();
         userData = activity.getUserData();
-        String username = (String) userData.get("username");
-        User user = new User(userData.get("username").toString(),
-                userData.get("name").toString(),
-                userData.get("username").toString(),
-                userData.get("password").toString(),
-                userData.get("profilePic").toString());
-        ArrayList<String> testdata = new ArrayList<>(Arrays.asList("xyz", "abc"));
-        userIDs = testdata;
-//        userIDs= user.getIncomingRequests();
+        userIDs = (ArrayList<String>) userData.get("incomingrequest");
         setRequests(userIDs);
         if (notificationDataList.size() > 0 ){
-
             notifButton.setBackgroundResource(R.drawable.notification_bell_after);
         }
         notifButton.setOnClickListener(this::notificationsButtonPressed);
 
     }
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void setRequests(ArrayList<String> userIDs){
@@ -102,13 +103,14 @@ public class Notification extends Fragment {
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void notificationsButtonPressed(View view) {
-
+        acceptButton = view.findViewById(R.id.accept_button);
+        declineButton  = view.findViewById(R.id.decline_button);
         Main activity = (Main) getActivity();
 
         notificationAdapter = new RequestList(activity, notificationDataList);
 
         notiDialog = new Dialog(activity);
-        //TODO show all pertinent information in a dialog
+
         int[] location = new int[2];
         notifButton.getLocationOnScreen(location);
         int x = location[0];
@@ -126,15 +128,20 @@ public class Notification extends Fragment {
         window.setAttributes(wlp);
         notiDialog.setContentView(R.layout.noti_popup);
 
-
-//        Request test1 = new Request("Arthur");
-//        notificationDataList.add(test1);
 //
         notificationsListView = (ListView) notiDialog.findViewById(R.id.noti_list);
         notificationsListView.setAdapter(notificationAdapter);
+//        notificationsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                Button decline = view.findViewById(R.id.decline_button);
+//
+//            }
+//        });
         notiDialog.show();
 
     }
+
 
 
 }

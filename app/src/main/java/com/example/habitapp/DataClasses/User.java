@@ -21,13 +21,24 @@
 
 package com.example.habitapp.DataClasses;
 
+import static android.content.ContentValues.TAG;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.example.habitapp.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class User implements Serializable {
 
@@ -79,6 +90,7 @@ public class User implements Serializable {
         followingList = new ArrayList<>();
         followersList = new ArrayList<>();
         requestedList = new ArrayList<>();
+        incomingRequests = new ArrayList<>();
     }
 
     // =========================== GETTERS AND SETTERS ===========================
@@ -153,6 +165,9 @@ public class User implements Serializable {
     public void setRequestedList(ArrayList<String> requestedList) {
         this.requestedList = requestedList;
     }
+    public void addToRequested(String userID){
+        requestedList.add(userID);
+    }
 
     public ArrayList<String> getIncomingRequests() {
         return incomingRequests;
@@ -165,4 +180,33 @@ public class User implements Serializable {
     public void addIncomingRequest(String userID){
         incomingRequests.add(userID);
     }
+
+    public void updateUserInFirestore() {
+        // add new Habit to Firestore
+        try {
+            FirebaseFirestore db;
+            db = FirebaseFirestore.getInstance();
+            final CollectionReference usersref = db.collection("Doers");
+            //Toast.makeText(getContext(), "I came here", Toast.LENGTH_SHORT).show();
+            Log.d(getUniqueID().toString(),">>>>>>>>>>");
+            usersref.document((String) getUniqueID())
+                    .set(this)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Log.d(TAG, "successfully updated");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d(TAG, "failed update");
+                        }
+                    });
+        }
+        catch (Exception e){
+            Log.d(e.getCause().toString(), ": CAUGHT EXCEPTION");
+        }
+    }
 }
+

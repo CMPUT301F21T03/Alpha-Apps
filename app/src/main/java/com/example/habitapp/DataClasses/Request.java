@@ -9,7 +9,7 @@ import java.io.Serializable;
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class Request implements Serializable {
     private String username;
-    final private String SUFFIX = "Sent you a friend request";
+    final private String SUFFIX = "sent you a friend request";
 
     public Request(String username){
         this.username = username;

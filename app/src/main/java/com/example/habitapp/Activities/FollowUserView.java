@@ -17,6 +17,8 @@
 
 package com.example.habitapp.Activities;
 
+import static android.content.ContentValues.TAG;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -29,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -41,7 +44,10 @@ import com.example.habitapp.DataClasses.OldHabitList;
 import com.example.habitapp.DataClasses.User;
 import com.example.habitapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -65,8 +71,9 @@ public class FollowUserView extends AppCompatActivity {
     private String followUserName;
     private String followUserID;
     private Bitmap followUserPFP;
-    private Map userData;
-
+    private String userID;
+    private String intentFollowStatus;
+    private Map currentUserData;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -78,11 +85,12 @@ public class FollowUserView extends AppCompatActivity {
         habitAdapter = new OldHabitList(this, habits);
 
         Intent intent = getIntent();
-        String userID = intent.getStringExtra("userID");
-        String intentFollowStatus = intent.getStringExtra("followStatus");
+        userID = intent.getStringExtra("userID");
+        intentFollowStatus = intent.getStringExtra("followStatus");
+        currentUserData = (Map) intent.getSerializableExtra("currentUser");
         setFollowStatusFrame(intentFollowStatus);
 
-        if (followStatus == FOLLOWING){
+        if (followStatus == FOLLOWING) {
             getUserData(userID);
             filterPrivateData();
             populateFrame();
@@ -97,13 +105,13 @@ public class FollowUserView extends AppCompatActivity {
         popupMenu.getMenuInflater().inflate(R.menu.following_status_menu, popupMenu.getMenu());
 
         // remove buttons based on what status this user has
-        if (followStatus == FOLLOWING){
+        if (followStatus == FOLLOWING) {
             popupMenu.getMenu().removeItem(R.id.request_follow);
         }
-        if (followStatus == REQUESTED){
+        if (followStatus == REQUESTED) {
             popupMenu.getMenu().removeItem(R.id.request_follow);
         }
-        if (followStatus == NEITHER){
+        if (followStatus == NEITHER) {
             popupMenu.getMenu().removeItem(R.id.unfollow);
         }
 
@@ -112,12 +120,14 @@ public class FollowUserView extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 if (menuItem.getItemId() == R.id.request_follow) {
-                    // TODO add the user in question to this user's requested list
+                    setRequested();
+                    setIncomingRequests();
+
 
                 } else if (menuItem.getItemId() == R.id.unfollow) {
-                    if (followStatus == FOLLOWING){
+                    if (followStatus == FOLLOWING) {
                         // TODO remove the user from the following list
-                    }else if (followStatus == REQUESTED){
+                    } else if (followStatus == REQUESTED) {
                         //TODO remove the user from the requested list
                     }
                 }
@@ -147,32 +157,33 @@ public class FollowUserView extends AppCompatActivity {
     }
 
     private void setFollowStatusFrame(String type) {
-        if (type == "must_be_checked"){
+        if (type == "must_be_checked") {
             //TODO check to see which category this user falls into and then set it
+
         }
 
-        if (type == "following"){
+        if (type == "following") {
             followStatus = FOLLOWING;
-        }else if (type == "requested"){
+        } else if (type == "requested") {
             followStatus = REQUESTED;
-        }else if (type == "neither"){
+        } else if (type == "neither") {
             followStatus = NEITHER;
         }
 
 
-        if (followStatus == FOLLOWING){ // show the user data
+        if (followStatus == FOLLOWING) { // show the user data
             setFollowStatusTag("following");
             findViewById(R.id.followuserview_no_data_textview).setVisibility(View.GONE);
-        }else{ // dont show the user data
+        } else { // dont show the user data
             findViewById(R.id.layout).setVisibility(View.GONE);
             findViewById(R.id.followuserview_habit_event_list).setVisibility(View.GONE);
             findViewById(R.id.textView24).setVisibility(View.GONE);
             findViewById(R.id.textView27).setVisibility(View.GONE);
         }
-        if (followStatus == REQUESTED){
+        if (followStatus == REQUESTED) {
             setFollowStatusTag("requested");
         }
-        if (followStatus == NEITHER){
+        if (followStatus == NEITHER) {
             setFollowStatusTag("nothing");
         }
     }
@@ -180,15 +191,15 @@ public class FollowUserView extends AppCompatActivity {
     @SuppressLint("ResourceAsColor")
     private void setFollowStatusTag(String type) {
         TextView followTag = findViewById(R.id.followuserview_follow_status);
-        if (type == "following"){
+        if (type == "following") {
             followTag.setText("Following");
             followTag.setTextColor(R.color.green);
         }
-        if (type == "requested"){
+        if (type == "requested") {
             followTag.setText("Requested");
             followTag.setTextColor(R.color.gray);
         }
-        if (type == "nothing"){
+        if (type == "nothing") {
             followTag.setText("Follow");
             followTag.setTextColor(R.color.blue);
         }
@@ -210,16 +221,16 @@ public class FollowUserView extends AppCompatActivity {
 
     }
 
-    private void getHabitData(String userID){
+    private void getHabitData(String userID) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         final Query user = db.collection("Doers")
                 .document(userID)
                 .collection("habits")
                 .orderBy("title");
-        habitAdapter.addSnapshotQuery(user,TAG);
+        habitAdapter.addSnapshotQuery(user, TAG);
     }
 
-    private void getProfileData(String userID){
+    private void getProfileData(String userID) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference user = db.collection("Doers").document(userID);
         user.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -243,7 +254,7 @@ public class FollowUserView extends AppCompatActivity {
         });
     }
 
-    private void processUserData(Map userData){
+    private void processUserData(Map userData) {
         followUserName = (String) userData.get("name");
         followUserID = (String) userData.get("username");
         // TODO get the profile picture and set it
@@ -251,8 +262,42 @@ public class FollowUserView extends AppCompatActivity {
     }
 
 
-    public static String getTAG(){
+    public static String getTAG() {
         return TAG;
     }
 
-}
+    public void setRequested() {
+        FirebaseFirestore db;
+        db = FirebaseFirestore.getInstance();
+        ArrayList<String> requested = (ArrayList<String>) currentUserData.get("requested");
+        requested.add(userID);
+        currentUserData.put("requested", requested);
+        final DocumentReference findUserRef = db.collection("Doers").document(currentUserData.get("username").toString());
+        findUserRef.update("requested", requested);
+
+    }
+        public void setIncomingRequests(){
+            FirebaseFirestore db;
+            db = FirebaseFirestore.getInstance();
+            final DocumentReference findUserRef1 = db.collection("Doers").document(userID);
+            findUserRef1.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            Map userData = document.getData();
+                            ArrayList<String> incomingRequests = (ArrayList<String>) userData.get("incomingrequest");
+                            incomingRequests.add(currentUserData.get("username").toString());
+                            findUserRef1.update("incomingrequest", incomingRequests);
+                            Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        } else {
+                            Log.d(TAG, "No such document");
+                        }
+                    } else {
+                        Log.d(TAG, "get failed with ", task.getException());
+                    }
+                }
+            });
+        }
+    }

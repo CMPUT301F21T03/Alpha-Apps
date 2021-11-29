@@ -43,7 +43,7 @@ public class RequestList extends ArrayAdapter<Request> implements Serializable {
         String suffix = request.getSUFFIX();
 
         TextView notiText = view.findViewById(R.id.noti_text);
-        notiText.setText(username + suffix);
+        notiText.setText(username +" "+  suffix);
 
         return view;
 
