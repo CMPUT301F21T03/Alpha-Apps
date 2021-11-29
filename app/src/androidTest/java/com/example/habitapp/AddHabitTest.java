@@ -85,7 +85,7 @@ public class AddHabitTest {
         solo.enterText((EditText) solo.getView(R.id.addhabit_habit_title),  new_habit_name);
         solo.clickOnView(solo.getView(R.id.friday_checkbox));
         solo.enterText((EditText) solo.getView(R.id.addhabit_reason),  "To stay healthy!");
-        solo.clickOnText("Select a date");
+        solo.clickOnText("yyyy-mm-dd");
         TextView date_text_field = (TextView) solo.getView(R.id.addhabit_select_date);
         date_text = date_text_field.getText().toString();
         solo.clickOnText("OK");

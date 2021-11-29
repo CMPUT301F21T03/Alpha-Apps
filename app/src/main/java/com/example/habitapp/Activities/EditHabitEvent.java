@@ -262,54 +262,73 @@ public class EditHabitEvent extends AppCompatActivity {
         FirebaseStorage storage = FirebaseStorage.getInstance("gs://alpha-apps-41471.appspot.com");
         StorageReference storageRef = storage.getReference();
 
-        // set image
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        photoBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] imageData = baos.toByteArray();
-
         EditHabitEvent thisActivity = this;
 
-        // format bytes to be stored in storage
-        StorageReference docuRef = storageRef.child("images/"+imageData.hashCode());
-        UploadTask uploadTask = docuRef.putBytes(imageData);
-        uploadTask.addOnFailureListener(exception -> Log.d(TAG,"Failed upload"))
-                .addOnSuccessListener(taskSnapshot -> Log.d(TAG,"Successful upload"));
-        uploadTask.continueWithTask(task -> {
-            if (!task.isSuccessful()) {
-                throw task.getException();
-            }
+        // set image
+        if (photoBitmap != null) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            photoBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] imageData = baos.toByteArray();
 
-            // Continue with the task to get the download URL
-            return docuRef.getDownloadUrl();
-        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-            @Override
-            public void onComplete(@NonNull Task<Uri> task) {
-                if (task.isSuccessful()) {
-                    Uri downloadUri = task.getResult();
-                    Log.d(TAG,downloadUri.toString());
-                    // set the event photo URL
-                    event.setPhotograph(downloadUri.toString());
-                    event.editEventInFirestore(userData, habit);
-                    // close this Activity
-                    setResult(RESULT_OK);
-                    completeButton.setEnabled(true);
-                    finish();
-                    Intent intent;
-
-                    intent = new Intent(thisActivity, HabitEventDetails.class);
-                    intent.putExtra("habit", habit);
-                    intent.putExtra("event", event);
-                    intent.putExtra("userData", (Serializable) userData);
-                    intent.putExtra("firestoreId", event.getFirestoreId());
-                    startActivity(intent);
-
-
-
-                } else {
-                    Log.d(TAG,"Failed to get download URL");
+            // format bytes to be stored in storage
+            StorageReference docuRef = storageRef.child("images/"+imageData.hashCode());
+            UploadTask uploadTask = docuRef.putBytes(imageData);
+            uploadTask.addOnFailureListener(exception -> Log.d(TAG,"Failed upload"))
+                    .addOnSuccessListener(taskSnapshot -> Log.d(TAG,"Successful upload"));
+            uploadTask.continueWithTask(task -> {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
                 }
-            }
-        });
+
+                // Continue with the task to get the download URL
+                return docuRef.getDownloadUrl();
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        Uri downloadUri = task.getResult();
+                        Log.d(TAG,downloadUri.toString());
+                        // set the event photo URL
+                        event.setPhotograph(downloadUri.toString());
+                        event.editEventInFirestore(userData, habit);
+                        // close this Activity
+                        setResult(RESULT_OK);
+                        completeButton.setEnabled(true);
+                        finish();
+                        Intent intent;
+
+                        intent = new Intent(thisActivity, HabitEventDetails.class);
+                        intent.putExtra("habit", habit);
+                        intent.putExtra("event", event);
+                        intent.putExtra("userData", (Serializable) userData);
+                        intent.putExtra("firestoreId", event.getFirestoreId());
+                        startActivity(intent);
+
+                    } else {
+                        Log.d(TAG,"Failed to get download URL");
+                    }
+                }
+            });
+        } else {
+            // don't do photo stuff
+            event.editEventInFirestore(userData, habit);
+            // close this Activity
+            setResult(RESULT_OK);
+            completeButton.setEnabled(true);
+            finish();
+            Intent intent;
+
+            intent = new Intent(thisActivity, HabitEventDetails.class);
+            intent.putExtra("habit", habit);
+            intent.putExtra("event", event);
+            intent.putExtra("userData", (Serializable) userData);
+            intent.putExtra("firestoreId", event.getFirestoreId());
+            startActivity(intent);
+        }
+
+
+
+
 
     }
 
