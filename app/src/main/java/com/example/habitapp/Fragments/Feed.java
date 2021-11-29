@@ -127,8 +127,9 @@ public class Feed extends Fragment implements EventList.OnEventListener {
                     final DocumentReference currentDoc = db.collection("Doers")
                             .document(following_usernames.get(i));
 
-                    final CollectionReference individual_habits_2 = currentDoc
-                            .collection("habits");
+                    final Query individual_habits_2 = currentDoc
+                            .collection("habits")
+                            .whereEqualTo("privacy", false);
 
                     individual_habits_2.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                         @Override
@@ -140,6 +141,7 @@ public class Feed extends Fragment implements EventList.OnEventListener {
 
                             }
                             following_habits.add(temp_habits);
+
 
                             // and then, for each user's habits, grab all their habit events
                             for (j = 0; j < temp_habits.size(); j++) {
@@ -171,9 +173,9 @@ public class Feed extends Fragment implements EventList.OnEventListener {
                                                 // TODO store location and photograph after halfway
                                                 Event eventToAdd;
                                                 if (username == null) {
-                                                    eventToAdd = new Event(doc.getString("name"), newDate, comment, null,  "");
+                                                    eventToAdd = new Event(doc.getString("name"), newDate, comment, photograph,  "");
                                                 } else {
-                                                    eventToAdd = new Event(doc.getString("name"), newDate, comment, null,  username);
+                                                    eventToAdd = new Event(doc.getString("name"), newDate, comment, photograph,  username);
 
                                                 }
                                                 eventToAdd.setFirestoreId(doc.getId());
