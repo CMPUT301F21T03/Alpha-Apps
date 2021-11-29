@@ -18,6 +18,8 @@
 
 package com.example.habitapp.DataClasses;
 
+import android.text.BoringLayout;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
@@ -111,6 +113,18 @@ public class DaysOfWeek implements Serializable {
         weeklyList.add(getSaturday());
 
         return weeklyList;
+    }
+
+    public boolean areAllFalse() {
+        ArrayList<Boolean> weeklyList = this.getAll() ;
+        Boolean all_false = true;
+        for (int i = 0; i < weeklyList.size(); i++)  {
+            if (weeklyList.get(i) == true) {
+                all_false = false;
+            }
+        }
+
+        return all_false;
     }
 
     // =========================== GETTERS AND SETTERS ===========================

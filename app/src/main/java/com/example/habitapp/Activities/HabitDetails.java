@@ -41,6 +41,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -51,6 +52,7 @@ import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -270,7 +272,7 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void habitDetailsDoneEditingPressed(View view) {
-        prepareForFinishEditing();
+
         // TODO update information in Firestore here
         Habit habit_to_edit = (Habit) intent.getSerializableExtra("habit");
         habit_to_edit.setTitle(title.getText().toString());
@@ -293,7 +295,14 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
         } else {
             habit_to_edit.setPrivacy(false);
         }
-        habit_to_edit.editHabitInFirestore(userData);
+
+        if (TextUtils.isEmpty(reason.getText().toString()) || TextUtils.isEmpty(title.getText().toString()) || frequency.areAllFalse()){
+            Toast.makeText(this, "Complete missing habit details!", Toast.LENGTH_SHORT).show();
+        } else {
+            prepareForFinishEditing();
+            habit_to_edit.editHabitInFirestore(userData);
+
+        }
     }
 
     private void setBoxesChecked(CheckBox button, boolean val) {
