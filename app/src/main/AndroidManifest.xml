@@ -26,7 +26,7 @@
         <activity android:name=".Activities.HabitDetails"
             android:noHistory="true"/>
         <activity android:name=".Activities.EditHabitEvent"
-            android:noHistory="true"/>
+            />
         <activity android:name=".Activities.HabitEventDetails"
             android:noHistory="true"/>
         <activity android:name=".Activities.ImageDialog"/>

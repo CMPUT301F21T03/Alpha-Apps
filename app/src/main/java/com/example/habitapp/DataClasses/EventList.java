@@ -77,7 +77,7 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private int layoutFile;
-        private TextView name, comment, date, username;
+        private TextView name, comment, date, username, location;
         private ImageView image;
         OnEventListener onEventListener;
 
@@ -87,6 +87,7 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
             comment = view.findViewById(R.id.eventslistviewcontent_comment_text);
             date = view.findViewById(R.id.eventslistviewcontent_date_text);
             image = view.findViewById(R.id.eventslistviewcontent_image);
+            location = view.findViewById(R.id.eventslistviewcontent_location_text);
             this.onEventListener = onEventListener;
             this.layoutFile = layoutFile;
 
@@ -117,6 +118,10 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
             return username;
         }
 
+        public TextView getLocation() {
+            return location;
+        }
+
         @Override
         public void onClick(View view) {
             onEventListener.onEventClick(getAdapterPosition());
@@ -141,6 +146,7 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
         holder.getName().setText(event.getName());
         holder.getComment().setText(event.getComment());
         holder.getDate().setText(event.getDateCompleted().format(formatter));
+        holder.getLocation().setText(event.getLocationName());
 
         if (layoutFile == R.layout.feed_events_listview_content) {
             holder.getUsername().setText(event.getUsername());
@@ -262,6 +268,8 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
 
     public void addEvent(Event event) {
         events.add(event);
+        System.out.println("Event added:");
+        System.out.println(event.getName());
         notifyDataSetChanged();
     }
 
