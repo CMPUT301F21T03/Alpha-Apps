@@ -147,9 +147,55 @@ public class HabitEventDetailsTest {
         solo.clickOnButton("Yes");
         solo.enterText((EditText) solo.getView(R.id.edithabitevent_comment),  "this is a comment");
         solo.clickOnView(solo.getView(R.id.edithabitevent_complete));
-        solo.clickOnView(solo.getView(R.id.go_back_button));
+        solo.clickOnText(new_habit_name);
 
         solo.waitForText("this is a comment", 1, 1000);
+
+    }
+
+    /**
+     * Asserts habit event is logged with location name and found in RecyclerView
+     */
+    @Test
+    public void addHabitEventAndPopulatesLocation() {
+        solo.clickOnView(solo.getView(R.id.addHabitFragment));
+        solo.waitForText("Add", 2, 1000);
+
+        // generate random username
+        // 1/1000 chance of failing if firestore db is not reset after testing
+        Random rand = new Random();
+        int upper_bound = 1000;
+        int random_userid = rand.nextInt(upper_bound);
+        String new_habit_name = "Running" + String.valueOf(random_userid);
+        solo.enterText((EditText) solo.getView(R.id.addhabit_habit_title),  new_habit_name);
+        solo.clickOnView(solo.getView(R.id.friday_checkbox));
+        solo.enterText((EditText) solo.getView(R.id.addhabit_reason),  "To stay healthy!");
+        solo.clickOnText("yyyy-mm-dd");
+        TextView date_text_field = (TextView) solo.getView(R.id.addhabit_select_date);
+        String date_text = date_text_field.getText().toString();
+        solo.clickOnText("OK");
+        solo.clickOnView(solo.getView(R.id.addhabit_complete));
+        solo.waitForText(new_habit_name, 1, 5000);
+        solo.clickOnText(new_habit_name);
+        solo.waitForActivity("HabitDetails");
+
+        //create new habit event
+        solo.clickOnView(solo.getView(R.id.moreButton));
+        solo.waitForText("Mark as done", 1, 1000);
+        solo.clickOnMenuItem("Mark as done");
+        solo.waitForText("Confirm", 1, 1000);
+        solo.clickOnButton("Confirm");
+        solo.waitForText("Yes", 1, 1000);
+        solo.clickOnButton("Yes");
+
+        solo.clickOnView(solo.getView(R.id.edithabitevent_location_button));
+        solo.clickOnView(solo.getView(R.id.actiivty_maps_close_button));
+        solo.enterText((EditText) solo.getView(R.id.edithabitevent_location_name), "Home");
+        solo.clickOnView(solo.getView(R.id.edithabitevent_complete));
+        solo.clickOnText(new_habit_name);
+
+        assertTrue(solo.searchText("Home"));
+
 
     }
 
@@ -189,7 +235,7 @@ public class HabitEventDetailsTest {
         solo.clickOnButton("Yes");
         solo.enterText((EditText) solo.getView(R.id.edithabitevent_comment),  "this is a comment");
         solo.clickOnView(solo.getView(R.id.edithabitevent_complete));
-        solo.clickOnView(solo.getView(R.id.go_back_button));
+
 
         //go to habiteventdetails page
         solo.clickOnText(new_habit_name);
@@ -197,7 +243,8 @@ public class HabitEventDetailsTest {
         //solo.waitForActivity("HabitEventDetails");
         //solo.assertCurrentActivity("Wrong Activity", HabitEventDetails.class);
         //solo.waitForText(new_habit_name);
-        solo.waitForText("this is a comment");
+        assertTrue(solo.searchText("this is a comment"));
+
 
 
     }
@@ -238,7 +285,7 @@ public class HabitEventDetailsTest {
         solo.clickOnButton("Yes");
         solo.enterText((EditText) solo.getView(R.id.edithabitevent_comment),  "this is a comment");
         solo.clickOnView(solo.getView(R.id.edithabitevent_complete));
-        solo.clickOnView(solo.getView(R.id.go_back_button));
+
 
         //go to habiteventdetails page
         solo.clickOnText(new_habit_name);

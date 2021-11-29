@@ -101,6 +101,7 @@ public class EditHabitEvent extends AppCompatActivity {
 
     private String extraFirestoreID;
 
+    private Boolean locationNameShowing = false;
 
     // camera related variables
     private static final int CAMERA_REQUEST = 1888;
@@ -184,10 +185,12 @@ public class EditHabitEvent extends AppCompatActivity {
             // dont show the location textview or edittext
             latlongView.setVisibility(View.GONE);
             locName.setVisibility(View.GONE);
+            locationNameShowing = false;
         }else{
             // populate the fields with their values
             latlongView.setVisibility(View.VISIBLE);
             locName.setVisibility(View.VISIBLE);
+            locationNameShowing = true;
             latlongView.setText("Latitude: " + Math.round(selectedLatitude*100.0)/100.0 + "\nLongitude: " + Math.round(selectedLongitude*100)/100.0);
             locName.setText(event.getLocationName());
         }
@@ -344,7 +347,8 @@ public class EditHabitEvent extends AppCompatActivity {
     public void editHabitEventCompleteButtonPressed(View view) {
         EditText locationEditText = findViewById(R.id.edithabitevent_location_name);
         String locationName = locationEditText.getText().toString();
-        if (TextUtils.isEmpty(locationName)){
+        if (TextUtils.isEmpty(locationName) && locationNameShowing){
+
             Toast.makeText(this, "Please enter a location nickname.", Toast.LENGTH_SHORT).show();
         } else {
 
