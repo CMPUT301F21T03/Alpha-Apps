@@ -91,7 +91,7 @@ public class Feed extends Fragment implements EventList.OnEventListener {
         searchButton.setOnClickListener(this::searchButtonPressed);
 
         feedRecyclerView = view.findViewById(R.id.feed_recycler_view);
-        eventsAdapter = new EventList(events, this);
+        eventsAdapter = new EventList(events, this, R.layout.feed_events_listview_content);
         feedRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         feedRecyclerView.setAdapter(eventsAdapter);
         getHabitEventList(eventsAdapter);
@@ -167,11 +167,11 @@ public class Feed extends Fragment implements EventList.OnEventListener {
                                                 LocalDateTime newDate = LocalDateTime.parse(newDateStr, formatter);
                                                 String comment = doc.getString("comment");
                                                 String username = doc.getString("username");
+                                                String photograph = doc.getString("photograph");
                                                 // TODO store location and photograph after halfway
                                                 Event eventToAdd;
                                                 if (username == null) {
                                                     eventToAdd = new Event(doc.getString("name"), newDate, comment, null,  "");
-
                                                 } else {
                                                     eventToAdd = new Event(doc.getString("name"), newDate, comment, null,  username);
 
@@ -180,6 +180,8 @@ public class Feed extends Fragment implements EventList.OnEventListener {
                                                 if (!events.contains(eventToAdd)) {
                                                     eventsAdapter.addEvent(eventToAdd);
                                                 }
+
+                                                eventsAdapter.sortEvents();
 
                                             }
                                         }
