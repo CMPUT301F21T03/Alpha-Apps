@@ -171,6 +171,27 @@ public class RequestList extends ArrayAdapter<Request> {
         userData.put("followers",userIDs);
         findUserRef1.update("followers", userIDs);
 
+        final DocumentReference findUserRef2 = db.collection("Doers").document(newFollower);
+        findUserRef2.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Map newUserData = document.getData();
+                        ArrayList<String> following = (ArrayList<String>) userData.get("following");
+                        following.add(userData.get("username").toString());
+                        findUserRef2.update("following", following);
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+
 
     }
 
