@@ -36,7 +36,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
-import com.example.habitapp.Activities.Main;
+import com.example.habitapp.Activities.MainActivity;
 import com.example.habitapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -122,7 +122,7 @@ public class RequestList extends ArrayAdapter<Request> {
     public void deleteRequest(int i ){
         Map userData;
         ArrayList<String> userIDs;
-        Main activity = (Main) context;
+        MainActivity activity = (MainActivity) context;
         userData = activity.getUserData();
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
@@ -160,7 +160,7 @@ public class RequestList extends ArrayAdapter<Request> {
     public void addFollower(int i ){
         Map userData;
         ArrayList<String> userIDs;
-        Main activity = (Main) context;
+        MainActivity activity = (MainActivity) context;
         userData = activity.getUserData();
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();

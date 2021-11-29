@@ -4,7 +4,7 @@
  * means without prior permission of the members of CMPUT301F21T03 or by the professor and any
  * authorized TAs of the CMPUT301 class at the University of Alberta, fall term 2021.
  *
- * Class: GoBack
+ * Class: GoBackButton
  *
  * Description: Sets a listener that responds when a user clicks on a "go back" button. When they
  * do so it will close the current frame and re-open the the most-recent frame.
@@ -21,15 +21,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
 import com.example.habitapp.R;
 
-public class GoBack extends Fragment {
+public class GoBackButton extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {

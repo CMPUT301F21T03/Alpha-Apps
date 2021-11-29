@@ -30,10 +30,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.habitapp.DataClasses.Habit;
 import com.example.habitapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -43,7 +41,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,23 +75,17 @@ public class SignUp extends AppCompatActivity {
     public void signUpScreenSignInButtonPressed(View view){
         // get the Strings inside the editText views
 
-        EditText getName = (EditText)findViewById(R.id.signupscreen_name_alias);
+        EditText getName = findViewById(R.id.signupscreen_name_alias);
         String name = getName.getText().toString();
-        EditText getUsername = (EditText)findViewById(R.id.signupscreen_username);
+        EditText getUsername = findViewById(R.id.signupscreen_username);
         String username = getUsername.getText().toString();
-        EditText getPassword = (EditText)findViewById(R.id.signupscreen_password);
+        EditText getPassword = findViewById(R.id.signupscreen_password);
         String password = getPassword.getText().toString();
 
-        // TODO go to firebase and create a unique ID for this user and assign it to them
-
         // prep Firestore
-        // this can be moved to initialization of Login
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
 
-
-
-        // TODO: could use something other than an alertdialog, like a snackbar
         // initiates an alertdialog to use if there is an error logging in
         AlertDialog.Builder signupAlert = new AlertDialog.Builder(this)
                 .setTitle("Signup Error")
@@ -118,7 +109,6 @@ public class SignUp extends AppCompatActivity {
                         DocumentSnapshot document = task.getResult();
                         // Validates username exists in database
                         if (!document.exists()) {
-                            // TODO: initiate name and other user profile details here
                             // Must change habit format later
                             Map userData = new HashMap<>();
                             userData.put("username",username);
@@ -131,7 +121,6 @@ public class SignUp extends AppCompatActivity {
                             userData.put("profilePic",defaultProfilePic);
 
                             // Validating password
-                            // TODO change this later to something other than random 3
                             if(password.length() > 2){
                                 findUserRef.set(userData)
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -139,10 +128,7 @@ public class SignUp extends AppCompatActivity {
                                             @Override
                                             public void onSuccess(Void aVoid) {
                                                 // SIGNUP HERE
-                                                // TODO figure out a way to move to the mainActivity class without allowing the back
-                                                //  button to take the user back to the log in page
-                                                //  send a state through the intent bundle?
-                                                Intent intent = new Intent(signupContext, Main.class);
+                                                Intent intent = new Intent(signupContext, MainActivity.class);
                                                 intent.putExtra(MESSAGE, username);
                                                 // bundle the user info into Serializable and send through Intent
                                                 intent.putExtra("userData",(Serializable) userData);
@@ -178,16 +164,6 @@ public class SignUp extends AppCompatActivity {
                     }
                 }
             });
-
         }
-
-
-
-
-        // TODO figure out a way to move to the mainActivity class without allowing the back
-        //  button to take the user back to the log in page
-
-
     }
-
 }

@@ -1,30 +1,21 @@
 package com.example.habitapp;
 
 import static org.junit.Assert.*;
-
 import android.app.Activity;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
-
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
-
 import com.example.habitapp.Activities.BootScreen;
 import com.example.habitapp.Activities.HabitDetails;
-import com.example.habitapp.Activities.HabitEventDetails;
 import com.example.habitapp.Activities.LogIn;
-import com.example.habitapp.Activities.Main;
+import com.example.habitapp.Activities.MainActivity;
 import com.example.habitapp.DataClasses.Event;
-import com.example.habitapp.Fragments.AllHabits;
 import com.robotium.solo.Solo;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -48,7 +39,7 @@ public class HabitEventDetailsTest {
         solo.enterText((EditText) solo.getView(R.id.loginscreen_password), "abc123");
         solo.clickOnView(solo.getView(R.id.signupscreen_sign_up)); // misleading button name
         solo.sleep(5); // wait for communication w/ server
-        solo.assertCurrentActivity("Wrong Activity", Main.class); //  just checks for main, once profile is set up check for right user
+        solo.assertCurrentActivity("Wrong Activity", MainActivity.class); //  just checks for main, once profile is set up check for right user
 
     }
 
@@ -66,7 +57,7 @@ public class HabitEventDetailsTest {
      */
     @Test
     public void testCorrectActivity(){
-        solo.assertCurrentActivity("Wrong Activity", Main.class);
+        solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
     }
 
     /**

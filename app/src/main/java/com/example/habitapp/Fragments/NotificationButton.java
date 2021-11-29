@@ -4,7 +4,7 @@
  * means without prior permission of the members of CMPUT301F21T03 or by the professor and any
  * authorized TAs of the CMPUT301 class at the University of Alberta, fall term 2021.
  *
- * Class: Notification
+ * Class: NotificationButton
  *
  * Description: Sets a listener that responds when a user clicks on a "notifications" button.
  * When they do so it will open a dialog with any pertinent notification information
@@ -32,17 +32,19 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
-import com.example.habitapp.Activities.Main;
+import com.example.habitapp.Activities.MainActivity;
 import com.example.habitapp.DataClasses.RequestList;
 import com.example.habitapp.DataClasses.Request;
 import com.example.habitapp.R;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class Notification extends Fragment {
+
+public class NotificationButton extends Fragment {
     ImageView notifButton;
     Dialog notiDialog;
     Button acceptButton;
@@ -53,9 +55,6 @@ public class Notification extends Fragment {
     private ArrayList<Request> notificationDataList = new ArrayList<>();
     private Map userData;
     private ArrayList<String> userIDs;
-
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         // Defines the xml file for the fragment
@@ -67,7 +66,7 @@ public class Notification extends Fragment {
         notifButton = view.findViewById(R.id.notification_image);
         acceptButton = (Button) view.findViewById(R.id.accept_button);
         declineButton  = (Button) view.findViewById(R.id.decline_button);
-        Main activity = (Main) getActivity();
+        MainActivity activity = (MainActivity) getActivity();
         userData = activity.getUserData();
         userIDs = (ArrayList<String>) userData.get("incomingrequest");
         setRequests(userIDs);
@@ -88,7 +87,7 @@ public class Notification extends Fragment {
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void notificationsButtonPressed(View view) {
-        Main activity = (Main) getActivity();
+        MainActivity activity = (MainActivity) getActivity();
 
         notificationAdapter = new RequestList(activity, notificationDataList);
 
@@ -113,7 +112,6 @@ public class Notification extends Fragment {
         notificationsListView = (ListView) notiDialog.findViewById(R.id.noti_list);
         notificationsListView.setAdapter(notificationAdapter);
         notiDialog.show();
-//
 
 
     }

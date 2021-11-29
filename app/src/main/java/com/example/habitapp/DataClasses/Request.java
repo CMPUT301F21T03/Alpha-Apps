@@ -19,9 +19,7 @@
 package com.example.habitapp.DataClasses;
 
 import android.os.Build;
-
 import androidx.annotation.RequiresApi;
-
 import java.io.Serializable;
 
 

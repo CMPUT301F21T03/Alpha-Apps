@@ -6,17 +6,17 @@
     app:startDestination="@id/allHabitsFragment">
     <fragment
         android:id="@+id/allHabitsFragment"
-        android:name="com.example.habitapp.Fragments.AllHabits"
+        android:name="com.example.habitapp.Fragments.AllHabitsPage"
         android:label="AllHabitsFragment"
         tools:layout="@layout/all_habits"/>
     <fragment
         android:id="@+id/todayHabitsFragment"
-        android:name="com.example.habitapp.Fragments.TodayHabits"
+        android:name="com.example.habitapp.Fragments.TodayHabitsPage"
         android:label="TodayHabitsFragment"
         tools:layout="@layout/today_habits"/>
     <fragment
         android:id="@+id/addHabitFragment"
-        android:name="com.example.habitapp.Fragments.AddHabit"
+        android:name="com.example.habitapp.Fragments.AddHabitPage"
         android:label="AddHabitFragment"
         tools:layout="@layout/add_habit">
         <action
@@ -25,12 +25,12 @@
     </fragment>
     <fragment
         android:id="@+id/feedFragment"
-        android:name="com.example.habitapp.Fragments.Feed"
+        android:name="com.example.habitapp.Fragments.FeedPage"
         android:label="FeedFragment"
         tools:layout="@layout/feed"/>
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.example.habitapp.Fragments.Profile"
+        android:name="com.example.habitapp.Fragments.ProfilePage"
         android:label="ProfileFragment"
         tools:layout="@layout/profile"/>
 </navigation>

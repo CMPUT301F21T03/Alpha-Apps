@@ -21,11 +21,8 @@
 
 package com.example.habitapp.DataClasses;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
-import android.media.MediaDrm;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -33,23 +30,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.habitapp.R;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -60,28 +52,41 @@ import java.util.List;
 import java.util.Map;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
-public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //ArrayAdapter<Event> {
+public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{
     private String TAG = "eventListTAG";
     private ArrayList<Event> events;
-    private Habit habit;
-    private Map userData;
     private OnEventListener onEventListener;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private int layoutFile;
 
+    /**
+     * creates a list of event objects. As this class extends an array adapter this object must
+     * contain the context of its use so other functions may use this value later
+     *
+     * @param events the raw data of the event list which will be formatted by this class
+     */
     public EventList(ArrayList<Event> events, OnEventListener onEventListener, int layoutFile) {
-        //super(context, 0, events);
         this.events = events;
         this.onEventListener = onEventListener;
         this.layoutFile = layoutFile;
     }
 
+    /**
+     * ViewHolder class specialized for RecyclerView
+     * Attaches to views in each cell's layout, and provides getters to access them.
+     */
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private int layoutFile;
         private TextView name, comment, date, username, location;
         private ImageView image;
         OnEventListener onEventListener;
 
+        /**
+         * Constructor for ViewHolder. Brings in the current view, and the listener
+         * allows for onClick handling
+         * @param view current view
+         * @param onEventListener listener instance to allow for onClick
+         */
         public ViewHolder(View view, OnEventListener onEventListener, int layoutFile){
             super(view);
             name = view.findViewById(R.id.eventslistviewcontent_name_text);
@@ -123,24 +128,43 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
             return location;
         }
 
+        /**
+         * onClick handler that passes the onClick functionality to the interface
+         * @param view parent view
+         */
         @Override
         public void onClick(View view) {
             onEventListener.onEventClick(getAdapterPosition());
         }
     }
 
+    /**
+     * Interface to allow for onClick method when tapping on
+     * cell in RecyclerView
+     */
     public interface OnEventListener{
         void onEventClick(int position);
     }
 
+    /**
+     * Once connected to a holder in the RecyclerView, inflates it with relevant cell layout
+     * belonging to an event
+     * @param parent ViewGroup parent to get context from
+     * @param viewType viewType number
+     */
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        //View listItem = layoutInflater.inflate(R.layout.events_listview_content, parent, false);
         View listItem = layoutInflater.inflate(layoutFile, parent, false);
         return new ViewHolder(listItem, onEventListener, layoutFile);
     }
 
+    /**
+     * Once connected to a holder in the RecyclerView, populates it with relevant data
+     * belonging to an event
+     * @param holder the "cell" in question in the RecyclerView
+     * @param position the index of the position of the cell in the RecyclerView
+     */
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position){
         final Event event = events.get(position);
@@ -158,8 +182,6 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
             Log.d(TAG,"Null");
             holder.getImage().setVisibility(View.GONE);
         }else{
-            // holder.getImage().setImageBitmap(event.getPhotograph());
-            Log.d(TAG,"URL: " + event.getPhotograph());
             // make a thread to decode the image URL and convert to bitmap to display
             Thread thread = new Thread(new Runnable() {
                 @Override
@@ -170,7 +192,7 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
                         new Handler(Looper.getMainLooper()).post(new Runnable(){
                             @Override
                             public void run() {
-                                holder.getImage().setImageBitmap(imageBitmap); //Bitmap.createScaledBitmap(imageBitmap, 300, 200, false));
+                                holder.getImage().setImageBitmap(imageBitmap);
                             }
                         });
                         Log.d(TAG, "Successfully set image");
@@ -187,6 +209,12 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
     }
 
 
+    /**
+     * if the data that this object is based on is changed in any way (as notified by firestore)
+     * update the values to reflect the new ones in firestore
+     * @param query the query to reach the location of the data in firestore representative of this object
+     * @param TAG a string to indicate where this function is being called from
+     */
     @NonNull
     public void addSnapshotQuery(Query query, String TAG) {
         query.addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -214,7 +242,6 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
                             String locationName = doc.getString("locationName");
                             Double longitude = doc.getDouble("longitude");
                             Double latitude = doc.getDouble("latitude");
-                            // TODO store location and photograph after halfway
                             Event eventToAdd = new Event(doc.getString("name"), newDate, comment, photograph, username, latitude, longitude, locationName);
 
 
@@ -231,12 +258,11 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
         });
     }
 
-    // custom comparator class
-    // first sorts events by date completed
-    // and in case two are the same, then sorts alphabetically
-    // sorts newer dates first, so you can scroll down on the feed
-    // and get to older entries
-    
+    /**
+     * custom comparator class, first sorts events by the date they were completed, and if two are
+     * the same then it sorts them alphabetically. Sorts newer dates first (first entry is at top
+     * of the listview)
+     */
     public class EventCompare implements Comparator<Event> {
         @Override
         public int compare(Event event_1, Event event_2) {
@@ -251,8 +277,6 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{ //Arr
 
         }
     }
-    
-    // public methods
 
     /**
      * Clears the ArrayList containing all the Event objects

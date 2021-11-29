@@ -25,20 +25,16 @@ import static android.content.ContentValues.TAG;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 
-import androidx.annotation.NonNull;
+
 
 import com.example.habitapp.R;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
+
+
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Map;
+
 
 public class User implements Serializable {
 

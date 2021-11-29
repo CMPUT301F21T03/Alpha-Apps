@@ -1,15 +1,12 @@
 package com.example.habitapp;
 
 import android.app.Activity;
-
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
-
 import com.example.habitapp.Activities.BootScreen;
 import com.example.habitapp.Activities.LogIn;
 import com.example.habitapp.Activities.SignUp;
 import com.robotium.solo.Solo;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;

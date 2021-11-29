@@ -131,7 +131,7 @@ public class FollowingFollowers extends AppCompatActivity {
     } */
 
     private void openUserFrame(String userID) {
-        Intent intent = new Intent(this, FollowUserView.class);
+        Intent intent = new Intent(this, SearchedUpUser.class);
         intent.putExtra("userID", userID);
         intent.putExtra("thisUserID",thisUserID);
         intent.putExtra("followStatus","must_be_checked");
@@ -237,7 +237,7 @@ public class FollowingFollowers extends AppCompatActivity {
 
 
         } else {
-            Intent intent = new Intent(this, FollowUserView.class);
+            Intent intent = new Intent(this, SearchedUpUser.class);
             User userPos = followDataList.get(pos);
             intent.putExtra("userID",userPos.getUniqueID());
             intent.putExtra("thisUserID",thisUserID);
