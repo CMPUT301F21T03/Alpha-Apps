@@ -35,6 +35,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Adapter;
@@ -135,6 +136,11 @@ public class HabitEventDetails extends AppCompatActivity {
             locationButton.setText(event.getLocationName());
         }
 
+        if (TextUtils.isEmpty(event.getLocationName())) {
+            locationButton.setText("No Location Specified");
+            locationButton.setEnabled(false);
+        }
+
         // set a listener for the edit button
         Button editButton = findViewById(R.id.habiteventdetails_edit);
         editButton.setOnClickListener(this::habitEventDetailsEditButtonPressed);
@@ -190,6 +196,14 @@ public class HabitEventDetails extends AppCompatActivity {
         AlertDialog alert = deleteBuilder.create();
         alert.show();
 
+    }
+
+    public void habitEventDetailsLocationButtonPressed(View view) {
+        Intent intent = new Intent(this, MapSelector.class);
+        intent.putExtra("latitude", event.getLatitude());
+        intent.putExtra("longitude", event.getLongitude());
+        intent.putExtra("selectActive", false);
+        startActivity(intent);
     }
 
 
