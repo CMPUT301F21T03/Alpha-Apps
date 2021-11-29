@@ -63,7 +63,9 @@
         android:layout_marginStart="30dp"
         android:layout_marginTop="10dp"
         android:text="Habits"
-        android:textColor="#252525"
+        android:textColor="#717171"
+        android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
 
@@ -74,7 +76,9 @@
         android:layout_marginStart="30dp"
         android:layout_marginTop="10dp"
         android:text="Habit Events"
-        android:textColor="#252525"
+        android:textColor="#717171"
+        android:textStyle="bold"
+        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layout" />
 
@@ -111,10 +115,10 @@
         android:layout_marginStart="50dp"
         android:layout_marginTop="50dp"
         android:layout_marginEnd="50dp"
-        android:text="You aren't following this user, you can request to follow them by clicking on the button in the top right. Follow them to view their habits and habit events."
+        android:gravity="center"
+        android:text="You aren't following this user.\nYou can request to follow by clicking on the button in the top right.\n\nFollow them to view their habits and habit events!"
         android:textAlignment="center"
-        android:textColor="#1E1E1E"
-        android:textSize="24sp"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />

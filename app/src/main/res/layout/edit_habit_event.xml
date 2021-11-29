@@ -7,10 +7,10 @@
 
     <ImageView
         android:id="@+id/edithabitevent_location_button"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
         android:layout_marginStart="30dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView25"
         app:srcCompat="@drawable/ic_baseline_add_location_24" />
@@ -122,37 +122,36 @@
         app:layout_constraintTop_toBottomOf="@+id/edithabitevent_location_button" />
 
 
-    <ImageView
-        android:id="@+id/edithabitevent_camera_button"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="5dp"
-        android:background="@drawable/ic_baseline_add_a_photo_24"
-        android:focusable="false"
-        android:scaleType="fitXY"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView26" />
-
-    <ImageView
-        android:id="@+id/edithabitevent_delete_image_button"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:focusable="false"
-        android:scaleType="fitXY"
-        app:layout_constraintStart_toEndOf="@+id/edithabitevent_camera_button"
-        app:layout_constraintTop_toBottomOf="@+id/textView26"
-        app:srcCompat="@drawable/ic_baseline_delete_forever_24" />
-
     <LinearLayout
         android:id="@+id/button_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="10dp"
         android:orientation="horizontal"
-        tools:layout_editor_absoluteX="28dp"
-        tools:layout_editor_absoluteY="399dp">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView26">
+
+        <ImageView
+            android:id="@+id/edithabitevent_camera_button"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/ic_baseline_add_a_photo_24"
+            android:focusable="false"
+            android:scaleType="fitXY" />
+
+
+        <ImageView
+            android:id="@+id/edithabitevent_delete_image_button"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_marginStart="10dp"
+            android:focusable="false"
+            android:scaleType="fitXY"
+            app:layout_constraintStart_toEndOf="@+id/edithabitevent_album_button"
+            app:layout_constraintTop_toBottomOf="@+id/textView26"
+            app:srcCompat="@drawable/ic_baseline_delete_forever_24" />
 
     </LinearLayout>
 
@@ -161,24 +160,26 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="30dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="30dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="10dp"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toTopOf="@+id/edithabitevent_complete"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edithabitevent_camera_button"
+        app:layout_constraintTop_toBottomOf="@+id/button_layout"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
     <TextView
         android:id="@+id/edithabitevent_lat_long"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="15dp"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="30dp"
         android:text="TextView"
+        android:textColor="@color/black"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/edithabitevent_location_button"
         app:layout_constraintTop_toBottomOf="@+id/textView25" />
@@ -187,11 +188,12 @@
         android:id="@+id/edithabitevent_location_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="15dp"
         android:layout_marginTop="5dp"
-        android:layout_marginEnd="30dp"
+        android:layout_marginEnd="35dp"
         android:ems="10"
         android:hint="Name for location"
+        android:textColor="@color/black"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="@+id/edithabitevent_location_button"
         app:layout_constraintEnd_toEndOf="parent"

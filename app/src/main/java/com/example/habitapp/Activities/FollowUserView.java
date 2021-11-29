@@ -274,7 +274,7 @@ public class FollowUserView extends AppCompatActivity {
 
         thread.start();
         usernameEditText.setText(followUserName);
-        idView.setText(followUserID);
+        idView.setText("@"+followUserID);
 
     }
 
