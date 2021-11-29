@@ -64,14 +64,16 @@ public class MapSelector extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private void buttonPressed(View view) {
-        finish();
+
 
         Intent intent = new Intent(this, EditHabitEvent.class);
         intent.putExtra("selectedLatitude", selectedLatitude);
         intent.putExtra("selectedLongitude", selectedLongitude);
         intent.putExtra("event", (Event) recievedIntent.getParcelableExtra("event"));
         intent.putExtra("habit", (Habit) recievedIntent.getSerializableExtra("habit"));
-        intent.putExtra("firestoreID", ((Event) recievedIntent.getParcelableExtra("event")).getFirestoreId());
+        intent.putExtra("firestoreId", (recievedIntent.getStringExtra("firestoreId")));
+        System.out.println("Sending back to edit:");
+        System.out.println(recievedIntent.getStringExtra("firestoreId"));
         intent.putExtra("userData", (Serializable) (Map) recievedIntent.getSerializableExtra("userData"));
         intent.putExtra("prevActivity", (String) recievedIntent.getSerializableExtra("activity"));
 
