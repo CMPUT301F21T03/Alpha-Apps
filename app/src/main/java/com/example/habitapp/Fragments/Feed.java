@@ -74,6 +74,7 @@ public class Feed extends Fragment implements EventList.OnEventListener {
 
     private ArrayList<String> following_usernames;
     private ArrayList<ArrayList<String>> following_habits;
+    private ArrayList<ArrayList<String>> following_habits_names;
     private ArrayList<ArrayList<String>> following_events;
 
     int i;
@@ -97,6 +98,7 @@ public class Feed extends Fragment implements EventList.OnEventListener {
         getHabitEventList(eventsAdapter);
 
         following_habits = new ArrayList<ArrayList<String>>();
+        following_habits_names = new ArrayList<ArrayList<String>>();
         following_events = new ArrayList<ArrayList<String>>();
 
         i = 0;
@@ -135,12 +137,20 @@ public class Feed extends Fragment implements EventList.OnEventListener {
                         @Override
                         public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                             ArrayList<String> temp_habits = new ArrayList<String>();
+                            ArrayList<String> temp_habits_names = new ArrayList<>();
                             for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
 
                                 temp_habits.add((String) doc.getId());
+                                temp_habits_names.add((String) doc.get("title"));
+
+
 
                             }
+
                             following_habits.add(temp_habits);
+                            following_habits_names.add(temp_habits_names);
+
+
 
 
                             // and then, for each user's habits, grab all their habit events
@@ -151,7 +161,8 @@ public class Feed extends Fragment implements EventList.OnEventListener {
                                         .collection("events")
                                         .orderBy("dateCompleted")
                                         .limit(10);
-
+                                String habit_name = temp_habits_names.get(j);
+                                System.out.println(habit_name);
                                 individualEvents.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                     @Override
                                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -174,7 +185,7 @@ public class Feed extends Fragment implements EventList.OnEventListener {
                                                 Double longitude = doc.getDouble("longitude");
                                                 String locationName = doc.getString("locationName");
                                                 // TODO store location and photograph after halfway
-                                                Event eventToAdd = new Event(doc.getString("name"), newDate, comment, photograph,  username, latitude, longitude, locationName);
+                                                Event eventToAdd = new Event(habit_name, newDate, comment, photograph,  username, latitude, longitude, locationName);
 
                                                 eventToAdd.setFirestoreId(doc.getId());
                                                 if (!events.contains(eventToAdd)) {

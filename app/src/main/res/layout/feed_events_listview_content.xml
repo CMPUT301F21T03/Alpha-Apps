@@ -44,7 +44,7 @@
             android:visibility="visible" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="305dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="20dp">
@@ -57,8 +57,8 @@
                     android:id="@+id/edithabitevent_complete_icon"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
-                    android:layout_marginEnd="5dp"
                     android:layout_marginTop="10dp"
+                    android:layout_marginEnd="5dp"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/done_icon"
                     android:focusable="false"
