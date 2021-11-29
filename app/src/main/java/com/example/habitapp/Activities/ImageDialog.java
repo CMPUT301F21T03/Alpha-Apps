@@ -19,20 +19,15 @@ package com.example.habitapp.Activities;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.habitapp.DataClasses.Event;
 import com.example.habitapp.R;
-
-import java.net.URI;
 import java.net.URL;
 
 public class ImageDialog extends AppCompatActivity {
@@ -46,9 +41,9 @@ public class ImageDialog extends AppCompatActivity {
         setContentView(R.layout.image_dialog);
 
         Intent sentIntent = getIntent();
-        event = (Event) sentIntent.getParcelableExtra("event");
+        event = sentIntent.getParcelableExtra("event");
 
-        dialog = (ImageView) findViewById(R.id.image_dialog_imageview);
+        dialog = findViewById(R.id.image_dialog_imageview);
 
         Log.d(TAG,"URL: " + event.getPhotograph());
         // make a thread to decode the image URL and convert to bitmap to display

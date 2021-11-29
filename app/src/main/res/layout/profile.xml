@@ -47,7 +47,7 @@
 
         <fragment
             android:id="@+id/profile_notification_button"
-            android:name="com.example.habitapp.Fragments.Notification"
+            android:name="com.example.habitapp.Fragments.NotificationButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
@@ -58,11 +58,10 @@
         android:id="@+id/profile_edit"
         android:layout_width="33dp"
         android:layout_height="33dp"
-        android:layout_marginEnd="28dp"
-
+        android:layout_marginEnd="30dp"
+        android:layout_marginTop="10dp"
         android:scaleType="fitXY"
         android:background="@null"
-        app:layout_constraintBottom_toBottomOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/constraintLayout"
         app:srcCompat="@drawable/edit_icon" />
@@ -71,10 +70,10 @@
         android:id="@+id/profile_save_button"
         android:layout_width="33dp"
         android:layout_height="33dp"
-        android:layout_marginEnd="28dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginTop="10dp"
         android:scaleType="fitXY"
         android:background="@null"
-        app:layout_constraintBottom_toBottomOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/constraintLayout"
         app:srcCompat="@drawable/save_icon" />
@@ -84,45 +83,48 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="30dp"
         android:layout_marginEnd="30dp"
         android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.81"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView18">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
 
         <android.widget.Button
             android:id="@+id/profile_following"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="4dp"
             android:layout_weight="0.33"
             android:text="Following"
             android:textAllCaps="false"
+            android:background="@drawable/grey_button"
             android:fontFamily="@font/open_sans_semibold"
-            android:textSize="14sp" />
+            android:textSize="16sp" />
 
         <android.widget.Button
             android:id="@+id/profile_followers"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="4dp"
             android:layout_weight="0.33"
             android:text="Followers"
+            android:background="@drawable/grey_button"
             android:textAllCaps="false"
             android:fontFamily="@font/open_sans_semibold"
-            android:textSize="14sp" />
+            android:textSize="16sp" />
 
         <android.widget.Button
             android:id="@+id/profile_pending_button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:layout_weight="0.33"
             android:text="Pending"
+            android:background="@drawable/grey_button"
             android:textAllCaps="false"
             android:fontFamily="@font/open_sans_semibold"
-            android:textSize="14sp" />
+            android:textSize="16sp" />
     </LinearLayout>
 
     <TextView
@@ -130,12 +132,47 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="28dp"
-        android:layout_marginTop="20dp"
-        android:text="Find Other Users:"
+        android:layout_marginTop="40dp"
+        android:text="Find Other Users"
         android:textColor="#000000"
-        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/profile_linearlayout"/>
+
+    <EditText
+        android:id="@+id/profile_search_field"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/search_engine"
+        android:ems="10"
+        android:fontFamily="@font/montserrat"
+        android:hint="search users"
+        android:inputType="textPersonName"
+        android:paddingStart="20dp"
+        android:paddingTop="7dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="7dp"
+        android:textColor="#717171"
+        android:textSize="16sp"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView18" />
+
+    <ImageButton
+        android:id="@+id/profile_search_button"
+        android:layout_width="23dp"
+        android:layout_height="23dp"
+        android:layout_marginEnd="12dp"
+        android:background="@drawable/loupe"
+        android:focusable="false"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="@+id/profile_search_field"
+        app:layout_constraintEnd_toEndOf="@+id/profile_search_field"
+        app:layout_constraintTop_toTopOf="@+id/profile_search_field" />
 
     <android.widget.Button
         android:id="@+id/profile_log_out"

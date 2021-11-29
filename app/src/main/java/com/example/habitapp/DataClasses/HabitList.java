@@ -22,29 +22,23 @@
 
 package com.example.habitapp.DataClasses;
 
-import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.habitapp.R;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -55,7 +49,6 @@ import java.util.Map;
 public class HabitList extends RecyclerView.Adapter<HabitList.ViewHolder> implements Serializable {
 
     private ArrayList<Habit> habitList;
-    private Context context;
 
     private HabitList.OnHabitListener onHabitListener;
 
@@ -160,6 +153,7 @@ public class HabitList extends RecyclerView.Adapter<HabitList.ViewHolder> implem
      * @param holder the "cell" in question in the RecyclerView
      * @param position the index of the position of the cell in the RecyclerView
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(HabitList.ViewHolder holder, final int position){
         final Habit habit = habitList.get(position);
@@ -173,7 +167,6 @@ public class HabitList extends RecyclerView.Adapter<HabitList.ViewHolder> implem
      * @param query The document and query to find Habits from in the Firestore
      * @param TAG The tag associated with the context it is called from, in case an error occurs
      */
-
     @NonNull
     public void addSnapshotQuery(Query query, String TAG){
         query.addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -270,6 +263,10 @@ public class HabitList extends RecyclerView.Adapter<HabitList.ViewHolder> implem
         return habitList.isEmpty();
     }
 
+    /**
+     * Returns the size of the ArrayList containing the Habit objects
+     * @return the size of the ArrayList containing the Habit objects
+     */
     @Override
     public int getItemCount(){
         return habitList.size();

@@ -21,13 +21,20 @@
 
 package com.example.habitapp.DataClasses;
 
+import static android.content.ContentValues.TAG;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+
+
 import com.example.habitapp.R;
+
+
 
 import java.io.Serializable;
 import java.util.ArrayList;
+
 
 public class User implements Serializable {
 
@@ -44,11 +51,15 @@ public class User implements Serializable {
     // a profile picture of the user
     private Bitmap profilePic;
     // a list containing all the IDs of the profiles that this user follows
+    private String profilePicURL;
+    // a URL to the profile pic of the user
     private ArrayList<String> followingList;
     // a list containing all the IDs of the profiles that this follow this user
     private ArrayList<String> followersList;
     // a list containing all the IDs of the profiles that this user requests to follow
     private ArrayList<String> requestedList;
+    // a list containing all the IDs of the profiles that request to follow this user
+    private  ArrayList<String>  incomingRequests;
 
 
     /**
@@ -58,13 +69,14 @@ public class User implements Serializable {
      * @param name the name that the user gives themselves
      * @param email the email that the user links with their account
      * @param password the password that the user sets for their account
-     * @param profilePic the URL to the profile picture of the user
+     * @param profilePicURL the URL to the profile picture of the user
      */
-    public User(String uniqueID, String name, String email, String password, String profilePic){
+    public User(String uniqueID, String name, String email, String password, String profilePicURL){
         setUniqueID(uniqueID);
         setName(name);
         setEmail(email);
         setPassword(password);
+        setProfilePicURL(profilePicURL);
         // default the account to be public, NOT private
         setPrivateAccount(false);
 
@@ -77,6 +89,7 @@ public class User implements Serializable {
         followingList = new ArrayList<>();
         followersList = new ArrayList<>();
         requestedList = new ArrayList<>();
+        incomingRequests = new ArrayList<>();
     }
 
     // =========================== GETTERS AND SETTERS ===========================
@@ -151,4 +164,30 @@ public class User implements Serializable {
     public void setRequestedList(ArrayList<String> requestedList) {
         this.requestedList = requestedList;
     }
+
+    public void addToRequested(String userID){
+        requestedList.add(userID);
+    }
+
+    public ArrayList<String> getIncomingRequests() {
+        return incomingRequests;
+    }
+
+    public void setIncomingRequests(ArrayList<String> incomingRequests) {
+        this.incomingRequests = incomingRequests;
+    }
+
+    public void addIncomingRequest(String userID){
+        incomingRequests.add(userID);
+    }
+
+    public String getProfilePicURL() {
+        return profilePicURL;
+    }
+
+    public void setProfilePicURL(String profilePicURL) {
+        this.profilePicURL = profilePicURL;
+
+    }
 }
+

@@ -1,23 +1,18 @@
 package com.example.habitapp;
 
 import static org.junit.Assert.assertTrue;
-
 import android.app.Activity;
 import android.widget.EditText;
-
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
-
 import com.example.habitapp.Activities.BootScreen;
-import com.example.habitapp.Activities.Main;
+import com.example.habitapp.Activities.MainActivity;
 import com.example.habitapp.Activities.SignUp;
 import com.robotium.solo.Solo;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-
 import java.util.Random;
 
 public class SignUpTest {
@@ -69,7 +64,7 @@ public class SignUpTest {
         solo.enterText((EditText) solo.getView(R.id.signupscreen_password), "abc123");
         solo.clickOnView(solo.getView(R.id.signupscreen_sign_up));
         solo.sleep(5); // wait for communication w/ server
-        solo.assertCurrentActivity("Wrong Activity", Main.class); //  just checks for main, once profile is set up check for right user
+        solo.assertCurrentActivity("Wrong Activity", MainActivity.class); //  just checks for main, once profile is set up check for right user
     }
 
     /**

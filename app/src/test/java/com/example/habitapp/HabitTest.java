@@ -1,17 +1,11 @@
 package com.example.habitapp;
 
 import static org.junit.Assert.assertEquals;
-
 import com.example.habitapp.DataClasses.DaysOfWeek;
 import com.example.habitapp.DataClasses.Habit;
-
-
 import org.junit.Test;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
-
 
 public class HabitTest {
     private Habit createHabit(){

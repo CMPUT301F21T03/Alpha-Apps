@@ -1,26 +1,13 @@
 package com.example.habitapp;
 
-import static android.content.ContentValues.TAG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import static java.security.AccessController.getContext;
-
-import android.content.Context;
-import android.util.Log;
-
 import androidx.annotation.NonNull;
-
-
 import com.example.habitapp.DataClasses.DaysOfWeek;
 import com.example.habitapp.DataClasses.Habit;
 import com.example.habitapp.DataClasses.HabitList;
-
-import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -45,6 +32,9 @@ public class HabitListTest implements HabitList.OnHabitListener{
     }
 
 
+    /**
+     * Tests adding a habit to the list
+     */
     @Test
     public void testAddHabit(){
         HabitList newHabitList = mockHabitList();
@@ -59,6 +49,10 @@ public class HabitListTest implements HabitList.OnHabitListener{
         assertTrue(newHabitList.getHabits().contains(habit));
     }
 
+    /**
+     * Tests adding an already existing habit to the list,
+     * to make sure it throws an exception
+     */
     @Test
     public void testAddHabitException(){
         HabitList newHabitList = mockHabitList();
@@ -69,6 +63,9 @@ public class HabitListTest implements HabitList.OnHabitListener{
         });
     }
 
+    /**
+     * Tests clearing the entire list
+     */
     @Test
     public void testClearHabits(){
         HabitList newHabitList = mockHabitList();
@@ -82,6 +79,10 @@ public class HabitListTest implements HabitList.OnHabitListener{
         newHabitList.clearHabitList();
         assertEquals(0, newHabitList.getHabits().size());
     }
+
+    /**
+     * Tests making sure list can be called upon to find out if empty
+     */
     @Test
     public void testGetHabitListEmpty(){
         HabitList newHabitList = mockHabitList();
@@ -93,6 +94,6 @@ public class HabitListTest implements HabitList.OnHabitListener{
 
     @Override
     public void onHabitClick(int position) {
-        // ?
+        // do nothing
     }
 }
