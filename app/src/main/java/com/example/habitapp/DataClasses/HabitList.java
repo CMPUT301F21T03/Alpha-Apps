@@ -160,6 +160,7 @@ public class HabitList extends RecyclerView.Adapter<HabitList.ViewHolder> implem
      * @param holder the "cell" in question in the RecyclerView
      * @param position the index of the position of the cell in the RecyclerView
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(HabitList.ViewHolder holder, final int position){
         final Habit habit = habitList.get(position);

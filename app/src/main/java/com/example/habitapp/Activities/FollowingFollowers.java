@@ -42,16 +42,23 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.habitapp.DataClasses.Event;
 import com.example.habitapp.DataClasses.User;
 import com.example.habitapp.DataClasses.UserList;
 import com.example.habitapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.Map;
@@ -149,11 +156,82 @@ public class FollowingFollowers extends AppCompatActivity {
     }
 
     private void followItemClicked(AdapterView<?> adapterView, View view, int pos, long l) {
-        Intent intent = new Intent(this, FollowUserView.class);
-        User userPos = followDataList.get(pos);
-        intent.putExtra("userID",userPos.getUniqueID());
-        intent.putExtra("thisUserID",thisUserID);
-        startActivity(intent);
+        if (followType == REQUESTED) {
+            // do something
+            User userToAcceptOrDeny = followDataList.get(pos);
+
+            android.app.AlertDialog.Builder markdoneBuilder = new android.app.AlertDialog.Builder(this);
+            markdoneBuilder.setMessage("Would you like to accept this follow request")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // allow them to follow you
+                            FirebaseFirestore db;
+                            db = FirebaseFirestore.getInstance();
+
+                            final DocumentReference otherUserDoc = db.collection("Doers")
+                                    .document(userToAcceptOrDeny.getUniqueID());
+
+                            otherUserDoc.update("following", FieldValue.arrayUnion(thisUserID)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    // success
+                                }
+                            });
+
+                            // then add them to your followers
+                            final DocumentReference thisUserDoc = db.collection("Doers")
+                                    .document(thisUserID);
+
+                            thisUserDoc.update("followers", FieldValue.arrayUnion(userToAcceptOrDeny.getUniqueID())).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    // success
+                                }
+                            });
+
+                            // and removed them from requested
+                            thisUserDoc.update("requested", FieldValue.arrayRemove(userToAcceptOrDeny.getUniqueID())).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    // success
+                                }
+                            });
+
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            FirebaseFirestore db;
+                            db = FirebaseFirestore.getInstance();
+
+                            final DocumentReference thisUserDoc = db.collection("Doers")
+                                    .document(thisUserID);
+
+                            // just remove them from requested
+                            thisUserDoc.update("requested", FieldValue.arrayRemove(userToAcceptOrDeny.getUniqueID())).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    // success
+                                }
+                            });
+                        }
+                    });
+            android.app.AlertDialog alert = markdoneBuilder.create();
+            alert.show();
+
+            // notify dataset changed
+            followAdapter.notifyDataSetChanged();
+
+
+        } else {
+            Intent intent = new Intent(this, FollowUserView.class);
+            User userPos = followDataList.get(pos);
+            intent.putExtra("userID",userPos.getUniqueID());
+            intent.putExtra("thisUserID",thisUserID);
+            startActivity(intent);
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
