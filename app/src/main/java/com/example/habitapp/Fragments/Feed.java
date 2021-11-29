@@ -75,9 +75,12 @@ public class Feed extends Fragment implements EventList.OnEventListener {
     private Map userData;
 
     private ArrayList<String> following_usernames;
+    private ArrayList<ArrayList<String>> followers_usernames;
     private ArrayList<ArrayList<String>> following_habits;
     private ArrayList<ArrayList<String>> following_habits_names;
     private ArrayList<ArrayList<String>> following_events;
+
+    private String temp_username;
 
     int i;
     int j;
@@ -108,6 +111,7 @@ public class Feed extends Fragment implements EventList.OnEventListener {
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
 
+
         // first, grab the current user's username
         final DocumentReference following = db.collection("Doers")
                 .document((String) userData.get("username"));
@@ -122,82 +126,96 @@ public class Feed extends Fragment implements EventList.OnEventListener {
 
                 for (i = 0; i < following_usernames.size(); i++) {
 
-                    // for each followed user, grab all of their habits
-                    final DocumentReference currentDoc = db.collection("Doers")
-                            .document(following_usernames.get(i));
 
-                    final Query individual_habits_2 = currentDoc
-                            .collection("habits")
-                            .whereEqualTo("privacy", false);
+                    // check if they're actually following
+                    final Query userDoc = db.collection("Doers")
+                            .whereEqualTo("username", following_usernames.get(i))
+                            .whereArrayContains("followers", (String) userData.get("username"));
 
-                    individual_habits_2.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    userDoc.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                         @Override
                         public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                            ArrayList<String> temp_habits = new ArrayList<String>();
-                            ArrayList<String> temp_habits_names = new ArrayList<>();
                             for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-
-                                temp_habits.add((String) doc.getId());
-                                temp_habits_names.add((String) doc.get("title"));
-
-
-
+                                temp_username = (String) doc.get("username");
                             }
+                                if (temp_username != null) {
+                                    // for each followed user, grab all of their habits
+                                    final DocumentReference currentDoc = db.collection("Doers")
+                                            .document(temp_username);
 
-                            following_habits.add(temp_habits);
-                            following_habits_names.add(temp_habits_names);
+                                    final Query individual_habits_2 = currentDoc
+                                            .collection("habits")
+                                            .whereEqualTo("privacy", false);
 
+                                    individual_habits_2.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                            ArrayList<String> temp_habits = new ArrayList<String>();
+                                            ArrayList<String> temp_habits_names = new ArrayList<>();
+                                            for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
 
-
-
-                            // and then, for each user's habits, grab all their habit events
-                            for (j = 0; j < temp_habits.size(); j++) {
-                                final Query individualEvents = currentDoc
-                                        .collection("habits")
-                                        .document(temp_habits.get(j))
-                                        .collection("events")
-                                        .orderBy("dateCompleted")
-                                        .limit(10);
-                                String habit_name = temp_habits_names.get(j);
-                                System.out.println(habit_name);
-                                individualEvents.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                        ArrayList<String> temp_events = new ArrayList<String>();
-                                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-
-                                            // and add each habit to the RecyclerView
-                                            if (doc.get("name") != null) {
-                                                Map getDate = (Map) doc.get("dateCompleted");
-                                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss");
-                                                String newDateStr = getDate.get("year").toString() + "-" +
-                                                        getDate.get("monthValue").toString() + "-" +
-                                                        getDate.get("dayOfMonth").toString() + " 00:00:00";
-                                                ;
-                                                LocalDateTime newDate = LocalDateTime.parse(newDateStr, formatter);
-                                                String comment = doc.getString("comment");
-                                                String username = doc.getString("username");
-                                                String photograph = doc.getString("photograph");
-                                                Double latitude = doc.getDouble("latitude");
-                                                Double longitude = doc.getDouble("longitude");
-                                                String locationName = doc.getString("locationName");
-                                                // TODO store location and photograph after halfway
-                                                Event eventToAdd = new Event(habit_name, newDate, comment, photograph,  username, latitude, longitude, locationName);
-
-                                                eventToAdd.setFirestoreId(doc.getId());
-                                                if (!events.contains(eventToAdd)) {
-                                                    eventsAdapter.addEvent(eventToAdd, true);
-                                                }
-
-                                                eventsAdapter.sortEvents(true);
+                                                temp_habits.add((String) doc.getId());
+                                                temp_habits_names.add((String) doc.get("title"));
 
                                             }
+
+                                            following_habits.add(temp_habits);
+                                            following_habits_names.add(temp_habits_names);
+
+                                            // and then, for each user's habits, grab all their habit events
+                                            for (j = 0; j < temp_habits.size(); j++) {
+                                                final Query individualEvents = currentDoc
+                                                        .collection("habits")
+                                                        .document(temp_habits.get(j))
+                                                        .collection("events")
+                                                        .orderBy("dateCompleted")
+                                                        .limit(10);
+                                                String habit_name = temp_habits_names.get(j);
+                                                System.out.println(habit_name);
+                                                individualEvents.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                                    @Override
+                                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                                        ArrayList<String> temp_events = new ArrayList<String>();
+                                                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+
+                                                            // and add each habit to the RecyclerView
+                                                            if (doc.get("name") != null) {
+                                                                Map getDate = (Map) doc.get("dateCompleted");
+                                                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss");
+                                                                String newDateStr = getDate.get("year").toString() + "-" +
+                                                                        getDate.get("monthValue").toString() + "-" +
+                                                                        getDate.get("dayOfMonth").toString() + " 00:00:00";
+                                                                ;
+                                                                LocalDateTime newDate = LocalDateTime.parse(newDateStr, formatter);
+                                                                String comment = doc.getString("comment");
+                                                                String username = doc.getString("username");
+                                                                String photograph = doc.getString("photograph");
+                                                                Double latitude = doc.getDouble("latitude");
+                                                                Double longitude = doc.getDouble("longitude");
+                                                                String locationName = doc.getString("locationName");
+                                                                // TODO store location and photograph after halfway
+                                                                Event eventToAdd = new Event(habit_name, newDate, comment, photograph, username, latitude, longitude, locationName);
+
+                                                                eventToAdd.setFirestoreId(doc.getId());
+                                                                if (!events.contains(eventToAdd)) {
+                                                                    eventsAdapter.addEvent(eventToAdd, true);
+                                                                }
+
+                                                                eventsAdapter.sortEvents(true);
+
+                                                            }
+                                                        }
+                                                    }
+                                                });
+                                            }
                                         }
-                                    }
-                                });
-                            }
+                                    });
+                                }
+
                         }
                     });
+
+
                 }
             }
         });
@@ -206,9 +224,8 @@ public class Feed extends Fragment implements EventList.OnEventListener {
     @Override
     public void onEventClick(int position) {
         Intent intent = new Intent(getContext(), FollowUserView.class);
-        Event eventPos = events.get(position);
-        intent.putExtra("userID",eventPos.getUsername());
-        intent.putExtra("thisUserID",userData.get("username").toString());
+        intent.putExtra("userID",events.get(position).getUsername());
+        intent.putExtra("thisUserID",(String) userData.get("username"));
         startActivity(intent);
     }
 

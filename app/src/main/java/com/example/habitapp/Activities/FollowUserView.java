@@ -52,18 +52,23 @@ import com.example.habitapp.DataClasses.HabitList;
 import com.example.habitapp.DataClasses.OldHabitList;
 import com.example.habitapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class FollowUserView extends AppCompatActivity {
+public class FollowUserView extends AppCompatActivity implements EventList.OnEventListener{
 
     private static final String TAG = "FollowUserViewTAG";
     private int followStatus;
@@ -78,13 +83,17 @@ public class FollowUserView extends AppCompatActivity {
 
     private ArrayList<Habit> habits = new ArrayList<Habit>();
     private OldHabitList habitAdapter;
-    private ArrayList<Event> events;
+    private ArrayList<Event> events = new ArrayList<Event>();
+    private EventList eventsAdapter;
     private String followUserName;
     private String followUserID;
     private String followUserPFP;
     private Map userData;
     private String userID;
     private String thisUserID;
+
+    private int i;
+    private int j;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -96,6 +105,7 @@ public class FollowUserView extends AppCompatActivity {
         Intent intent = getIntent();
         // user ID of user being viewed
         userID = intent.getStringExtra("userID");
+        System.out.print(userID);
         // user ID of user currently logged in
         thisUserID = intent.getStringExtra("thisUserID");
         if(userID.equals(thisUserID)){
@@ -104,6 +114,12 @@ public class FollowUserView extends AppCompatActivity {
             followTag.setEnabled(false);
             followTag.setVisibility(View.GONE);
         }
+
+        RecyclerView userRecyclerView = findViewById(R.id.followeruserview_habit_event_recycler);
+        eventsAdapter = new EventList(events, this, R.layout.events_listview_content);
+        userRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        userRecyclerView.setAdapter(eventsAdapter);
+        getUserData(userID);
 
         Context context = this;
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -147,6 +163,8 @@ public class FollowUserView extends AppCompatActivity {
 
         TextView followStatus = findViewById(R.id.followuserview_follow_status);
         followStatus.setOnClickListener(this::followStatusClicked);
+
+
     }
 
     private void followStatusClicked(View view) {
@@ -280,7 +298,7 @@ public class FollowUserView extends AppCompatActivity {
 
         thread.start();
         usernameEditText.setText(followUserName);
-        idView.setText(followUserID);
+        idView.setText("@"+followUserID);
 
     }
 
@@ -365,13 +383,93 @@ public class FollowUserView extends AppCompatActivity {
 
     private void getEventData() {
         //TODO get this users habit events (the first one from each habit)
-        /*
-        * feedRecyclerView = this.findViewById(R.id.followuserview_habit_event_list);
-        eventsAdapter = new EventList(events, this, R.layout.feed_events_listview_content);
-        feedRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        feedRecyclerView.setAdapter(eventsAdapter);
-        getHabitEventList(eventsAdapter);
-        * */
+        //getHabitData(userID);
+
+        FirebaseFirestore db;
+        db = FirebaseFirestore.getInstance();
+
+        // first, grab the current user's username
+        final DocumentReference following = db.collection("Doers")
+                .document(userID);
+
+        // ADD NULL CHECKS!!!
+        following.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                // for the followed user, grab all of their habits
+                final DocumentReference currentDoc = db.collection("Doers")
+                        .document(userID);
+
+                final Query individual_habits_2 = currentDoc
+                        .collection("habits")
+                        .whereEqualTo("privacy", false);
+
+                individual_habits_2.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        ArrayList<String> temp_habits = new ArrayList<String>();
+                        ArrayList<String> temp_habits_names = new ArrayList<>();
+                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+
+                            temp_habits.add((String) doc.getId());
+                            temp_habits_names.add((String) doc.get("title"));
+
+                        }
+
+                        // and then, for each user's habits, grab all their habit events
+                        for (j = 0; j < temp_habits.size(); j++) {
+                            final Query individualEvents = currentDoc
+                                    .collection("habits")
+                                    .document(temp_habits.get(j))
+                                    .collection("events")
+                                    .orderBy("dateCompleted")
+                                    .limit(10);
+                            String habit_name = temp_habits_names.get(j);
+                            System.out.println(habit_name);
+                            individualEvents.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                @RequiresApi(api = Build.VERSION_CODES.O)
+                                @Override
+                                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                    ArrayList<String> temp_events = new ArrayList<String>();
+                                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+
+                                        // and add each habit to the RecyclerView
+                                        if (doc.get("name") != null) {
+                                            Map getDate = (Map) doc.get("dateCompleted");
+                                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss");
+                                            String newDateStr = getDate.get("year").toString() + "-" +
+                                                    getDate.get("monthValue").toString() + "-" +
+                                                    getDate.get("dayOfMonth").toString() + " 00:00:00";
+                                            ;
+                                            LocalDateTime newDate = LocalDateTime.parse(newDateStr, formatter);
+                                            String comment = doc.getString("comment");
+                                            String username = doc.getString("username");
+                                            String photograph = doc.getString("photograph");
+                                            Double latitude = doc.getDouble("latitude");
+                                            Double longitude = doc.getDouble("longitude");
+                                            String locationName = doc.getString("locationName");
+                                            // TODO store location and photograph after halfway
+                                            Event eventToAdd = new Event(habit_name, newDate, comment, photograph, username, latitude, longitude, locationName);
+
+                                            eventToAdd.setFirestoreId(doc.getId());
+                                            if (!events.contains(eventToAdd)) {
+                                                eventsAdapter.addEvent(eventToAdd, true);
+                                            }
+
+                                            //eventsAdapter.sortEvents(true);
+
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+
+
+            }
+        });
 
 
     }
@@ -387,4 +485,8 @@ public class FollowUserView extends AppCompatActivity {
         return TAG;
     }
 
+    @Override
+    public void onEventClick(int position) {
+        // do nothing
+    }
 }
