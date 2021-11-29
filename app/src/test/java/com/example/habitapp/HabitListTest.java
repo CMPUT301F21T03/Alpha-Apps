@@ -27,7 +27,7 @@ public class HabitListTest implements HabitList.OnHabitListener{
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss");
         LocalDateTime date = LocalDateTime.parse("2021-08-11 00:00:00", formatter);
         boolean privacy = true;
-        Habit habit = new Habit("Exercise", "Get fit", date, frequency, privacy, -1, -1);
+        Habit habit = new Habit("Exercise", "Get fit", date, frequency, privacy, -1, -1, date, 0, 0);
         return habit;
     }
 
@@ -43,7 +43,7 @@ public class HabitListTest implements HabitList.OnHabitListener{
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss");
         LocalDateTime date = LocalDateTime.parse("2021-09-20 00:00:00", formatter);
         boolean privacy = true;
-        Habit habit = new Habit("New Habit", "For test", date, frequency, privacy, -1, -1);
+        Habit habit = new Habit("New Habit", "For test", date, frequency, privacy, -1, -1, date, 0, 0);
         newHabitList.addHabit(habit);
         assertEquals(2, newHabitList.getHabits().size());
         assertTrue(newHabitList.getHabits().contains(habit));
@@ -74,7 +74,7 @@ public class HabitListTest implements HabitList.OnHabitListener{
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss");
         LocalDateTime date = LocalDateTime.parse("2021-09-20 00:00:00", formatter);
         boolean privacy = true;
-        Habit habit = new Habit("New Habit", "Test clear", date, frequency, privacy, -1, -1);
+        Habit habit = new Habit("New Habit", "Test clear", date, frequency, privacy, -1, -1, date, 0, 0);
         newHabitList.addHabit(habit);
         newHabitList.clearHabitList();
         assertEquals(0, newHabitList.getHabits().size());

@@ -22,6 +22,8 @@
 
 package com.example.habitapp.DataClasses;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -153,12 +155,13 @@ public class HabitList extends RecyclerView.Adapter<HabitList.ViewHolder> implem
      * @param holder the "cell" in question in the RecyclerView
      * @param position the index of the position of the cell in the RecyclerView
      */
+    @SuppressLint("SetTextI18n")
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(HabitList.ViewHolder holder, final int position){
         final Habit habit = habitList.get(position);
         holder.getHabitTitle().setText(habit.getTitle());
-        holder.getHabitProgressText().setText(habit.getProgress().toString()+  "%");
+        holder.getHabitProgressText().setText(habit.getProgress().intValue() +  "%");
         holder.getHabitProgressBar().setProgress(habit.getProgress().intValue());
     }
 
@@ -195,13 +198,38 @@ public class HabitList extends RecyclerView.Adapter<HabitList.ViewHolder> implem
                                     getDate.get("dayOfMonth").toString() + " 00:00:00";
                             LocalDateTime newDate = LocalDateTime.parse(newDateString, formatter);
                             LocalDateTime ldt = newDate;
+                            // Convert Firestore's stored time to LocalDateTime
+                            Map getDateChecked = (Map) doc.get("dateLastChecked");
+                            String newDateStringChecked = getDateChecked.get("year").toString() + "-" +
+                                    getDateChecked.get("monthValue").toString() + "-" +
+                                    getDateChecked.get("dayOfMonth").toString() + " 00:00:00";
+                            LocalDateTime newDateChecked = LocalDateTime.parse(newDateStringChecked, formatter);
+                            LocalDateTime ldtCheck = newDateChecked;
                             // Convert Firestore's stored days of week to DaysOfWeek
                             Map<String, Boolean> docDaysOfWeek = (Map<String, Boolean>) doc.get("weekOccurence");
                             Habit habitToAdd;
                             if (doc.getBoolean("privacy") == null || (doc.get("allHabitsIndex") == null) || (doc.get("todayHabitsIndex") == null) ) {
-                                 habitToAdd = new Habit(doc.getString("title"),doc.getString("reason"),ldt,new DaysOfWeek(docDaysOfWeek), true, -1, -1);
+                                 habitToAdd = new Habit(doc.getString("title"),
+                                                         doc.getString("reason"),
+                                                         ldt,
+                                                         new DaysOfWeek(docDaysOfWeek),
+                                                         true,
+                                                         -1,
+                                                         -1,
+                                                         ldtCheck,
+                                                         ((Long) doc.get("daysCompleted")).intValue(),
+                                                         ((Long) doc.get("daysTotal")).intValue());
                             } else {
-                                 habitToAdd = new Habit(doc.getString("title"),doc.getString("reason"),ldt,new DaysOfWeek(docDaysOfWeek), doc.getBoolean("privacy"), ((Long) doc.get("allHabitsIndex")).intValue(), ((Long) doc.get("todayHabitsIndex")).intValue());
+                                 habitToAdd = new Habit(doc.getString("title"),
+                                                        doc.getString("reason"),
+                                                        ldt,
+                                                        new DaysOfWeek(docDaysOfWeek),
+                                                        doc.getBoolean("privacy"),
+                                                        ((Long) doc.get("allHabitsIndex")).intValue(),
+                                                        ((Long) doc.get("todayHabitsIndex")).intValue(),
+                                                         ldtCheck,
+                                                         ((Long) doc.get("daysCompleted")).intValue(),
+                                                         ((Long) doc.get("daysTotal")).intValue());
                             }
 
                             // Set the document ID in case it needs to be fetched for delete/edits

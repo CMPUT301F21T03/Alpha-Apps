@@ -179,7 +179,6 @@ public class EventList extends RecyclerView.Adapter<EventList.ViewHolder>{
 
         // if there is no photograph saved to the event object, make the imageView invisible
         if (event.getPhotograph() == null){
-            Log.d(TAG,"Null");
             holder.getImage().setVisibility(View.GONE);
         }else{
             // make a thread to decode the image URL and convert to bitmap to display

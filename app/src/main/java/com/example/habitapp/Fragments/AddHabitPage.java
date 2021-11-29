@@ -133,7 +133,8 @@ public class AddHabitPage extends Fragment {
             // format the input data into a new Habit
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss");
             LocalDateTime newDate = LocalDateTime.parse(habitDate, formatter);
-            Habit newHabit = new Habit(habitName, habitReason, newDate, frequency, privacyBool, -1, -1);
+            LocalDateTime checkDate = LocalDateTime.now().minusDays(1);
+            Habit newHabit = new Habit(habitName, habitReason, newDate, frequency, privacyBool, -1, -1, checkDate, 0, 0);
 
             newHabit.addHabitToFirestore(userData);
 

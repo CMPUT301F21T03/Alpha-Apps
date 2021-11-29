@@ -13,6 +13,7 @@
  * 1.0       Eric      Oct-21-2021   Created
  * 1.1       Moe       Nov-24-2021   Search functionality added
  * 1.2       Eric      Nov-27-2021   Social feed functionality added
+ * 1.3       Leah      Nov-29-2021   Now opens user profile when a feed entry is clicked
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -50,8 +51,6 @@ public class FeedPage extends Fragment implements EventList.OnEventListener {
         super(R.layout.feed);
     }
 
-    private EditText searchedUserNameEdit;
-    private String searchedUserName;
     private RecyclerView feedRecyclerView;
     private EventList eventsAdapter;
     public ArrayList<Event> events = new ArrayList<>();

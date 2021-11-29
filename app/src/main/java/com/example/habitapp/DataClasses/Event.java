@@ -36,6 +36,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.Exclude;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -137,17 +139,30 @@ public class Event implements Parcelable {
     public void removeEventFromFirestore(Map userData, Habit habit) {
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
-        final CollectionReference eventsref = db.collection("Doers")
+        final DocumentReference habitref = db.collection("Doers")
                 .document((String)userData.get("username"))
                 .collection("habits")
-                .document(habit.getFirestoreId())
-                .collection("events");
+                .document(habit.getFirestoreId());
+        final CollectionReference eventsref = habitref.collection("events");
         eventsref.document(getFirestoreId())
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
                         Log.d(TAG, "successfully deleted");
+                        Integer dayWeek = (dateCompleted.getDayOfWeek().ordinal() + 1) % 7;
+                        if(habit.getWeekOccurence().getAll().get(dayWeek)){
+                            // update days completed counter on Habit
+                            if(habit.getDaysCompleted() > 0){
+                                habit.setDaysCompleted(habit.getDaysCompleted() - 1);
+                                habitref.update("daysCompleted", FieldValue.increment(-1));
+                                // if today, decrement daysTotal counter
+                                if(dateCompleted.getDayOfYear() == LocalDateTime.now().getDayOfYear() && dateCompleted.getYear() == LocalDateTime.now().getYear()){
+                                    habit.setDaysTotal(habit.getDaysTotal() - 1);
+                                    habitref.update("daysTotal",FieldValue.increment(-1));
+                                }
+                            }
+                        }
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

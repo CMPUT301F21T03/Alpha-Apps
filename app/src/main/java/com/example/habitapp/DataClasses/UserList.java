@@ -67,7 +67,6 @@ public class UserList extends ArrayAdapter<User> {
         username.setText(profile.getName());
         id.setText(profile.getUniqueID());
         if(profile.getProfilePicURL() != null){
-            Log.d(TAG,profile.getProfilePicURL().toString());
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -81,7 +80,6 @@ public class UserList extends ArrayAdapter<User> {
                                 photoView.setImageBitmap(profile.getProfilePic());
                             }
                         });
-                        Log.d(TAG, "Successfully set image");
                     } catch (Exception e) {
                         Log.d(TAG, e.toString());
                     }

@@ -155,7 +155,6 @@ public class ProfilePage extends Fragment {
                                 profilePicView.setImageBitmap(profile.getProfilePic());
                             }
                         });
-                        Log.d(TAG, "Successfully set image");
                     } catch (Exception e) {
                         Log.d(TAG, e.toString());
                     }
@@ -327,7 +326,6 @@ public class ProfilePage extends Fragment {
                 public void onComplete(@NonNull Task<Uri> task) {
                     if (task.isSuccessful()) {
                         Uri downloadUri = task.getResult();
-                        Log.d(TAG,downloadUri.toString());
                         // upload to the user document in Firestore
                         Map newUserData = new HashMap<>();
                         newUserData.put("profilePic",downloadUri.toString());
@@ -348,7 +346,6 @@ public class ProfilePage extends Fragment {
         // Puts new data into Firestore
         Map<String, Object> data = new HashMap<>();
         data.put("name", newUsername);
-        Log.d(TAG,newUsername);
         db.collection("Doers").document(userData.get("username").toString())
                 .set(data, SetOptions.merge());
     }
