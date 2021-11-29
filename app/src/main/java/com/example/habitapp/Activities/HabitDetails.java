@@ -131,7 +131,7 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
         reason = findViewById(R.id.habitdetails_reason_text);
         date_started = findViewById(R.id.habitdetails_date_started);
         habit_events_title = findViewById(R.id.habitdetails_habit_events_text);
-        done_habit = findViewById(R.id.habitdetails_done_habit);
+        //done_habit = findViewById(R.id.habitdetails_done_habit);
         done_editing = findViewById(R.id.habitdetails_button_done_editing);
         privacy_spinner = findViewById(R.id.habitdetails_privacy_spinner);
 
@@ -363,7 +363,7 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
                                     public void onSuccess(DocumentReference documentReference) {
                                         Log.d(TAG,"Successful add");
                                         newHabitEvent.setFirestoreId(documentReference.getId());
-                                        done_habit.setVisibility(View.VISIBLE);
+                                        //done_habit.setVisibility(View.VISIBLE);
                                         // ask if user wants to log the Habit with details
                                         AlertDialog.Builder loghabitBuilder = new AlertDialog.Builder(HabitDetails.this);
                                         loghabitBuilder.setMessage("Do you want to log this habit?")
