@@ -21,9 +21,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.habitapp.DataClasses.Event;
 import com.example.habitapp.DataClasses.Habit;
 import com.example.habitapp.R;
@@ -32,7 +30,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-
 import java.io.Serializable;
 import java.util.Map;
 
@@ -42,6 +39,7 @@ public class MapSelector extends AppCompatActivity implements OnMapReadyCallback
     private Double selectedLongitude = null;
     private Double givenLatitude = 0.0;
     private Double givenLongitude = 0.0;
+    private Boolean buttonActive = true;
     private Intent recievedIntent;
 
     @Override
@@ -53,6 +51,7 @@ public class MapSelector extends AppCompatActivity implements OnMapReadyCallback
         recievedIntent = getIntent();
         givenLatitude = recievedIntent.getDoubleExtra("latitude", 0.0);
         givenLongitude = recievedIntent.getDoubleExtra("longitude", 0.0);
+        buttonActive = recievedIntent.getBooleanExtra("selectActive", true);
 
 
         // Get the SupportMapFragment and request notification when the map is ready to be used.
@@ -60,18 +59,21 @@ public class MapSelector extends AppCompatActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         Button button = findViewById(R.id.actiivty_maps_close_button);
+        if (buttonActive == false) {
+            button.setVisibility(View.GONE);
+        }
         button.setOnClickListener(this::buttonPressed);
     }
 
     private void buttonPressed(View view) {
-        finish();
+
 
         Intent intent = new Intent(this, EditHabitEvent.class);
         intent.putExtra("selectedLatitude", selectedLatitude);
         intent.putExtra("selectedLongitude", selectedLongitude);
         intent.putExtra("event", (Event) recievedIntent.getParcelableExtra("event"));
         intent.putExtra("habit", (Habit) recievedIntent.getSerializableExtra("habit"));
-        intent.putExtra("firestoreID", ((Event) recievedIntent.getParcelableExtra("event")).getFirestoreId());
+        intent.putExtra("firestoreId", (recievedIntent.getStringExtra("firestoreId")));
         intent.putExtra("userData", (Serializable) (Map) recievedIntent.getSerializableExtra("userData"));
         intent.putExtra("prevActivity", (String) recievedIntent.getSerializableExtra("activity"));
 

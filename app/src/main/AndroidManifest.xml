@@ -20,17 +20,20 @@
         android:name=".DataClasses.ContextGetter">
         <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat"/>
-        <activity android:name=".Activities.MapSelector"/>
+        <activity android:name=".Activities.MapSelector"
+            android:noHistory="true"/>
         <activity android:name=".Activities.LogIn"/>
         <activity android:name=".Activities.HabitDetails"
             android:noHistory="true"/>
-        <activity android:name=".Activities.EditHabitEvent"/>
-        <activity android:name=".Activities.HabitEventDetails"/>
+        <activity android:name=".Activities.EditHabitEvent"
+            />
+        <activity android:name=".Activities.HabitEventDetails"
+            android:noHistory="true"/>
         <activity android:name=".Activities.ImageDialog"/>
-        <activity android:name=".Activities.FollowUserView"/>
+        <activity android:name=".Activities.SearchedUpUser"/>
         <activity android:name=".Activities.FollowingFollowers"/>
         <activity android:name=".Activities.SignUp"/>
-        <activity android:name=".Activities.Main"
+        <activity android:name=".Activities.MainActivity"
             android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".Activities.BootScreen"

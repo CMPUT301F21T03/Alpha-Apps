@@ -26,25 +26,17 @@
 
 package com.example.habitapp.DataClasses;
 
-import android.graphics.Bitmap;
-import android.location.Location;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.IgnoreExtraProperties;
-
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -81,9 +73,13 @@ public class Event implements Parcelable {
      * @param dateCompleted the day that the event was completed
      * @param comment an optional comment about the event
      * @param photograph a URL of an image associated with the event
+     * @param username the alias of the user that created this habit event
+     * @param latitude the latitude of the location the user specifies
+     * @param longitude the longitude of the location the user specifies
+     * @param locationName the subjective name of the location that the user tied to their location
      */
 
-    public Event(String name, LocalDateTime dateCompleted, String comment, String photograph, String username){
+    public Event(String name, LocalDateTime dateCompleted, String comment, String photograph, String username, Double latitude, Double longitude, String locationName){
 
         setName(name);
         setDateCompleted(dateCompleted);
@@ -92,15 +88,20 @@ public class Event implements Parcelable {
         try{
             setComment(comment);
         }catch (IllegalArgumentException ex){
-            System.out.println("comment too long, programs fails");
         }
 
-        setLocationName(null);
-        setLongitude(null);
-        setLatitude(null);
+        setLocationName(locationName);
+        setLongitude(longitude);
+        setLatitude(latitude);
         setPhotograph(photograph);
     }
 
+
+    /**
+     * add this object to firestore to allow for the data to persist
+     * @param userData a collection of data which stores the user's ID. This is used to build the query
+     * @param habit the habit object that this event is created under
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void addEventToFirestore(Map userData, Habit habit) {
         FirebaseFirestore db;
@@ -127,6 +128,11 @@ public class Event implements Parcelable {
         });
     }
 
+    /**
+     * remove an event from firestore
+     * @param userData a collection of data which stores the user's ID. This is used to build the query
+     * @param habit the habit object that this event is created under
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void removeEventFromFirestore(Map userData, Habit habit) {
         FirebaseFirestore db;
@@ -153,18 +159,23 @@ public class Event implements Parcelable {
                 });
     }
 
+    /**
+     * update the values in firestore to a new set of data
+     * @param userData a collection of data which stores the user's ID. This is used to build the query
+     * @param habit the habit object that this event is created under
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void editEventInFirestore(Map userData, Habit habit) {
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
         Log.d(TAG,(String)userData.get("username"));
-        Log.d(TAG,getFirestoreId());
         final CollectionReference eventsref = db.collection("Doers")
                 .document((String)userData.get("username"))
                 .collection("habits")
                 .document(habit.getFirestoreId())
                 .collection("events");
-        eventsref.document(getFirestoreId())
+
+        eventsref.document(this.getFirestoreId())
                 .set(this)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -181,11 +192,18 @@ public class Event implements Parcelable {
 
     }
 
+    /**
+     * unused abstract method from another class (unnecessary to implement)
+     * @return 0
+     */
     @Override
     public int describeContents() {
         return 0;
     }
 
+    /**
+     * Creates an event from a parcel object when moving it between activities
+     */
     public static final Creator<Event> CREATOR = new Creator<Event>() {
         @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
@@ -199,6 +217,12 @@ public class Event implements Parcelable {
         }
     };
 
+    /**
+     * specifies how the event object should be "packaged" from an event object to a parcel object
+     * when moving between activities
+     * @param parcel the parcel that is to be "packaged"
+     * @param i unused argument
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void writeToParcel(Parcel parcel, int i) {
@@ -210,8 +234,17 @@ public class Event implements Parcelable {
         parcel.writeString(getComment());
         parcel.writeString(getPhotograph());
         parcel.writeString(getUsername());
+        parcel.writeString(getLocationName());
+        parcel.writeDouble(getLongitude());
+        parcel.writeDouble(getLatitude());
 
     }
+
+    /**
+     * specifies how the event object should be "unpackaged" from a parcel object to an event object
+     * when moving between activities
+     * @param parcel the parcel that is to be "unpackaged"
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(Parcel parcel){
         this.name = parcel.readString();
@@ -221,12 +254,13 @@ public class Event implements Parcelable {
         this.comment = parcel.readString();
         this.photograph = parcel.readString();     
         this.username = parcel.readString();
+        this.locationName = parcel.readString();
+        this.longitude = parcel.readDouble();
+        this.latitude = parcel.readDouble();
 
     }
 
     // =========================== GETTERS AND SETTERS ===========================
-
-
     public Double getLatitude() {
         return latitude;
     }

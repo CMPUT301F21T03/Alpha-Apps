@@ -29,18 +29,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.habitapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.io.Serializable;
 import java.util.Map;
 
@@ -67,18 +64,15 @@ public class LogIn extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void logInScreenLogInButtonPressed(View view){
         // prep Firestore
-        // this can be moved to initialization of Login
-
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
 
         // get the Strings inside the editText views
-        EditText userNameEdit = (EditText)findViewById(R.id.loginscreen_username);
+        EditText userNameEdit = findViewById(R.id.loginscreen_username);
         String username = userNameEdit.getText().toString();
-        EditText passwordEdit = (EditText)findViewById(R.id.loginscreen_password);
+        EditText passwordEdit = findViewById(R.id.loginscreen_password);
         String password = passwordEdit.getText().toString();
 
-        // TODO: could use something other than an alertdialog, like a snackbar
         // initiates an alertdialog to use if there is an error logging in
         AlertDialog.Builder loginAlert = new AlertDialog.Builder(this)
                 .setTitle("Login Error")
@@ -106,10 +100,7 @@ public class LogIn extends AppCompatActivity {
                             // Validating password
                             if(((String) userData.get("password")).equals(password)){
                                 // LOGIN HERE
-                                // TODO figure out a way to move to the mainActivity class without allowing the back
-                                //  button to take the user back to the log in page
-                                //  send a state through the intent bundle?
-                                Intent intent = new Intent(loginContext, Main.class);
+                                Intent intent = new Intent(loginContext, MainActivity.class);
                                 //
                                 intent.putExtra(MESSAGE, username);
                                 // bundle the user info into Serializable and send through Intent

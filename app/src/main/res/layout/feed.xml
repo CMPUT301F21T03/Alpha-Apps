@@ -5,18 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- nav bar can be safely removed
-    <include
-        android:id="@+id/include"
-        layout="@layout/nav_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    -->
     <FrameLayout
         android:id="@+id/frameLayout3"
         android:layout_width="wrap_content"
@@ -28,7 +16,7 @@
 
         <fragment
             android:id="@+id/feed_notification_button"
-            android:name="com.example.habitapp.Fragments.Notification"
+            android:name="com.example.habitapp.Fragments.NotificationButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
@@ -48,47 +36,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/feed_search_field"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/search_engine"
-        android:ems="10"
-        android:fontFamily="@font/montserrat"
-        android:hint="search users"
-        android:inputType="textPersonName"
-        android:paddingStart="20dp"
-        android:paddingTop="7dp"
-        android:paddingEnd="20dp"
-        android:paddingBottom="7dp"
-        android:textColor="#717171"
-        android:textSize="16sp"
-        android:layout_marginStart="25dp"
-        android:layout_marginEnd="25dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView16" />
-
-    <ImageButton
-        android:id="@+id/feed_search_button"
-        android:layout_width="23dp"
-        android:layout_height="23dp"
-        android:layout_marginEnd="12dp"
-        android:background="@drawable/loupe"
-        android:focusable="false"
-        android:scaleType="fitXY"
-        app:layout_constraintBottom_toBottomOf="@+id/feed_search_field"
-        app:layout_constraintEnd_toEndOf="@+id/feed_search_field"
-        app:layout_constraintTop_toTopOf="@+id/feed_search_field" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/feed_recycler_view"
-        android:layout_width="349dp"
-        android:layout_height="622dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="25dp"
         android:layout_marginTop="10dp"
+        android:layout_marginEnd="25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/feed_search_field" />
+        app:layout_constraintTop_toBottomOf="@+id/textView16" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

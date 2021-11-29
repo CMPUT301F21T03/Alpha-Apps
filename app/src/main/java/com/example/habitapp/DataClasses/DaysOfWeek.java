@@ -92,8 +92,6 @@ public class DaysOfWeek implements Serializable {
         setFriday(setTo);
         setSaturday(setTo);
     }
-    
-    //
 
     /**
      * returns an arrayList of each value, position 0 = sunday, pos 1 = monday, etc. etc.
@@ -113,9 +111,24 @@ public class DaysOfWeek implements Serializable {
         return weeklyList;
     }
 
+    /**
+     * Returns a boolean telling us whether or not all of the days in the week are false
+     * comes in handy for making sure users didn't leave the field blank when adding a new habit/editing
+     * @return a boolean telling us whether or not all of the days in the week are false
+     */
+    public boolean areAllFalse() {
+        ArrayList<Boolean> weeklyList = this.getAll() ;
+        Boolean all_false = true;
+        for (int i = 0; i < weeklyList.size(); i++)  {
+            if (weeklyList.get(i) == true) {
+                all_false = false;
+            }
+        }
+
+        return all_false;
+    }
+
     // =========================== GETTERS AND SETTERS ===========================
-
-
     public Boolean getSunday() {
         return sunday;
     }
