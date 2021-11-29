@@ -111,6 +111,7 @@ public class FollowingFollowers extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Please enter another user's ID");
         final EditText input = new EditText(this);
+        input.setPadding(30, 30, 30, 30);
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         builder.setView(input);
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
