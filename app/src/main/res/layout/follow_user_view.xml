@@ -100,7 +100,7 @@
             android:id="@+id/followeruserview_habit_event_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-    </FrameLayout>
+    </androidx.recyclerview.widget.RecyclerView>
 
     <TextView
         android:id="@+id/followuserview_follow_status"

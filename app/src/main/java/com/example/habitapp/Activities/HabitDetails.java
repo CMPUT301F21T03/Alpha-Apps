@@ -65,17 +65,24 @@ import com.example.habitapp.DataClasses.EventList;
 import com.example.habitapp.DataClasses.Habit;
 import com.example.habitapp.DataClasses.Event;
 import com.example.habitapp.R;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class HabitDetails extends AppCompatActivity implements EventList.OnEventListener{
@@ -153,21 +160,6 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
 
         // if a selected habit was sent over in the intent
         intent = getIntent();
-        /*if (intent.getSerializableExtra(AllHabits.getTAG()) != null)  {
-            // then we can work with it...
-            // set the data to the proper fields in the activity
-            Log.d(TAG,"2");
-            habit = (Habit) intent.getSerializableExtra(AllHabits.getTAG());
-            Log.d(TAG,habit.getTitle());
-            title.setText(habit.getTitle());
-            reason.setText(habit.getReason());
-            date_started.setText(habit.getDateStarted().toString());
-            ArrayList<Boolean> weekOccurenceList = habit.getWeekOccurence().getAll();
-            for (int i = 0; i < 7; i++) {
-                setBoxesChecked(weekButtons.get(i), weekOccurenceList.get(i));
-            }
-
-        }*/
         userData = (Map) intent.getSerializableExtra("userData");
 
         habit = (Habit) intent.getSerializableExtra("habit");
@@ -193,16 +185,6 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
 
         setHabitEventAdapter();
 
-//        //set a listener for if the editHabit layout is pressed by the user
-//        recyclerView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                Event event = (Event) recyclerView.getItemAtPosition(i);
-//                habitDetailsHabitEventLayoutPressed(event);
-//            }
-//        });
-
-        // most likely out of date code
         // set a listener for if the more button is pressed by the user
         moreButton = findViewById(R.id.habitdetails_more);
         moreButton.setOnClickListener(this::habitDetailsMoreButtonPressed);
@@ -235,10 +217,6 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
             popupMenu.getMenu().removeItem(R.id.edit_habit);
         }
 
-        // if a habit event already exists for today, make the "mark as done" button not visible
-        if (habit.getDateLastChecked().toLocalDate().isEqual(LocalDate.now())){
-            popupMenu.getMenu().removeItem(R.id.mark_done);
-        }
 
         popupMenu.show();
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -261,14 +239,6 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
 
 
     }
-
-//    private void habitDetailsHabitEventLayoutPressed(Event event){
-//        Intent intent = new Intent(this, HabitEventDetails.class);
-//        intent.putExtra("event", event);
-//        intent.putExtra("habit", habit);
-//        intent.putExtra("userData", (Serializable) userData);
-//        startActivity(intent);
-//    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void habitDetailsDoneEditingPressed(View view) {
@@ -346,6 +316,14 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void addHabitEvent() {
+        AlertDialog.Builder warnBuilder = new AlertDialog.Builder(this);
+        warnBuilder.setTitle("You already logged this today!");
+        warnBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
 
         AlertDialog.Builder markdoneBuilder = new AlertDialog.Builder(this);
         markdoneBuilder.setMessage("Do you want to mark this habit as done?")
@@ -355,8 +333,6 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
 
                         newHabitEvent = new Event(habit.getTitle(), LocalDateTime.now(), "", null, (String) userData.get("username"), 0.0, 0.0, "");
 
-                        increaseEventCompletionCount();
-
                         // add to Firestore
                         FirebaseFirestore db;
                         db = FirebaseFirestore.getInstance();
@@ -365,42 +341,77 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
                                 .collection("habits")
                                 .document(habit.getFirestoreId())
                                 .collection("events");
-
-                        eventsRef.add(newHabitEvent)
-                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                    @Override
-                                    public void onSuccess(DocumentReference documentReference) {
-                                        Log.d(TAG,"Successful add");
-                                        newHabitEvent.setFirestoreId(documentReference.getId());
-                                        System.out.println("On creation, ID is:");
-                                        System.out.println(documentReference.getId());
-                                        //done_habit.setVisibility(View.VISIBLE);
-                                        // ask if user wants to log the Habit with details
-                                        AlertDialog.Builder loghabitBuilder = new AlertDialog.Builder(HabitDetails.this);
-                                        loghabitBuilder.setMessage("Do you want to log this habit?")
-                                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(DialogInterface dialog, int which) {
-                                                        Intent intent = new Intent(HabitDetails.this, EditHabitEvent.class);
-                                                        intent.putExtra("event", newHabitEvent);
-                                                        intent.putExtra("habit", habit);
-                                                        intent.putExtra("firestoreId",newHabitEvent.getFirestoreId());
-                                                        intent.putExtra("userData", (Serializable) userData);
-                                                        intent.putExtra("activity", "HabitDetails");
-                                                        startActivity(intent);
-                                                    }
-                                                })
-                                                .setNegativeButton("No", null);
-                                        AlertDialog alert2 = loghabitBuilder.create();
-                                        alert2.show();
-
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
+                        eventsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                             @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.d(TAG,"failed: "+ e);
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    boolean hasToday = false;
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        Map eventData = document.getData();
+                                        // Convert Firestore's stored time to LocalDateTime
+                                        Map getDateChecked = (Map) eventData.get("dateCompleted");
+                                        Integer checkYear = ((Long) getDateChecked.get("year")).intValue();
+                                        Integer checkDate = ((Long) getDateChecked.get("dayOfYear")).intValue();
+                                        // Check if there is already an event today
+                                        if(checkDate == LocalDateTime.now().getDayOfYear() && checkYear == LocalDateTime.now().getYear()){
+                                            hasToday = true;
+                                        }
+                                    }
+                                    if(!hasToday){
+                                        eventsRef.add(newHabitEvent)
+                                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                    @Override
+                                                    public void onSuccess(DocumentReference documentReference) {
+                                                        final DocumentReference userHabit = db.collection("Doers")
+                                                                .document((String) userData.get("username"))
+                                                                .collection("habits")
+                                                                .document(habit.getFirestoreId());
+                                                        increaseEventCompletionCount();
+                                                        Map updateFields = new HashMap<>();
+                                                        updateFields.put("dateLastChecked",habit.getDateLastChecked());
+                                                        Log.d(TAG,habit.getDaysTotal().toString());
+                                                        userHabit.update(updateFields);
+                                                        userHabit.update("daysTotal", FieldValue.increment(1));
+                                                        userHabit.update("daysCompleted",FieldValue.increment(1));
+
+                                                        newHabitEvent.setFirestoreId(documentReference.getId());
+                                                        //done_habit.setVisibility(View.VISIBLE);
+                                                        // ask if user wants to log the Habit with details
+                                                        AlertDialog.Builder loghabitBuilder = new AlertDialog.Builder(HabitDetails.this);
+                                                        loghabitBuilder.setMessage("Do you want to log this habit?")
+                                                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                                                    @Override
+                                                                    public void onClick(DialogInterface dialog, int which) {
+                                                                        Intent intent = new Intent(HabitDetails.this, EditHabitEvent.class);
+                                                                        intent.putExtra("event", newHabitEvent);
+                                                                        intent.putExtra("habit", habit);
+                                                                        intent.putExtra("firestoreId",newHabitEvent.getFirestoreId());
+                                                                        intent.putExtra("userData", (Serializable) userData);
+                                                                        intent.putExtra("activity", "HabitDetails");
+                                                                        startActivity(intent);
+                                                                    }
+                                                                })
+                                                                .setNegativeButton("No", null);
+                                                        AlertDialog alert2 = loghabitBuilder.create();
+                                                        alert2.show();
+
+                                                    }
+                                                }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Log.d(TAG,"failed: "+ e);
+                                            }
+                                        });
+                                    }
+                                    else{
+                                        warnBuilder.show();
+                                    }
+                                } else {
+                                    Log.d(TAG, "Error getting documents: ", task.getException());
+                                }
                             }
                         });
+
                         //
                     }
                 })
@@ -459,7 +470,7 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
             default:
                 break;
         }
-        System.out.println("inside" + habit.getProgress());
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

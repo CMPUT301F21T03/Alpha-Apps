@@ -102,8 +102,6 @@ public class TodayHabits extends Fragment implements HabitList.OnHabitListener{
             super.onChanged();
             // modify LocalDate ordinal from mon-sun order to sun-sat order
             Integer dayWeek = (LocalDate.now().getDayOfWeek().ordinal() + 1) % 7;
-            System.out.println("Day of week index:");
-            Log.d(TAG,dayWeek.toString());
             for (int i = 0; i < habitDataList.size(); i++) {
                 if (habitDataList.get(i).getWeekOccurence().getAll().get(dayWeek) == Boolean.FALSE) {
                     habitDataList.remove(i);

@@ -106,9 +106,12 @@ public class Habit implements Serializable {
      * @param privacy the privacy setting of the habit
      * @param allHabitsIndex the index of where the habit should go on the All Habits frame
      * @param todayHabitsIndex the index of where the habits should go on the Today Habits frame
+     * @param dateLastChecked the last date this habit was checked for completion
+     * @param daysCompleted the number of days this habit has been successfully completed
+     * @param daysTotal the total number of days this habit should have been completed
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Habit(String title, String reason, LocalDateTime dateStarted, DaysOfWeek weekOccurence, boolean privacy, Integer allHabitsIndex, Integer todayHabitsIndex){
+    public Habit(String title, String reason, LocalDateTime dateStarted, DaysOfWeek weekOccurence, boolean privacy, Integer allHabitsIndex, Integer todayHabitsIndex, LocalDateTime dateLastChecked, Integer daysCompleted, Integer daysTotal){
         // set the eventList to be empty
         setEventList(new ArrayList<>());
         // set the last day that was checked for habit completion to be one day ago
@@ -124,6 +127,9 @@ public class Habit implements Serializable {
         setPrivacy(privacy);
         setAllHabitsIndex(allHabitsIndex);
         setTodayHabitsIndex(todayHabitsIndex);
+        setDateLastChecked(dateLastChecked);
+        setDaysCompleted(daysCompleted);
+        setDaysTotal(daysTotal);
     }
 
     /**
@@ -178,7 +184,7 @@ public class Habit implements Serializable {
         if (daysTotal == 0){
             setProgress(0.0);
         }else{
-            setProgress((double)daysCompleted/((double)daysTotal));
+            setProgress(((double)daysCompleted/((double)daysTotal))*100);
         }
     }
 
@@ -305,7 +311,7 @@ public class Habit implements Serializable {
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
         final CollectionReference habitsref = db.collection("Doers").document((String)userData.get("username")).collection("habits");
-        //Toast.makeText(getContext(), "I came here", Toast.LENGTH_SHORT).show();
+
         habitsref.add(this)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
@@ -349,7 +355,6 @@ public class Habit implements Serializable {
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
         final CollectionReference habitsref = db.collection("Doers").document((String)userData.get("username")).collection("habits");
-        //Toast.makeText(getContext(), "I came here", Toast.LENGTH_SHORT).show();
         habitsref.document(getFirestoreId())
                 .set(this)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
