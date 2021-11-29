@@ -66,7 +66,9 @@
                 android:id="@+id/profilelistentry_username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/black"
                 android:ems="10"
+                android:enabled="false"
                 android:inputType="textPersonName"
                 android:text="Username_text" />
 
@@ -74,7 +76,9 @@
                 android:id="@+id/profilelistentry_id"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="UserID_text" />
+                android:layout_marginLeft="5dp"
+                android:text="UserID_text"
+                android:textAlignment="viewStart" />
 
         </LinearLayout>
     </LinearLayout>
