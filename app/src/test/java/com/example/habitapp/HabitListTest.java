@@ -45,6 +45,9 @@ public class HabitListTest implements HabitList.OnHabitListener{
     }
 
 
+    /**
+     * Tests adding a habit to the list
+     */
     @Test
     public void testAddHabit(){
         HabitList newHabitList = mockHabitList();
@@ -59,6 +62,10 @@ public class HabitListTest implements HabitList.OnHabitListener{
         assertTrue(newHabitList.getHabits().contains(habit));
     }
 
+    /**
+     * Tests adding an already existing habit to the list,
+     * to make sure it throws an exception
+     */
     @Test
     public void testAddHabitException(){
         HabitList newHabitList = mockHabitList();
@@ -69,6 +76,9 @@ public class HabitListTest implements HabitList.OnHabitListener{
         });
     }
 
+    /**
+     * Tests clearing the entire list
+     */
     @Test
     public void testClearHabits(){
         HabitList newHabitList = mockHabitList();
@@ -82,6 +92,10 @@ public class HabitListTest implements HabitList.OnHabitListener{
         newHabitList.clearHabitList();
         assertEquals(0, newHabitList.getHabits().size());
     }
+
+    /**
+     * Tests making sure list can be called upon to find out if empty
+     */
     @Test
     public void testGetHabitListEmpty(){
         HabitList newHabitList = mockHabitList();
@@ -93,6 +107,6 @@ public class HabitListTest implements HabitList.OnHabitListener{
 
     @Override
     public void onHabitClick(int position) {
-        // ?
+        // do nothing
     }
 }

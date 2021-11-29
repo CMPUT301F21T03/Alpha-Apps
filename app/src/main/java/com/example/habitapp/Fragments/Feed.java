@@ -189,10 +189,10 @@ public class Feed extends Fragment implements EventList.OnEventListener {
 
                                                 eventToAdd.setFirestoreId(doc.getId());
                                                 if (!events.contains(eventToAdd)) {
-                                                    eventsAdapter.addEvent(eventToAdd);
+                                                    eventsAdapter.addEvent(eventToAdd, true);
                                                 }
 
-                                                eventsAdapter.sortEvents();
+                                                eventsAdapter.sortEvents(true);
 
                                             }
                                         }
