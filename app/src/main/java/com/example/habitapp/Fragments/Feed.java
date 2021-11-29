@@ -170,14 +170,12 @@ public class Feed extends Fragment implements EventList.OnEventListener {
                                                 String comment = doc.getString("comment");
                                                 String username = doc.getString("username");
                                                 String photograph = doc.getString("photograph");
+                                                Double latitude = doc.getDouble("latitude");
+                                                Double longitude = doc.getDouble("longitude");
+                                                String locationName = doc.getString("locationName");
                                                 // TODO store location and photograph after halfway
-                                                Event eventToAdd;
-                                                if (username == null) {
-                                                    eventToAdd = new Event(doc.getString("name"), newDate, comment, photograph,  "");
-                                                } else {
-                                                    eventToAdd = new Event(doc.getString("name"), newDate, comment, photograph,  username);
+                                                Event eventToAdd = new Event(doc.getString("name"), newDate, comment, photograph,  username, latitude, longitude, locationName);
 
-                                                }
                                                 eventToAdd.setFirestoreId(doc.getId());
                                                 if (!events.contains(eventToAdd)) {
                                                     eventsAdapter.addEvent(eventToAdd);
