@@ -178,6 +178,7 @@ public class FollowingFollowers extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Void unused) {
                                     // success
+                                    followAdapter.notifyDataSetChanged();
                                 }
                             });
 
@@ -189,6 +190,7 @@ public class FollowingFollowers extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Void unused) {
                                     // success
+                                    followAdapter.notifyDataSetChanged();
                                 }
                             });
 
@@ -197,8 +199,11 @@ public class FollowingFollowers extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Void unused) {
                                     // success
+                                    // notify dataset changed
+                                    followAdapter.notifyDataSetChanged();
                                 }
                             });
+                            finish();
 
                         }
                     })
@@ -216,15 +221,19 @@ public class FollowingFollowers extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Void unused) {
                                     // success
+                                    // notify dataset changed
+                                    followAdapter.notifyDataSetChanged();
                                 }
                             });
+                            finish();
                         }
                     });
             android.app.AlertDialog alert = markdoneBuilder.create();
             alert.show();
 
-            // notify dataset changed
             followAdapter.notifyDataSetChanged();
+
+
 
 
         } else {
