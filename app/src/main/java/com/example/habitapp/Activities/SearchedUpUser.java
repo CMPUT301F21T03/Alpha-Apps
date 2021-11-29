@@ -13,6 +13,7 @@
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Mathew    Nov-23-2021   Created
  *   1.1       Leah      Nov-28-2021   Finished following/follower functionality
+ *   1.3       Arthur    Nov-29-2021   Added requested functionality
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -35,6 +36,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
@@ -42,10 +45,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.habitapp.DataClasses.Event;
 import com.example.habitapp.DataClasses.EventList;
 import com.example.habitapp.DataClasses.Habit;
+import com.example.habitapp.DataClasses.HabitList;
+import com.example.habitapp.DataClasses.User;
 import com.example.habitapp.DataClasses.NonReorderableHabitList;
 import com.example.habitapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -68,6 +74,7 @@ public class SearchedUpUser extends AppCompatActivity implements EventList.OnEve
     private NonReorderableHabitList habitAdapter;
     private String followUserName;
     private String followUserID;
+
     private String followUserPFP;
     private Map userData;
     private String userID;
@@ -81,6 +88,7 @@ public class SearchedUpUser extends AppCompatActivity implements EventList.OnEve
         setContentView(R.layout.follow_user_view);
 
         Intent intent = getIntent();
+
         // user ID of user being viewed
         userID = intent.getStringExtra("userID");
         // user ID of user currently logged in
@@ -162,6 +170,11 @@ public class SearchedUpUser extends AppCompatActivity implements EventList.OnEve
             public boolean onMenuItemClick(MenuItem menuItem) {
                 if (menuItem.getItemId() == R.id.request_follow) {
                     // Add the user in question to this user's requested list, and change status to Requested
+                    setRequested();
+                    setIncomingRequests();
+                    popupMenu.getMenuInflater().inflate(R.menu.following_status_menu, popupMenu.getMenu());
+                    popupMenu.getMenu().removeItem(R.id.request_follow);
+
                     user.update("requested", FieldValue.arrayUnion(thisUserID))
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
@@ -271,6 +284,7 @@ public class SearchedUpUser extends AppCompatActivity implements EventList.OnEve
 
     }
 
+
     private void setFollowStatusFrame() {
         String type = "neither";
         ArrayList<String> userFollowers = (ArrayList<String>) userData.get("followers");
@@ -307,6 +321,7 @@ public class SearchedUpUser extends AppCompatActivity implements EventList.OnEve
 
         if (followStatus == FOLLOWING) { // show the user data
             setFollowStatusTag("following");
+
             this.findViewById(R.id.followuserview_no_data_textview).setVisibility(View.GONE);
         } else { // dont show the user data
             this.findViewById(R.id.layout).setVisibility(View.GONE);
@@ -324,6 +339,7 @@ public class SearchedUpUser extends AppCompatActivity implements EventList.OnEve
 
     @SuppressLint("ResourceAsColor")
     private void setFollowStatusTag(String type) {
+
         TextView followTag = this.findViewById(R.id.followuserview_follow_status);
         if ("following".equals(type)) {
             followTag.setText("Following");
@@ -334,6 +350,7 @@ public class SearchedUpUser extends AppCompatActivity implements EventList.OnEve
             followTag.setTextColor(R.color.gray);
         }
         if (type.equals("nothing")) {
+
             followTag.setText("Follow");
             followTag.setTextColor(R.color.blue);
         }
@@ -363,16 +380,53 @@ public class SearchedUpUser extends AppCompatActivity implements EventList.OnEve
         habitAdapter.addSnapshotQuery(user, TAG);
     }
 
+
     private void processUserData() {
         followUserName = (String) userData.get("name");
         followUserID = (String) userData.get("username");
         followUserPFP = (String) userData.get("profilePic");
     }
 
+
     public static String getTAG() {
         return TAG;
     }
+    public void setRequested() {
+        FirebaseFirestore db;
+        db = FirebaseFirestore.getInstance();
+        ArrayList<String> requested = (ArrayList<String>) userData.get("requested");
+        requested.add(userID);
+        userData.put("requested", requested);
+        final DocumentReference findUserRef = db.collection("Doers").document(thisUserID);
+        findUserRef.update("requested", requested);
+        setFollowStatusTag("requested");
 
+
+    }
+    public void setIncomingRequests() {
+        FirebaseFirestore db;
+        db = FirebaseFirestore.getInstance();
+        final DocumentReference findUserRef1 = db.collection("Doers").document(userID);
+        findUserRef1.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Map userData = document.getData();
+                        ArrayList<String> incomingRequests = (ArrayList<String>) userData.get("incomingrequest");
+                        incomingRequests.add(thisUserID);
+                        findUserRef1.update("incomingrequest", incomingRequests);
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+    }
     @Override
     public void onEventClick(int position) {
 
@@ -383,3 +437,5 @@ public class SearchedUpUser extends AppCompatActivity implements EventList.OnEve
 
     }
 }
+
+
