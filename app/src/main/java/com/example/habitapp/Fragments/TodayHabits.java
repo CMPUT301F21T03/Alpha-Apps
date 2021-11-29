@@ -15,6 +15,7 @@
  *   1.2       Leah      Nov-02-2021   Fixed crashing when opening this Fragment
  *   1.3       Leah      Nov-03-2021   Changed empty habit list text to use emptyListView, moved list population to HabitList
  *   1.4       Eric      Nov-24-2021   Changed to RecyclerView to allow for reorderability
+ *   1.5       Leah      Nov-28-2021   Fixed crashing
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -58,7 +59,7 @@ public class TodayHabits extends Fragment implements HabitList.OnHabitListener{
         super(R.layout.today_habits);
     }
 
-    private static final String TAG = "todayhabitsTAG";
+    private static final String TAG = "todayHabitsTAG";
 
     // prep the today_habits screen related objects
     private RecyclerView todaysHabitsRecyclerView;
@@ -99,10 +100,10 @@ public class TodayHabits extends Fragment implements HabitList.OnHabitListener{
         @Override
         public void onChanged() {
             super.onChanged();
-
-            Integer dayWeek = LocalDate.now().getDayOfWeek().ordinal()+1;
+            // modify LocalDate ordinal from mon-sun order to sun-sat order
+            Integer dayWeek = (LocalDate.now().getDayOfWeek().ordinal() + 1) % 7;
             System.out.println("Day of week index:");
-            System.out.println(dayWeek);
+            Log.d(TAG,dayWeek.toString());
             for (int i = 0; i < habitDataList.size(); i++) {
                 if (habitDataList.get(i).getWeekOccurence().getAll().get(dayWeek) == Boolean.FALSE) {
                     habitDataList.remove(i);
@@ -124,6 +125,7 @@ public class TodayHabits extends Fragment implements HabitList.OnHabitListener{
 
     ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(
             ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.START | ItemTouchHelper.END, 0) {
+        @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
             int fromPosition = viewHolder.getAdapterPosition();
@@ -158,16 +160,8 @@ public class TodayHabits extends Fragment implements HabitList.OnHabitListener{
         String dayWeek = LocalDate.now().getDayOfWeek().name().toLowerCase(Locale.ROOT);
 
 
-        // initialize firestore
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
-        // only get the ones for today
-        /*final Query user = db.collection("Doers")
-                                           .document((String) userData.get("username"))
-                                           .collection("habits")
-                                           .whereEqualTo("weekOccurence."+dayWeek,true)
-                                           .orderBy("todayHabitsIndex"); */
-
         final Query user = db.collection("Doers")
                 .document((String) userData.get("username"))
                 .collection("habits")
