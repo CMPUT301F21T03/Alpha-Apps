@@ -85,10 +85,10 @@ public class Feed extends Fragment implements EventList.OnEventListener {
         Main activity = (Main) getActivity();
         userData = activity.getUserData();
 
-        searchedUserNameEdit = (EditText) view.findViewById(R.id.feed_search_field);
-        // do something
-        ImageButton searchButton = view.findViewById(R.id.feed_search_button);
-        searchButton.setOnClickListener(this::searchButtonPressed);
+//        searchedUserNameEdit = (EditText) view.findViewById(R.id.feed_search_field);
+//        // do something
+//        ImageButton searchButton = view.findViewById(R.id.feed_search_button);
+//        searchButton.setOnClickListener(this::searchButtonPressed);
 
         feedRecyclerView = view.findViewById(R.id.feed_recycler_view);
         eventsAdapter = new EventList(events, this, R.layout.feed_events_listview_content);
@@ -197,36 +197,36 @@ public class Feed extends Fragment implements EventList.OnEventListener {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void searchButtonPressed(View view) {
-
-        FirebaseFirestore db;
-        db = FirebaseFirestore.getInstance();
-        searchedUserName = searchedUserNameEdit.getText().toString();
-
-        AlertDialog.Builder searchAlert = new AlertDialog.Builder(getActivity())
-                .setNegativeButton("OK", null);
-
-        final DocumentReference findUserRef = db.collection("Doers").document(searchedUserName);
-        findUserRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    // checks if the username searched exists in database
-                    if (document.exists()) {
-                        Map UserData = document.getData();
-                        // TODO move to user's page
-                        searchAlert.setMessage("Username: \"" + searchedUserName + "\"" + " exists!");
-                        searchAlert.show();
-                    } else {
-                        searchAlert.setMessage("Username: \"" + searchedUserName + "\"" + " doesn't exist");
-                        searchAlert.show();
-                    }
-                }
-            }
-        });
-    }
+//    @RequiresApi(api = Build.VERSION_CODES.O)
+//    private void searchButtonPressed(View view) {
+//
+//        FirebaseFirestore db;
+//        db = FirebaseFirestore.getInstance();
+//        searchedUserName = searchedUserNameEdit.getText().toString();
+//
+//        AlertDialog.Builder searchAlert = new AlertDialog.Builder(getActivity())
+//                .setNegativeButton("OK", null);
+//
+//        final DocumentReference findUserRef = db.collection("Doers").document(searchedUserName);
+//        findUserRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                if (task.isSuccessful()) {
+//                    DocumentSnapshot document = task.getResult();
+//                    // checks if the username searched exists in database
+//                    if (document.exists()) {
+//                        Map UserData = document.getData();
+//                        // TODO move to user's page
+//                        searchAlert.setMessage("Username: \"" + searchedUserName + "\"" + " exists!");
+//                        searchAlert.show();
+//                    } else {
+//                        searchAlert.setMessage("Username: \"" + searchedUserName + "\"" + " doesn't exist");
+//                        searchAlert.show();
+//                    }
+//                }
+//            }
+//        });
+//    }
 
     @Override
     public void onEventClick(int position) {
