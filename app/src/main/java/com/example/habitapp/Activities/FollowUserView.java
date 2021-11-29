@@ -73,10 +73,6 @@ public class FollowUserView extends AppCompatActivity implements EventList.OnEve
     private static final String TAG = "FollowUserViewTAG";
     private int followStatus;
 
-    private RecyclerView feedRecyclerView;
-    private EventList eventsAdapter;
-    public ArrayList<Event> events = new ArrayList<>();
-
     private static final int FOLLOWING = 1;
     private static final int REQUESTED = 2;
     private static final int NEITHER = 3;
@@ -145,11 +141,14 @@ public class FollowUserView extends AppCompatActivity implements EventList.OnEve
                             processUserData();
                             populateFrame();
                             setFollowStatusFrame();
+
+                            Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                         } else {
                             hidePage();
                             builder.show();
                         }
                     } else {
+                        Log.d(TAG, "get failed with ", task.getException());
                         hidePage();
                         builder.show();
                     }
@@ -192,17 +191,17 @@ public class FollowUserView extends AppCompatActivity implements EventList.OnEve
                 if (menuItem.getItemId() == R.id.request_follow) {
                     // Add the user in question to this user's requested list, and change status to Requested
                     user.update("requested", FieldValue.arrayUnion(thisUserID))
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if(task.isSuccessful()){
-                                    // Change status to requested
-                                    setFollowStatusTag("requested");
-                                    popupMenu.getMenuInflater().inflate(R.menu.following_status_menu, popupMenu.getMenu());
-                                    popupMenu.getMenu().removeItem(R.id.request_follow);
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if(task.isSuccessful()){
+                                        // Change status to requested
+                                        setFollowStatusTag("requested");
+                                        popupMenu.getMenuInflater().inflate(R.menu.following_status_menu, popupMenu.getMenu());
+                                        popupMenu.getMenu().removeItem(R.id.request_follow);
+                                    }
                                 }
-                            }
-                        });
+                            });
 
                 } else if (menuItem.getItemId() == R.id.unfollow) {
                     if (followStatus == FOLLOWING){
@@ -261,9 +260,6 @@ public class FollowUserView extends AppCompatActivity implements EventList.OnEve
         habitAdapter = new OldHabitList(this, habits);
         allHabitsListView.setAdapter(habitAdapter);
 
-        // populate events
-        getEventData();
-
         // make a query for all the user habits that are public
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
@@ -290,6 +286,7 @@ public class FollowUserView extends AppCompatActivity implements EventList.OnEve
                             profilePicView.setImageBitmap(imageBitmap);
                         }
                     });
+                    Log.d(TAG, "Successfully set image");
                 } catch (Exception e) {
                     Log.d(TAG, e.toString());
                 }
@@ -328,6 +325,7 @@ public class FollowUserView extends AppCompatActivity implements EventList.OnEve
 
         switch (type) {
             case "following":
+                Log.d(TAG, type);
                 followStatus = FOLLOWING;
                 break;
             case "requested":
@@ -381,7 +379,7 @@ public class FollowUserView extends AppCompatActivity implements EventList.OnEve
         }
     }
 
-    private void getEventData() {
+    private void getUserData(String userID) {
         //TODO get this users habit events (the first one from each habit)
         //getHabitData(userID);
 
@@ -471,9 +469,16 @@ public class FollowUserView extends AppCompatActivity implements EventList.OnEve
             }
         });
 
-
     }
 
+    private void getHabitData(String userID){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        final Query user = db.collection("Doers")
+                .document(userID)
+                .collection("habits")
+                .orderBy("title");
+        habitAdapter.addSnapshotQuery(user,TAG);
+    }
 
     private void processUserData(){
         followUserName = (String) userData.get("name");
