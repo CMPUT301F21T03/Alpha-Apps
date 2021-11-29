@@ -110,6 +110,7 @@ public class NotificationButton extends Fragment {
         notiDialog.setContentView(R.layout.noti_popup);
 
         notificationsListView = (ListView) notiDialog.findViewById(R.id.noti_list);
+        notificationsListView.setEmptyView(notiDialog.findViewById(R.id.noti_no_notifications));
         notificationsListView.setAdapter(notificationAdapter);
         notiDialog.show();
 

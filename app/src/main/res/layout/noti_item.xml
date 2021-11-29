@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
+        android:padding="5dp"
         android:textColor="@color/black"
         android:textSize="15sp" />
 
