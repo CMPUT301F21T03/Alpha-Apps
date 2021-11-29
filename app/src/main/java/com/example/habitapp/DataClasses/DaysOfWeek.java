@@ -18,8 +18,6 @@
 
 package com.example.habitapp.DataClasses;
 
-import android.text.BoringLayout;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
@@ -94,8 +92,6 @@ public class DaysOfWeek implements Serializable {
         setFriday(setTo);
         setSaturday(setTo);
     }
-    
-    //
 
     /**
      * returns an arrayList of each value, position 0 = sunday, pos 1 = monday, etc. etc.
@@ -133,8 +129,6 @@ public class DaysOfWeek implements Serializable {
     }
 
     // =========================== GETTERS AND SETTERS ===========================
-
-
     public Boolean getSunday() {
         return sunday;
     }

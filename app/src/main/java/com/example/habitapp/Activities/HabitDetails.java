@@ -38,7 +38,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -53,13 +52,11 @@ import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.habitapp.DataClasses.DaysOfWeek;
 import com.example.habitapp.DataClasses.EventList;
 import com.example.habitapp.DataClasses.Habit;
@@ -71,7 +68,6 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -104,7 +100,6 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
     private CheckBox friday_button;
     private CheckBox saturday_button;
 
-//    public ListView eventsListview;
     public RecyclerView recyclerView;
     private EventList eventsAdapter;
     public ArrayList<Event> events = new ArrayList<>();
@@ -133,7 +128,6 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
         reason = findViewById(R.id.habitdetails_reason_text);
         date_started = findViewById(R.id.habitdetails_date_started);
         habit_events_title = findViewById(R.id.habitdetails_habit_events_text);
-        //done_habit = findViewById(R.id.habitdetails_done_habit);
         done_editing = findViewById(R.id.habitdetails_button_done_editing);
         privacy_spinner = findViewById(R.id.habitdetails_privacy_spinner);
 
@@ -153,25 +147,9 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
 
         // if a selected habit was sent over in the intent
         intent = getIntent();
-        /*if (intent.getSerializableExtra(AllHabits.getTAG()) != null)  {
-            // then we can work with it...
-            // set the data to the proper fields in the activity
-            Log.d(TAG,"2");
-            habit = (Habit) intent.getSerializableExtra(AllHabits.getTAG());
-            Log.d(TAG,habit.getTitle());
-            title.setText(habit.getTitle());
-            reason.setText(habit.getReason());
-            date_started.setText(habit.getDateStarted().toString());
-            ArrayList<Boolean> weekOccurenceList = habit.getWeekOccurence().getAll();
-            for (int i = 0; i < 7; i++) {
-                setBoxesChecked(weekButtons.get(i), weekOccurenceList.get(i));
-            }
-
-        }*/
         userData = (Map) intent.getSerializableExtra("userData");
-
         habit = (Habit) intent.getSerializableExtra("habit");
-        Log.d(TAG,habit.getTitle());
+
         title.setText(habit.getTitle());
         reason.setText(habit.getReason());
         date_started.setText(habit.getDateStarted().toString());
@@ -193,16 +171,7 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
 
         setHabitEventAdapter();
 
-//        //set a listener for if the editHabit layout is pressed by the user
-//        recyclerView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                Event event = (Event) recyclerView.getItemAtPosition(i);
-//                habitDetailsHabitEventLayoutPressed(event);
-//            }
-//        });
 
-        // most likely out of date code
         // set a listener for if the more button is pressed by the user
         moreButton = findViewById(R.id.habitdetails_more);
         moreButton.setOnClickListener(this::habitDetailsMoreButtonPressed);
@@ -262,18 +231,9 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
 
     }
 
-//    private void habitDetailsHabitEventLayoutPressed(Event event){
-//        Intent intent = new Intent(this, HabitEventDetails.class);
-//        intent.putExtra("event", event);
-//        intent.putExtra("habit", habit);
-//        intent.putExtra("userData", (Serializable) userData);
-//        startActivity(intent);
-//    }
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void habitDetailsDoneEditingPressed(View view) {
 
-        // TODO update information in Firestore here
         Habit habit_to_edit = (Habit) intent.getSerializableExtra("habit");
         habit_to_edit.setTitle(title.getText().toString());
         habit_to_edit.setReason(reason.getText().toString());
@@ -372,9 +332,6 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
                                     public void onSuccess(DocumentReference documentReference) {
                                         Log.d(TAG,"Successful add");
                                         newHabitEvent.setFirestoreId(documentReference.getId());
-                                        System.out.println("On creation, ID is:");
-                                        System.out.println(documentReference.getId());
-                                        //done_habit.setVisibility(View.VISIBLE);
                                         // ask if user wants to log the Habit with details
                                         AlertDialog.Builder loghabitBuilder = new AlertDialog.Builder(HabitDetails.this);
                                         loghabitBuilder.setMessage("Do you want to log this habit?")
@@ -401,7 +358,6 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
                                 Log.d(TAG,"failed: "+ e);
                             }
                         });
-                        //
                     }
                 })
                 .setNegativeButton("Cancel", null);
@@ -459,7 +415,6 @@ public class HabitDetails extends AppCompatActivity implements EventList.OnEvent
             default:
                 break;
         }
-        System.out.println("inside" + habit.getProgress());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

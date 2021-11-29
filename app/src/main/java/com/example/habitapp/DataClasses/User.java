@@ -23,9 +23,7 @@ package com.example.habitapp.DataClasses;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-
 import com.example.habitapp.R;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 

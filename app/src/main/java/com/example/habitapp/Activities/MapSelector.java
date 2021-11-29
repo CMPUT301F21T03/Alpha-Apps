@@ -21,9 +21,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.habitapp.DataClasses.Event;
 import com.example.habitapp.DataClasses.Habit;
 import com.example.habitapp.R;
@@ -32,7 +30,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-
 import java.io.Serializable;
 import java.util.Map;
 
@@ -77,8 +74,6 @@ public class MapSelector extends AppCompatActivity implements OnMapReadyCallback
         intent.putExtra("event", (Event) recievedIntent.getParcelableExtra("event"));
         intent.putExtra("habit", (Habit) recievedIntent.getSerializableExtra("habit"));
         intent.putExtra("firestoreId", (recievedIntent.getStringExtra("firestoreId")));
-        System.out.println("Sending back to edit:");
-        System.out.println(recievedIntent.getStringExtra("firestoreId"));
         intent.putExtra("userData", (Serializable) (Map) recievedIntent.getSerializableExtra("userData"));
         intent.putExtra("prevActivity", (String) recievedIntent.getSerializableExtra("activity"));
 

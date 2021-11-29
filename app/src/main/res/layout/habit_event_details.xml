@@ -16,7 +16,7 @@
 
         <fragment
             android:id="@+id/go_back_button"
-            android:name="com.example.habitapp.Fragments.GoBack"
+            android:name="com.example.habitapp.Fragments.GoBackButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
@@ -137,20 +137,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView26"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
-
-<!--    <ImageView-->
-<!--        android:id="@+id/habiteventdetails_delete"-->
-<!--        android:layout_width="80dp"-->
-<!--        android:layout_height="80dp"-->
-<!--        android:layout_marginBottom="32dp"-->
-<!--        android:focusable="false"-->
-<!--        android:scaleType="fitXY"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toStartOf="@+id/habiteventdetails_edit"-->
-<!--        app:layout_constraintHorizontal_bias="0.5"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:srcCompat="@android:drawable/ic_menu_delete" />-->
-
 
     <android.widget.Button
         android:id="@+id/habiteventdetails_edit"

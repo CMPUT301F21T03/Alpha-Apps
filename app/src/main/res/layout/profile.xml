@@ -47,7 +47,7 @@
 
         <fragment
             android:id="@+id/profile_notification_button"
-            android:name="com.example.habitapp.Fragments.Notification"
+            android:name="com.example.habitapp.Fragments.NotificationButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
