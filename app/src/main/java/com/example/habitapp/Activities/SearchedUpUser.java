@@ -170,20 +170,23 @@ public class SearchedUpUser extends AppCompatActivity implements EventList.OnEve
             public boolean onMenuItemClick(MenuItem menuItem) {
                 if (menuItem.getItemId() == R.id.request_follow) {
                     // Add the user in question to this user's requested list, and change status to Requested
-                    setRequested();
-                    setIncomingRequests();
-                    popupMenu.getMenuInflater().inflate(R.menu.following_status_menu, popupMenu.getMenu());
-                    popupMenu.getMenu().removeItem(R.id.request_follow);
 
-                    user.update("requested", FieldValue.arrayUnion(thisUserID))
+                    user.update("incomingrequest", FieldValue.arrayUnion(thisUserID))
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
                                         // Change status to requested
-                                        setFollowStatusTag("requested");
-                                        popupMenu.getMenuInflater().inflate(R.menu.following_status_menu, popupMenu.getMenu());
-                                        popupMenu.getMenu().removeItem(R.id.request_follow);
+                                        thisUser.update("requested",FieldValue.arrayUnion(userID))
+                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    setFollowStatusTag("requested");
+                                                    popupMenu.getMenuInflater().inflate(R.menu.following_status_menu, popupMenu.getMenu());
+                                                    popupMenu.getMenu().removeItem(R.id.request_follow);
+                                                    followStatus = REQUESTED;
+                                                }
+                                            });
                                     }
                                 }
                             });
@@ -205,14 +208,16 @@ public class SearchedUpUser extends AppCompatActivity implements EventList.OnEve
                                                             setFollowStatusTag("nothing");
                                                             popupMenu.getMenuInflater().inflate(R.menu.following_status_menu, popupMenu.getMenu());
                                                             popupMenu.getMenu().removeItem(R.id.unfollow);
+                                                            followStatus = NEITHER;
                                                         }
                                                     });
                                         }
                                     }
                                 });
                     } else if (followStatus == REQUESTED) {
-                        //Remove the user from the requested list, and change status to neither
-                        user.update("requested", FieldValue.arrayRemove(thisUserID))
+                        //Remove the user from the requested lists, and change status to neither
+                        thisUser.update("request",FieldValue.arrayRemove(userID));
+                        user.update("incomingrequest", FieldValue.arrayRemove(thisUserID))
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
@@ -221,6 +226,7 @@ public class SearchedUpUser extends AppCompatActivity implements EventList.OnEve
                                             setFollowStatusTag("nothing");
                                             popupMenu.getMenuInflater().inflate(R.menu.following_status_menu, popupMenu.getMenu());
                                             popupMenu.getMenu().removeItem(R.id.unfollow);
+                                            followStatus = NEITHER;
                                         }
                                     }
                                 });
@@ -288,7 +294,7 @@ public class SearchedUpUser extends AppCompatActivity implements EventList.OnEve
     private void setFollowStatusFrame() {
         String type = "neither";
         ArrayList<String> userFollowers = (ArrayList<String>) userData.get("followers");
-        ArrayList<String> userRequested = (ArrayList<String>) userData.get("requested");
+        ArrayList<String> userRequested = (ArrayList<String>) userData.get("incomingrequest");
         if (userFollowers != null) {
             if (userFollowers.contains(thisUserID)) {
                 type = "following";
@@ -365,12 +371,6 @@ public class SearchedUpUser extends AppCompatActivity implements EventList.OnEve
         }
     }
 
-    private void getUserData(String userID) {
-        //TODO get this users habit events (the first one from each habit)
-        getHabitData(userID);
-
-    }
-
     private void getHabitData(String userID) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         final Query user = db.collection("Doers")
@@ -403,30 +403,7 @@ public class SearchedUpUser extends AppCompatActivity implements EventList.OnEve
 
 
     }
-    public void setIncomingRequests() {
-        FirebaseFirestore db;
-        db = FirebaseFirestore.getInstance();
-        final DocumentReference findUserRef1 = db.collection("Doers").document(userID);
-        findUserRef1.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Map userData = document.getData();
-                        ArrayList<String> incomingRequests = (ArrayList<String>) userData.get("incomingrequest");
-                        incomingRequests.add(thisUserID);
-                        findUserRef1.update("incomingrequest", incomingRequests);
-                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                    } else {
-                        Log.d(TAG, "No such document");
-                    }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
-                }
-            }
-        });
-    }
+
     @Override
     public void onEventClick(int position) {
 

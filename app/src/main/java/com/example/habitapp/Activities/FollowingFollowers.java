@@ -95,40 +95,9 @@ public class FollowingFollowers extends AppCompatActivity {
         setUserListAdapter();
         getUserDataList();
 
-
-
-        // set an on click listener for if a follower is pressed
-
         followListView.setOnItemClickListener(this::followItemClicked);
 
-        // set a listener for if the search button is pressed
-        //ImageButton searchButton = findViewById(R.id.followingfollowers_search);
-        //searchButton.setOnClickListener(this::searchButtonClicked);
-
     }
-
-    /*private void searchButtonClicked(View view) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Please enter another user's ID");
-        final EditText input = new EditText(this);
-        input.setId(100);
-        input.setPadding(30, 30, 30, 30);
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        builder.setView(input);
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                openUserFrame(input.getText().toString());
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-        builder.show();
-    } */
 
     private void openUserFrame(String userID) {
         Intent intent = new Intent(this, SearchedUpUser.class);
@@ -182,6 +151,15 @@ public class FollowingFollowers extends AppCompatActivity {
                                 }
                             });
 
+                            // remove from their requested
+                            otherUserDoc.update("requested", FieldValue.arrayRemove(thisUserID)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    // success
+                                    followAdapter.notifyDataSetChanged();
+                                }
+                            });
+
                             // then add them to your followers
                             final DocumentReference thisUserDoc = db.collection("Doers")
                                     .document(thisUserID);
@@ -195,7 +173,7 @@ public class FollowingFollowers extends AppCompatActivity {
                             });
 
                             // and removed them from requested
-                            thisUserDoc.update("requested", FieldValue.arrayRemove(userToAcceptOrDeny.getUniqueID())).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            thisUserDoc.update("incomingrequest", FieldValue.arrayRemove(userToAcceptOrDeny.getUniqueID())).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void unused) {
                                     // success
@@ -247,16 +225,20 @@ public class FollowingFollowers extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void getUserDataList(){
-
+        String checkArrayString = sentFollowString;
+        if(sentFollowString.equals("requested")){
+            checkArrayString = "incomingrequest";
+        }
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
         DocumentReference thisUser = db.collection("Doers").document(thisUserID);
+        String finalCheckArrayString = checkArrayString;
         thisUser.addSnapshotListener(new com.google.firebase.firestore.EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
                 DocumentSnapshot userDocument = value;
                 Map thisUserData = value.getData();
-                followUsernameList = (ArrayList<String>) thisUserData.get(sentFollowString);
+                followUsernameList = (ArrayList<String>) thisUserData.get(finalCheckArrayString);
                 if(followUsernameList != null){
                     followDataList.clear();
                     for(String e : followUsernameList){
