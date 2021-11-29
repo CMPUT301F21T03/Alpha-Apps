@@ -3,11 +3,11 @@
  * part of it may be reproduced, stored in a retrieval system or transmitted in any for or by any
  * means without prior permission of the members of CMPUT301F21T03 or by the professor and any
  * authorized TAs of the CMPUT301 class at the University of Alberta, fall term 2021.
- * <p>
- * Class: Feed
- * <p>
+ *
+ * Class: FeedPage
+ *
  * Description: Handles the user interactions of the Feed fragment
- * <p>
+ *
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  * 1.0       Eric      Oct-21-2021   Created
@@ -19,53 +19,35 @@
 
 package com.example.habitapp.Fragments;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ListView;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.habitapp.Activities.FollowUserView;
-import com.example.habitapp.Activities.Main;
+import com.example.habitapp.Activities.SearchedUpUser;
+import com.example.habitapp.Activities.MainActivity;
 import com.example.habitapp.DataClasses.Event;
 import com.example.habitapp.DataClasses.EventList;
-import com.example.habitapp.DataClasses.Habit;
-import com.example.habitapp.DataClasses.User;
 import com.example.habitapp.R;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
-import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
-public class Feed extends Fragment implements EventList.OnEventListener {
-    public Feed() {
+public class FeedPage extends Fragment implements EventList.OnEventListener {
+    public FeedPage() {
         super(R.layout.feed);
     }
 
@@ -88,7 +70,7 @@ public class Feed extends Fragment implements EventList.OnEventListener {
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        Main activity = (Main) getActivity();
+        MainActivity activity = (MainActivity) getActivity();
         userData = activity.getUserData();
 
         feedRecyclerView = view.findViewById(R.id.feed_recycler_view);
@@ -97,9 +79,9 @@ public class Feed extends Fragment implements EventList.OnEventListener {
         feedRecyclerView.setAdapter(eventsAdapter);
         getHabitEventList(eventsAdapter);
 
-        following_habits = new ArrayList<ArrayList<String>>();
-        following_habits_names = new ArrayList<ArrayList<String>>();
-        following_events = new ArrayList<ArrayList<String>>();
+        following_habits = new ArrayList<>();
+        following_habits_names = new ArrayList<>();
+        following_events = new ArrayList<>();
 
         i = 0;
         j = 0;
@@ -171,7 +153,6 @@ public class Feed extends Fragment implements EventList.OnEventListener {
                                                         .orderBy("dateCompleted")
                                                         .limit(10);
                                                 String habit_name = temp_habits_names.get(j);
-                                                System.out.println(habit_name);
                                                 individualEvents.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                                     @Override
                                                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -193,7 +174,6 @@ public class Feed extends Fragment implements EventList.OnEventListener {
                                                                 Double latitude = doc.getDouble("latitude");
                                                                 Double longitude = doc.getDouble("longitude");
                                                                 String locationName = doc.getString("locationName");
-                                                                // TODO store location and photograph after halfway
                                                                 Event eventToAdd = new Event(habit_name, newDate, comment, photograph, username, latitude, longitude, locationName);
 
                                                                 eventToAdd.setFirestoreId(doc.getId());
@@ -202,7 +182,6 @@ public class Feed extends Fragment implements EventList.OnEventListener {
                                                                 }
 
                                                                 eventsAdapter.sortEvents(true);
-
                                                             }
                                                         }
                                                     }
@@ -211,11 +190,8 @@ public class Feed extends Fragment implements EventList.OnEventListener {
                                         }
                                     });
                                 }
-
                         }
                     });
-
-
                 }
             }
         });
@@ -223,7 +199,7 @@ public class Feed extends Fragment implements EventList.OnEventListener {
 
     @Override
     public void onEventClick(int position) {
-        Intent intent = new Intent(getContext(), FollowUserView.class);
+        Intent intent = new Intent(getContext(), SearchedUpUser.class);
         intent.putExtra("userID",events.get(position).getUsername());
         intent.putExtra("thisUserID",(String) userData.get("username"));
         startActivity(intent);

@@ -38,27 +38,18 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.habitapp.DataClasses.Event;
-import com.example.habitapp.DataClasses.EventList;
 import com.example.habitapp.DataClasses.Habit;
 import com.example.habitapp.R;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-
 import java.io.Serializable;
 import java.net.URL;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Map;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
@@ -68,10 +59,6 @@ public class HabitEventDetails extends AppCompatActivity {
     private Event event;
     private String habitName;
     private String comment;
-    //private String date;
-    private Bitmap photograph;
-    private Boolean hasLocation;
-    //private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private Map userData;
 
 
@@ -94,12 +81,10 @@ public class HabitEventDetails extends AppCompatActivity {
         if (comment.trim().isEmpty()) {
             comment = "No comment added";
         }
-        //date = event.getDateCompleted().format(formatter);
 
         EditText nameText = findViewById(R.id.habiteventdetails_title);
         TextView commentText = findViewById(R.id.habiteventdetails_comment);
         ImageView photographView = findViewById(R.id.habiteventdetails_camera_image);
-        //TextView locationText = findViewById(R.id.habiteventdetails_location);
 
         Button locationButton = findViewById(R.id.habiteventdetails_location);
 
@@ -145,7 +130,6 @@ public class HabitEventDetails extends AppCompatActivity {
         Button editButton = findViewById(R.id.habiteventdetails_edit);
         editButton.setOnClickListener(this::habitEventDetailsEditButtonPressed);
 
-        //ImageView deleteButton = findViewById(R.id.habiteventdetails_delete);
         Button deleteButton = findViewById(R.id.habiteventdetails_delete);
         deleteButton.setOnClickListener(this::habitEventDetailsDeleteButtonPressed);
 
@@ -153,9 +137,11 @@ public class HabitEventDetails extends AppCompatActivity {
     }
 
     private void editHabitEventCameraImagePressed(View view) {
-        Intent intent = new Intent(HabitEventDetails.this, ImageDialog.class);
-        intent.putExtra("event", event);
-        startActivity(intent);
+        if (event.getPhotograph() != null){
+            Intent intent = new Intent(HabitEventDetails.this, ImageDialog.class);
+            intent.putExtra("event", event);
+            startActivity(intent);
+        }
     }
 
     private void habitEventDetailsEditButtonPressed(View view) {

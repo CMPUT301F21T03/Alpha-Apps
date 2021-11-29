@@ -102,15 +102,16 @@ public class FollowingFollowers extends AppCompatActivity {
         followListView.setOnItemClickListener(this::followItemClicked);
 
         // set a listener for if the search button is pressed
-        ImageButton searchButton = findViewById(R.id.followingfollowers_search);
-        searchButton.setOnClickListener(this::searchButtonClicked);
+        //ImageButton searchButton = findViewById(R.id.followingfollowers_search);
+        //searchButton.setOnClickListener(this::searchButtonClicked);
 
     }
 
-    private void searchButtonClicked(View view) {
+    /*private void searchButtonClicked(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Please enter another user's ID");
         final EditText input = new EditText(this);
+        input.setId(100);
         input.setPadding(30, 30, 30, 30);
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         builder.setView(input);
@@ -127,10 +128,10 @@ public class FollowingFollowers extends AppCompatActivity {
             }
         });
         builder.show();
-    }
+    } */
 
     private void openUserFrame(String userID) {
-        Intent intent = new Intent(this, FollowUserView.class);
+        Intent intent = new Intent(this, SearchedUpUser.class);
         intent.putExtra("userID", userID);
         intent.putExtra("thisUserID",thisUserID);
         intent.putExtra("followStatus","must_be_checked");
@@ -177,6 +178,7 @@ public class FollowingFollowers extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Void unused) {
                                     // success
+                                    followAdapter.notifyDataSetChanged();
                                 }
                             });
 
@@ -188,6 +190,7 @@ public class FollowingFollowers extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Void unused) {
                                     // success
+                                    followAdapter.notifyDataSetChanged();
                                 }
                             });
 
@@ -196,8 +199,11 @@ public class FollowingFollowers extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Void unused) {
                                     // success
+                                    // notify dataset changed
+                                    followAdapter.notifyDataSetChanged();
                                 }
                             });
+                            finish();
 
                         }
                     })
@@ -215,19 +221,23 @@ public class FollowingFollowers extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Void unused) {
                                     // success
+                                    // notify dataset changed
+                                    followAdapter.notifyDataSetChanged();
                                 }
                             });
+                            finish();
                         }
                     });
             android.app.AlertDialog alert = markdoneBuilder.create();
             alert.show();
 
-            // notify dataset changed
             followAdapter.notifyDataSetChanged();
 
 
+
+
         } else {
-            Intent intent = new Intent(this, FollowUserView.class);
+            Intent intent = new Intent(this, SearchedUpUser.class);
             User userPos = followDataList.get(pos);
             intent.putExtra("userID",userPos.getUniqueID());
             intent.putExtra("thisUserID",thisUserID);

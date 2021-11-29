@@ -1,27 +1,24 @@
 package com.example.habitapp;
 
-import static org.junit.Assert.assertFalse;
-
 import android.app.Activity;
 import android.widget.EditText;
-
+import android.widget.TextView;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
-
 import com.example.habitapp.Activities.BootScreen;
 import com.example.habitapp.Activities.LogIn;
-import com.example.habitapp.Activities.Main;
+import com.example.habitapp.Activities.MainActivity;
 import com.robotium.solo.Solo;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-
 import java.util.Random;
 
-public class AllHabitsTest {
+public class TodayHabitsPageTest {
     private Solo solo;
+    private String new_habit_name;
+    private String date_text;
 
     @Rule
     public ActivityTestRule<BootScreen> rule = new ActivityTestRule(LogIn.class, true, true);
@@ -40,7 +37,7 @@ public class AllHabitsTest {
         solo.enterText((EditText) solo.getView(R.id.loginscreen_password), "abc123");
         solo.clickOnView(solo.getView(R.id.signupscreen_sign_up)); // misleading button name
         solo.sleep(5); // wait for communication w/ server
-        solo.assertCurrentActivity("Wrong Activity", Main.class); //  just checks for main, once profile is set up check for right user
+        solo.assertCurrentActivity("Wrong Activity", MainActivity.class); //  just checks for main, once profile is set up check for right user
 
     }
 
@@ -58,15 +55,16 @@ public class AllHabitsTest {
      */
     @Test
     public void testCorrectActivity(){
-        solo.assertCurrentActivity("Wrong Activity", Main.class);
+        solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
     }
 
     /**
-     * Asserting app successfully can add a habit by
-     * adding the habit, and then checking for it in the all habits frame
+     * Asserts app can successfully add a new habit, and have it populate
+     * in the today view. Done by setting new habit's date to current date,
+     * and by selecting all days of the week just in case.
      */
     @Test
-    public void addHabitAndPopulates(){
+    public void addHabitAndPopulatesDetails(){
         solo.clickOnView(solo.getView(R.id.addHabitFragment));
         solo.waitForText("Add", 2, 1000);
 
@@ -75,51 +73,33 @@ public class AllHabitsTest {
         Random rand = new Random();
         int upper_bound = 1000;
         int random_userid = rand.nextInt(upper_bound);
-        String new_habit_name = "Running" + String.valueOf(random_userid);
+        new_habit_name = "Running" + String.valueOf(random_userid);
 
         solo.enterText((EditText) solo.getView(R.id.addhabit_habit_title),  new_habit_name);
+
         solo.clickOnView(solo.getView(R.id.sunday_checkbox));
+        solo.clickOnView(solo.getView(R.id.monday_checkbox));
+        solo.clickOnView(solo.getView(R.id.tuesday_checkbox));
+        solo.clickOnView(solo.getView(R.id.wednesday_checkbox));
+        solo.clickOnView(solo.getView(R.id.thursday_checkbox));
+        solo.clickOnView(solo.getView(R.id.friday_checkbox));
+        solo.clickOnView(solo.getView(R.id.sunday_checkbox));
+
         solo.enterText((EditText) solo.getView(R.id.addhabit_reason),  "To stay healthy!");
         solo.clickOnText("yyyy-mm-dd");
+        TextView date_text_field = (TextView) solo.getView(R.id.addhabit_select_date);
+        date_text = date_text_field.getText().toString();
         solo.clickOnText("OK");
         solo.clickOnView(solo.getView(R.id.addhabit_complete));
 
         solo.waitForText(new_habit_name, 1, 5000);
-    }
 
-    /**
-     * Asserting app successfully can add a habit by
-     * adding the habit, and then checking for it in the all habits frame.
-     * Then we select it from all habits, delete it, and check for its absence in the list.
-     */
-    @Test
-    public void deleteHabitAndPopulates(){
-        solo.clickOnView(solo.getView(R.id.addHabitFragment));
-        solo.waitForText("Add", 2, 1000);
-
-        // generate random username
-        // 1/1000 chance of failing if firestore db is not reset after testing
-        Random rand = new Random();
-        int upper_bound = 1000;
-        int random_userid = rand.nextInt(upper_bound);
-        String new_habit_name = "Running" + String.valueOf(random_userid);
-
-        solo.enterText((EditText) solo.getView(R.id.addhabit_habit_title),  new_habit_name);
-        solo.clickOnView(solo.getView(R.id.sunday_checkbox));
-        solo.enterText((EditText) solo.getView(R.id.addhabit_reason),  "To stay healthy!");
-        solo.clickOnText("yyyy-mm-dd");
-        solo.clickOnText("OK");
-        solo.clickOnView(solo.getView(R.id.addhabit_complete));
+        solo.clickOnMenuItem("Today");
+        solo.waitForText("Today", 2, 1000);
 
         solo.waitForText(new_habit_name, 1, 5000);
-        solo.clickOnText(new_habit_name);
-        solo.clickOnView(solo.getView(R.id.moreButton));
-        solo.clickOnText("Delete habit");
-        assertFalse(solo.searchText(new_habit_name));
+
     }
-
-
-
 
     @After
     public void tearDown() throws Exception{

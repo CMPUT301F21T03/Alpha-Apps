@@ -4,7 +4,7 @@
  * means without prior permission of the members of CMPUT301F21T03 or by the professor and any
  * authorized TAs of the CMPUT301 class at the University of Alberta, fall term 2021.
  *
- * Class: HabitList
+ * Class: NonReorderableHabitList
  *
  * Description: A class that holds a list of Habit objects
  *
@@ -30,18 +30,15 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-
 import com.example.habitapp.R;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -49,7 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class OldHabitList extends ArrayAdapter<Habit> implements Serializable {
+public class NonReorderableHabitList extends ArrayAdapter<Habit> implements Serializable {
 
     private ArrayList<Habit> habitList;
     private Context context;
@@ -60,7 +57,7 @@ public class OldHabitList extends ArrayAdapter<Habit> implements Serializable {
      * @param context the context into which the habit list is created in
      * @param habitList the raw data of the habit list which will be formatted by this class
      */
-    public OldHabitList(Context context, ArrayList<Habit> habitList){
+    public NonReorderableHabitList(Context context, ArrayList<Habit> habitList){
         super(context, 0, habitList);
         this.habitList = habitList;
         this.context = context;
@@ -120,7 +117,6 @@ public class OldHabitList extends ArrayAdapter<Habit> implements Serializable {
                 // if there are Habits
                 clearHabitList();
                 if (!querySnapshot.isEmpty()){
-                    List<String> habits = new ArrayList<>();
                     for(QueryDocumentSnapshot doc : querySnapshot){
                         // make sure the title exists
                         if (doc.get("title") != null) {

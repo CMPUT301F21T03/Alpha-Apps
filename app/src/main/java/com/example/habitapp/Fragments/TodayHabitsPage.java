@@ -4,19 +4,18 @@
  * means without prior permission of the members of CMPUT301F21T03 or by the professor and any
  * authorized TAs of the CMPUT301 class at the University of Alberta, fall term 2021.
  *
- * Class: AllHabits
+ * Class: TodayHabitsPage
  *
- * Description: Handles the user interactions of the all habits fragment
+ * Description: Handles the user interactions of the today habits fragment
  *
  * Changelog:
  * =|Version|=|User(s)|==|Date|========|Description|================================================
  *   1.0       Eric      Oct-21-2021   Created
- *   1.1       Mathew    Oct-21-2021   Added some navigation features, added test data
- *   1.2       Leah      Oct-30-2021   Now populates from user firestore document, does not use subcollection yet
- *   1.3       Leah      Nov-02-2021   Now uses Habits subcollection. Cleaned up test code. Adds Firestore document ID.
- *   1.4       Leah      Nov-03-2021   Changed empty habit list text to use emptyListView, moved list population to HabitList
- *   1.5       Eric      Nov-03-2021   Firestore add, edit, delete now part of Habit class. Changes reflected here.
- *   1.6       Eric      Nov-24-2021   Changed to RecyclerView to allow for reorderability
+ *   1.1       Mathew    Oct-31-2021   Added logic to only show today's habits
+ *   1.2       Leah      Nov-02-2021   Fixed crashing when opening this Fragment
+ *   1.3       Leah      Nov-03-2021   Changed empty habit list text to use emptyListView, moved list population to HabitList
+ *   1.4       Eric      Nov-24-2021   Changed to RecyclerView to allow for reorderability
+ *   1.5       Leah      Nov-28-2021   Fixed crashing
  * =|=======|=|======|===|====|========|===========|================================================
  */
 
@@ -28,81 +27,83 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.habitapp.Activities.HabitDetails;
-import com.example.habitapp.Activities.Main;
-import com.example.habitapp.DataClasses.EventList;
+import com.example.habitapp.Activities.MainActivity;
 import com.example.habitapp.DataClasses.Habit;
 import com.example.habitapp.DataClasses.HabitList;
 import com.example.habitapp.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
-public class AllHabits extends Fragment implements HabitList.OnHabitListener{
 
-    private static final String TAG = "allhabitsTAG";
-
-    public AllHabits() {
-        super(R.layout.all_habits);
+public class TodayHabitsPage extends Fragment implements HabitList.OnHabitListener{
+    public TodayHabitsPage() {
+        super(R.layout.today_habits);
     }
 
-    // prep the all_habits screen related objects
-    private RecyclerView allHabitsRecyclerView;
+    private static final String TAG = "todayHabitsTAG";
+
+    // prep the today_habits screen related objects
+    private RecyclerView todaysHabitsRecyclerView;
     private HabitList habitAdapter;
     private ArrayList<Habit> habitDataList = new ArrayList<>();
     private Map userData;
-
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         // get user data
-        Main activity = (Main) getActivity();
+        MainActivity activity = (MainActivity) getActivity();
         userData = activity.getUserData();
         Log.d(TAG,"Successfully logged in: " + (String) userData.get("username"));
 
         setHabitRecyclerAdapter();
 
-        // set up reorderability
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
-        itemTouchHelper.attachToRecyclerView(allHabitsRecyclerView);
+        itemTouchHelper.attachToRecyclerView(todaysHabitsRecyclerView);
+
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void setHabitRecyclerAdapter() {
 
-        allHabitsRecyclerView = getView().findViewById(R.id.allhabits_habit_list);
+        todaysHabitsRecyclerView = getView().findViewById(R.id.todayhabits_habit_list);
         habitAdapter = new HabitList(habitDataList, this);
-        allHabitsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        allHabitsRecyclerView.setAdapter(habitAdapter);
+        todaysHabitsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        todaysHabitsRecyclerView.setAdapter(habitAdapter);
         getHabitDataList(habitAdapter);
         habitAdapter.registerAdapterDataObserver(myObserver);
 
     }
 
-    // manages showing/hiding the empty list message
     private RecyclerView.AdapterDataObserver myObserver = new RecyclerView.AdapterDataObserver() {
+        @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         public void onChanged() {
             super.onChanged();
+            // modify LocalDate ordinal from mon-sun order to sun-sat order
+            Integer dayWeek = (LocalDate.now().getDayOfWeek().ordinal() + 1) % 7;
+            for (int i = 0; i < habitDataList.size(); i++) {
+                if (habitDataList.get(i).getWeekOccurence().getAll().get(dayWeek) == Boolean.FALSE) {
+                    habitDataList.remove(i);
+                }
+            }
 
             if (getView()  != null) {
-                TextView hiddenText = getView().findViewById(R.id.allhabits_hidden_textview_1);
+                TextView hiddenText = getView().findViewById(R.id.today_habits_hidden_textview);
                 if (habitAdapter.getItemCount() == 0) {
                     hiddenText.setVisibility(View.VISIBLE);
                     hiddenText.setTextColor(Color.parseColor("#000000"));
@@ -111,11 +112,9 @@ public class AllHabits extends Fragment implements HabitList.OnHabitListener{
                     hiddenText.setVisibility(View.INVISIBLE);
                 }
             }
-
         }
     };
 
-    // handles reorderability
     ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(
             ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.START | ItemTouchHelper.END, 0) {
         @RequiresApi(api = Build.VERSION_CODES.O)
@@ -126,13 +125,16 @@ public class AllHabits extends Fragment implements HabitList.OnHabitListener{
 
             Collections.swap(habitDataList, fromPosition, toPosition);
 
+
             recyclerView.getAdapter().notifyItemMoved(fromPosition, toPosition);
 
+
             for (int i = 0; i < habitDataList.size(); i++) {
-                habitDataList.get(i).setAllHabitsIndex(i);
+
+                habitDataList.get(i).setTodayHabitsIndex(i);
+
             }
 
-            // update in firestore
             habitDataList.get(fromPosition).editHabitInFirestore(userData);
             habitDataList.get(toPosition).editHabitInFirestore(userData);
 
@@ -144,20 +146,15 @@ public class AllHabits extends Fragment implements HabitList.OnHabitListener{
         }
     } ;
 
-
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void getHabitDataList(HabitList habitAdapter){
-        // show your page from Firestore
+    public void getHabitDataList(HabitList habitAdapter) {
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
-
         final Query user = db.collection("Doers")
-                                         .document((String) userData.get("username"))
-                                         .collection("habits")
-                                         .orderBy("allHabitsIndex");
+                .document((String) userData.get("username"))
+                .collection("habits")
+                .orderBy("todayHabitsIndex");
         habitAdapter.addSnapshotQuery(user,TAG);
-
-
     }
 
     @Override

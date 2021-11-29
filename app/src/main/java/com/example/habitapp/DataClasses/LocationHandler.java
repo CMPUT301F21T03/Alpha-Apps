@@ -28,7 +28,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
-
 import androidx.core.app.ActivityCompat;
 
 public class LocationHandler extends Service implements LocationListener {
@@ -56,11 +55,20 @@ public class LocationHandler extends Service implements LocationListener {
     // Declaring a Location Manager
     protected LocationManager locationManager;
 
+    /**
+     * creates an object that listens for the user's location and updates it specified by static
+     * variables in this class
+     * @param mContext the context in which this location handler was created in
+     */
     public LocationHandler(Context mContext) {
         this.mContext = mContext;
         getLocation();
     }
 
+    /**
+     * get the location of the device based on either the GPS or Network provider of the phone
+     * @return Location location an object that contains latitude and longitude coords
+     */
     public Location getLocation() {
         try {
             locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
@@ -140,6 +148,10 @@ public class LocationHandler extends Service implements LocationListener {
         }
     }
 
+    /**
+     * get the latitude of the location object
+     * @return latitude an object of type double that refers to the latitude coord
+     */
     public double getLatitude(){
         if(location != null){
             latitude = location.getLatitude();
@@ -147,6 +159,10 @@ public class LocationHandler extends Service implements LocationListener {
         return latitude;
     }
 
+    /**
+     * get the longitude of the location object
+     * @return longitude an object of type double that refers to the longitude coord
+     */
     public double getLongitude(){
         if(location != null){
             longitude = location.getLongitude();
@@ -158,7 +174,6 @@ public class LocationHandler extends Service implements LocationListener {
      * Function to check if getting the location is possible
      * @return boolean
      * */
-
     public boolean canGetLocation() {
         return this.canGetLocation;
     }

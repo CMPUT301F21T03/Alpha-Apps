@@ -1,38 +1,23 @@
 package com.example.habitapp;
 
-import static android.content.ContentValues.TAG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import static java.security.AccessController.getContext;
-
-import android.content.Context;
-import android.util.Log;
-
 import androidx.annotation.NonNull;
-
-
 import com.example.habitapp.DataClasses.DaysOfWeek;
 import com.example.habitapp.DataClasses.Habit;
-import com.example.habitapp.DataClasses.HabitList;
-import com.example.habitapp.DataClasses.OldHabitList;
-
-import org.junit.Assert;
-import org.junit.Rule;
+import com.example.habitapp.DataClasses.NonReorderableHabitList;
 import org.junit.Test;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-public class OldHabitListTest {
-    public OldHabitList mockHabitList(){
+public class NonReorderableHabitListTest {
+    public NonReorderableHabitList mockHabitList(){
 
         ArrayList<Habit> mockDataList = new ArrayList<>();
-        //Context context = ApplicationProvider.getApplicationContext();
         mockDataList.add(mockHabit());
-        OldHabitList habitListAdapter = new OldHabitList(null, mockDataList);
+        NonReorderableHabitList habitListAdapter = new NonReorderableHabitList(null, mockDataList);
         return habitListAdapter;
     }
     @NonNull
@@ -51,7 +36,7 @@ public class OldHabitListTest {
      */
     @Test
     public void testAddHabit(){
-        OldHabitList newHabitList = mockHabitList();
+        NonReorderableHabitList newHabitList = mockHabitList();
         assertEquals(1, newHabitList.getHabits().size());
         DaysOfWeek frequency = new DaysOfWeek(false,false, true, false,true, false, true);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss");
@@ -69,7 +54,7 @@ public class OldHabitListTest {
      */
     @Test
     public void testAddHabitException(){
-        OldHabitList newHabitList = mockHabitList();
+        NonReorderableHabitList newHabitList = mockHabitList();
         Habit newHabit = mockHabit();
         newHabitList.addHabit(newHabit);
         assertThrows(IllegalArgumentException.class, () -> {
@@ -82,7 +67,7 @@ public class OldHabitListTest {
      */
     @Test
     public void testClearHabits(){
-        OldHabitList newHabitList = mockHabitList();
+        NonReorderableHabitList newHabitList = mockHabitList();
         assertEquals(1, newHabitList.getHabits().size());
         DaysOfWeek frequency = new DaysOfWeek(false,false, true, false,true, false, true);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss");
@@ -99,7 +84,7 @@ public class OldHabitListTest {
      */
     @Test
     public void testGetHabitListEmpty(){
-        OldHabitList newHabitList = mockHabitList();
+        NonReorderableHabitList newHabitList = mockHabitList();
         assertEquals(false, newHabitList.getHabitListEmpty());
         newHabitList.clearHabitList();
         assertEquals(true, newHabitList.getHabitListEmpty());

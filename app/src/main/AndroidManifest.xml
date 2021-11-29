@@ -30,10 +30,10 @@
         <activity android:name=".Activities.HabitEventDetails"
             android:noHistory="true"/>
         <activity android:name=".Activities.ImageDialog"/>
-        <activity android:name=".Activities.FollowUserView"/>
+        <activity android:name=".Activities.SearchedUpUser"/>
         <activity android:name=".Activities.FollowingFollowers"/>
         <activity android:name=".Activities.SignUp"/>
-        <activity android:name=".Activities.Main"
+        <activity android:name=".Activities.MainActivity"
             android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".Activities.BootScreen"

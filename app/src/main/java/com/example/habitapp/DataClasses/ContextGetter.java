@@ -31,6 +31,12 @@ public class ContextGetter extends Application {
         context = this;
     }
 
+    /**
+     * Get the context that the application is currently in. This can usually be done by casting
+     * 'this' to (Context), but in the cases where that is not possible, this function can be
+     * used as an alternative.
+     * @return context, a value that represents the context the application is currently in
+     */
     public static Context getContext(){
         return context;
     }

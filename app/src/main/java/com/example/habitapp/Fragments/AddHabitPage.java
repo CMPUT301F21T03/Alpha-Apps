@@ -4,7 +4,7 @@
  * means without prior permission of the members of CMPUT301F21T03 or by the professor and any
  * authorized TAs of the CMPUT301 class at the University of Alberta, fall term 2021.
  *
- * Class: AddHabit
+ * Class: AddHabitPage
  *
  * Description: Handles the user interactions of the add habit fragment
  *
@@ -41,25 +41,21 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
-
-import com.example.habitapp.Activities.Main;
+import com.example.habitapp.Activities.MainActivity;
 import com.example.habitapp.DataClasses.DaysOfWeek;
 import com.example.habitapp.DataClasses.Habit;
 import com.example.habitapp.R;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-
-public class AddHabit extends Fragment {
+public class AddHabitPage extends Fragment {
 
     @Nullable
     @Override
@@ -68,13 +64,13 @@ public class AddHabit extends Fragment {
     }
     private final String TAG = "addhabitTAG";
 
-    public AddHabit() {
+    public AddHabitPage() {
         super(R.layout.add_habit);
     }
     private Map userData;
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        Main activity = (Main) getActivity();
+        MainActivity activity = (MainActivity) getActivity();
         userData = activity.getUserData();
         Log.d(TAG,(String) userData.get("username"));
 
@@ -95,12 +91,11 @@ public class AddHabit extends Fragment {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void addHabitCompleteButtonPressed(View view){
-        //TODO update firestore with the user entered values
         //Get all buttons
         EditText nameText = getActivity().findViewById(R.id.addhabit_habit_title);
         EditText reasonText = getActivity().findViewById(R.id.addhabit_reason);
         TextView dateText = getActivity().findViewById(R.id.addhabit_select_date);
-        Spinner privacyText = (Spinner) getActivity().findViewById(R.id.habitprivacy_spinner);
+        Spinner privacyText = getActivity().findViewById(R.id.habitprivacy_spinner);
 
         CheckBox sunday = getActivity().findViewById((R.id.sunday_checkbox));
         CheckBox monday = getActivity().findViewById((R.id.monday_checkbox));
@@ -136,7 +131,6 @@ public class AddHabit extends Fragment {
         }
         else{
             // format the input data into a new Habit
-
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d HH:mm:ss");
             LocalDateTime newDate = LocalDateTime.parse(habitDate, formatter);
             LocalDateTime checkDate = LocalDateTime.now().minusDays(1);
@@ -153,7 +147,7 @@ public class AddHabit extends Fragment {
     }
 
     private void navigateToMainAcitivity(){
-        Intent intent = new Intent(getContext(), Main.class);
+        Intent intent = new Intent(getContext(), MainActivity.class);
         startActivity(intent);
     }
 
@@ -179,9 +173,9 @@ public class AddHabit extends Fragment {
             @Override
             public void onDateSet(DatePicker datePicker, int y, int m, int d) {
                 // format the selection into a string (yyyy-mm-dd)
-                Integer year = (Integer) y;
+                Integer year = y;
                 Integer month = m + 1; //counts the months from 0-11 not 1-12 (add one to correct)
-                Integer day = (Integer) d;
+                Integer day = d;
                 String selectedDate = year.toString() + "-" + month.toString() + "-" + day.toString();
 
                 // set the hint text to the date that was selected

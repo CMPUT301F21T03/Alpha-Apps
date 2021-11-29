@@ -1,26 +1,13 @@
 package com.example.habitapp;
 
-import static android.content.ContentValues.TAG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import static java.security.AccessController.getContext;
-
-import android.content.Context;
-import android.util.Log;
-
 import androidx.annotation.NonNull;
-
-
 import com.example.habitapp.DataClasses.DaysOfWeek;
 import com.example.habitapp.DataClasses.Habit;
 import com.example.habitapp.DataClasses.HabitList;
-
-import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;

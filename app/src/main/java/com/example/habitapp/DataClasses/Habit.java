@@ -25,28 +25,16 @@ package com.example.habitapp.DataClasses;
 
 import android.os.Build;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
@@ -54,8 +42,6 @@ public class Habit implements Serializable {
 
     private final String TAG = "addhabitTAG";
 
-    // User interactive elements
-    //=================================================================================
     // records the title of the habit
     private String title;
 
@@ -80,10 +66,7 @@ public class Habit implements Serializable {
     // records placement in lists for user display
     private Integer allHabitsIndex;
     private Integer todayHabitsIndex;
-    //==================================================================================
 
-    // program data objects
-    //==================================================================================
     // records the Firestore document ID in case it must be fetched for edits/deletes
     private String firestoreId;
 
@@ -94,7 +77,6 @@ public class Habit implements Serializable {
 
     private Integer daysCompleted = 0;
     private Integer daysTotal = 0;
-    //==================================================================================
 
 
     /**
@@ -189,8 +171,6 @@ public class Habit implements Serializable {
     }
 
     // =========================== GETTERS AND SETTERS ===========================
-
-
     public LocalDateTime getDateLastChecked() {
         return dateLastChecked;
     }
@@ -306,12 +286,16 @@ public class Habit implements Serializable {
         this.todayHabitsIndex = todayHabitsIndex;
     }
 
+    /**
+     * add the habit objects data to firestore to allow for data persistence
+     * @param userData a collection of data of which a username attribute is taken from to build
+     *                 the query to create a habit object
+     */
     public void addHabitToFirestore(Map userData) {
         // add new Habit to Firestore
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
         final CollectionReference habitsref = db.collection("Doers").document((String)userData.get("username")).collection("habits");
-
         habitsref.add(this)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
@@ -328,12 +312,16 @@ public class Habit implements Serializable {
         });
     }
 
+    /**
+     * remove the habit objects data from firestore to allow for data persistence
+     * @param userData a collection of data of which a username attribute is taken from to build
+     *                 the query to create a habit object
+     */
     public void removeHabitFromFirestore(Map userData) {
         // remove current Habit from Firestore
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
         final CollectionReference habitsref = db.collection("Doers").document((String)userData.get("username")).collection("habits");
-        //System.out.println("Firestore ID is: " + getFirestoreId());
         habitsref.document(getFirestoreId())
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -350,6 +338,11 @@ public class Habit implements Serializable {
                 });
     }
 
+    /**
+     * update the habit objects data to firestore to allow for data persistence
+     * @param userData a collection of data of which a username attribute is taken from to build
+     *                 the query to create a habit object
+     */
     public void editHabitInFirestore(Map userData) {
         // add new Habit to Firestore
         FirebaseFirestore db;

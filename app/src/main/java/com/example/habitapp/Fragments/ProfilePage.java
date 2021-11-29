@@ -4,7 +4,7 @@
  * means without prior permission of the members of CMPUT301F21T03 or by the professor and any
  * authorized TAs of the CMPUT301 class at the University of Alberta, fall term 2021.
  *
- * Class: Profile
+ * Class: ProfilePage
  *
  * Description: Handles the user interactions of the profile fragment
  *
@@ -24,19 +24,15 @@
 package com.example.habitapp.Fragments;
 
 import static android.app.Activity.RESULT_OK;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.ImageDecoder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Parcelable;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -44,15 +40,15 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
-
 import com.example.habitapp.Activities.BootScreen;
+import com.example.habitapp.Activities.SearchedUpUser;
 import com.example.habitapp.Activities.FollowingFollowers;
-import com.example.habitapp.Activities.Main;
+import com.example.habitapp.Activities.MainActivity;
+import com.example.habitapp.Activities.SearchedUpUser;
 import com.example.habitapp.DataClasses.User;
 import com.example.habitapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -64,22 +60,14 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
-import java.io.FileNotFoundException;
 
-
-public class Profile extends Fragment {
-    public Profile() {
+public class ProfilePage extends Fragment {
+    public ProfilePage() {
         super(R.layout.profile);
     }
 
@@ -92,6 +80,8 @@ public class Profile extends Fragment {
     private View usernameView;
     private EditText usernameEditText;
     private ImageView profilePicView;
+    private EditText profileSearchEditText;
+    private ImageButton profileSearchButton;
     private Map userData;
     private Uri imageUri;
 
@@ -112,8 +102,13 @@ public class Profile extends Fragment {
         // set the current user's data
         setUserData(view);
 
+        profileSearchEditText = view.findViewById(R.id.profile_search_field);
+        profileSearchButton = view.findViewById(R.id.profile_search_button);
+
         //init button listeners
         setButtonListeners(view);
+
+
 
     }
 
@@ -127,7 +122,7 @@ public class Profile extends Fragment {
 
     public void getUserData(){
         // fetch user data from activity in Main
-        Main activity = (Main) getActivity();
+        MainActivity activity = (MainActivity) getActivity();
         userData = activity.getUserData();
         // convert to a User
         profile = new User(userData.get("username").toString(),
@@ -198,6 +193,9 @@ public class Profile extends Fragment {
         Button logOutButton = view.findViewById(R.id.profile_log_out);
         logOutButton.setOnClickListener(this::profileLogOutButtonPressed);
 
+        // set a listener for if the search button is pressed
+        profileSearchButton.setOnClickListener(this::profileSearchButtonPressed);
+
         // set a listener for if the photo of the persons profile is pressed
         profilePicView.setSoundEffectsEnabled(false);
         profilePicView.setOnClickListener(this::profilePhotoPressed);
@@ -238,7 +236,6 @@ public class Profile extends Fragment {
     }
 
     private void profileLogOutButtonPressed(View view) {
-        //TODO sign the user out AND dont allow them to get back to this page using the back button
         Intent intent = new Intent(getContext(), BootScreen.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
@@ -255,6 +252,19 @@ public class Profile extends Fragment {
 
     private void profilePendingButtonPressed(View view){
         this.navigateFollowingFollowers("requested");
+    }
+
+    private void profileSearchButtonPressed(View view){
+        // do something
+        openUserFrame(profileSearchEditText.getText().toString());
+    }
+
+    private void openUserFrame(String userID) {
+        Intent intent = new Intent(getContext(), SearchedUpUser.class);
+        intent.putExtra("userID", userID);
+        intent.putExtra("thisUserID",(String) userData.get("username"));
+        intent.putExtra("followStatus","must_be_checked");
+        startActivity(intent);
     }
 
     private void navigateFollowingFollowers(String follow){
@@ -284,7 +294,7 @@ public class Profile extends Fragment {
         Bitmap imageBitMap = profilePicView.getDrawingCache();
 
         // Set the data to persist in the app
-        Main activity = (Main) getActivity();
+        MainActivity activity = (MainActivity) getActivity();
         // prepare references
         FirebaseFirestore db;
         db = FirebaseFirestore.getInstance();
@@ -365,6 +375,8 @@ public class Profile extends Fragment {
     private static String getTAG(){
         return TAG;
     }
+
+
 
 
 }
